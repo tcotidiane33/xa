@@ -1,0 +1,84 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\TraitementPaie;
+use App\Models\User;
+use App\Models\Client;
+use App\Models\PeriodePaie;
+use Illuminate\Http\Request;
+
+class TraitementPaieController extends Controller
+{
+    public function index()
+    {
+        $traitementsPaie = TraitementPaie::with(['gestionnaire', 'client', 'periodePaie'])->paginate(15);
+        return view('traitements_paie.index', compact('traitementsPaie'));
+    }
+
+    public function create()
+    {
+        $gestionnaires = User::where('role_id', 3)->get(); // Supposons que le rôle_id 3 soit pour les gestionnaires de paie
+        $clients = Client::all();
+        $periodesPaie = PeriodePaie::all();
+        return view('traitements_paie.create', compact('gestionnaires', 'clients', 'periodesPaie'));
+    }
+
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'gestionnaire_id' => 'required|exists:users,id',
+            'client_id' => 'required|exists:clients,id',
+            'periode_paie_id' => 'required|exists:periodes_paie,id',
+            'nbr_bull' => 'required|integer',
+            'maj_fiche_para' => 'nullable|date',
+            'reception_variable' => 'nullable|date',
+            'preparation_bp' => 'nullable|date',
+            'validation_bp_client' => 'nullable|date',
+            'preparation_envoie_dsn' => 'nullable|date',
+            'accuses_dsn' => 'nullable|date',
+            'teledec_urssaf' => 'nullable|date',
+            'notes' => 'nullable|string',
+        ]);
+
+        $traitementPaie = TraitementPaie::create($validatedData);
+
+        return redirect()->route('traitements_paie.index')->with('success', 'Traitement de paie créé avec succès.');
+    }
+
+    public function edit(TraitementPaie $traitementPaie)
+    {
+        $gestionnaires = User::where('role_id', 3)->get();
+        $clients = Client::all();
+        $periodesPaie = PeriodePaie::all();
+        return view('traitements_paie.edit', compact('traitementPaie', 'gestionnaires', 'clients', 'periodesPaie'));
+    }
+
+    public function update(Request $request, TraitementPaie $traitementPaie)
+    {
+        $validatedData = $request->validate([
+            'gestionnaire_id' => 'required|exists:users,id',
+            'client_id' => 'required|exists:clients,id',
+            'periode_paie_id' => 'required|exists:periodes_paie,id',
+            'nbr_bull' => 'required|integer',
+            'maj_fiche_para' => 'nullable|date',
+            'reception_variable' => 'nullable|date',
+            'preparation_bp' => 'nullable|date',
+            'validation_bp_client' => 'nullable|date',
+            'preparation_envoie_dsn' => 'nullable|date',
+            'accuses_dsn' => 'nullable|date',
+            'teledec_urssaf' => 'nullable|date',
+            'notes' => 'nullable|string',
+        ]);
+
+        $traitementPaie->update($validatedData);
+
+        return redirect()->route('traitements_paie.index')->with('success', 'Traitement de paie mis à jour avec succès.');
+    }
+
+    public function destroy(TraitementPaie $traitementPaie)
+    {
+        $traitementPaie->delete();
+        return redirect()->route('traitements_paie.index')->with('success', 'Traitement de paie supprimé avec succès.');
+    }
+}
