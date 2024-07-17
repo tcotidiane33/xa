@@ -30,7 +30,7 @@ class GestionnaireController extends AdminController
 
         $grid->column('id', __('Id'))->hide();
         $grid->column('GID', __('GID'));
-        $grid->column('user_id', __('Gestionnaire'))->as(function ($user_id) {
+        $grid->column('user_id', __('Gestionnaire'))->display(function ($user_id) {
             return User::find($user_id)->name ?? 'N/A';
         });
         // $grid->column('nbr_bull', __('Nbr bulletins'));

@@ -9,12 +9,17 @@ use Illuminate\Http\Request;
 use App\Models\TraitementPaie;
 use Illuminate\Support\Facades\DB;
 use OpenAdmin\Admin\Layout\Content;
+use Illuminate\Support\Facades\Auth;
 use OpenAdmin\Admin\Controllers\AdminController;
 
 class HomeController extends AdminController
 {
     public function index(Content $content)
     {
+
+        $user = Auth::user();
+        $successPercentage = 72; // Exemple, à remplacer par la logique pour calculer le succès
+
         $totalUsers = User::count();
         $totalClients = Client::count();
         $totalPeriodesPaie = PeriodePaie::count();
@@ -24,7 +29,7 @@ class HomeController extends AdminController
         $traitementsPaieTerminer = TraitementPaie::whereHas('periodePaie', function($query) {
             $query->where('validee', true);
         })->count();
-      
+
         $traitementsPaieInterrompu = TraitementPaie::whereHas('periodePaie', function($query) {
             $query->where('validee', '');
         })->count();
@@ -33,7 +38,7 @@ class HomeController extends AdminController
         return $content
             ->title('Tableau de bord')
             ->description('Statistiques et informations principales')
-            ->view('dashboard.index', compact('totalUsers', 'totalClients', 'totalPeriodesPaie', 'traitementsPaieEnCours','traitementsPaieTerminer', 'traitementsPaieInterrompu', 'latestClients'));
+            ->view('dashboard.index', compact('user','successPercentage','totalUsers', 'totalClients', 'totalPeriodesPaie', 'traitementsPaieEnCours','traitementsPaieTerminer', 'traitementsPaieInterrompu', 'latestClients'));
     }
 
     // Gestion des utilisateurs

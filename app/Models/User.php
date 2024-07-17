@@ -51,6 +51,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Fonction::class);
     }
+    public function gestionnaire()
+    {
+        return $this->belongsTo(Gestionnaire::class);
+    }
 
     public function domaine()
     {

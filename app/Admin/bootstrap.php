@@ -1,5 +1,10 @@
 <?php
 
+use OpenAdmin\Admin\Admin;
+use OpenAdmin\Admin\Grid\Column;
+use App\Admin\Extensions\Popover;
+
+
 /**
  * Open-admin - admin builder based on Laravel.
  * @author z-song <https://github.com/z-song>
@@ -17,5 +22,24 @@
  * Admin::js('/packages/prettydocs/js/main.js');
  *
  */
+OpenAdmin\Admin\Form::forget(['map', 'editor']);
+Column::extend('popover', Popover::class);
 
-OpenAdmin\Admin\Form::forget(['editor']);
+// OpenAdmin\Admin\Form::forget(['editor']);
+
+Admin::navbar(function (\OpenAdmin\Admin\Widgets\Navbar $navbar) {
+
+
+
+    // $navbar->right('<button type="button" class="btn btn-danger m-1"><a href="/admin" class="btn text-warning">Dashboard de l\'administration</a></button>');
+    $navbar->right('<button type="button" class="btn btn-warning m-1"><a href="/admin/periodes-paie" class="btn text-white"><b>Definir une periode de paie</b></a></button>');
+    $navbar->right('<button type="button" class="btn btn-warning m-1"><a href="/admin/traitements-paie" class="btn text-danger"><b>Traiter une fiche de paie</b></a></button>');
+    $navbar->right('<button type="button" class="btn btn-infos m-1"><i class="fa fa-bell" style="font-size:18px;color:yellow"></i> <a class="badge badge-light bg-white text-dark">4</a></button>');
+
+    // adds fullscreen option
+    $navbar->right(new OpenAdmin\Admin\Widgets\Navbar\Fullscreen());
+
+    // adds ajax refresh button
+    $navbar->right(new OpenAdmin\Admin\Widgets\Navbar\RefreshButton());
+
+});
