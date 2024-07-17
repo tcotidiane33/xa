@@ -41,6 +41,8 @@ class HomeController extends AdminController
             ->view('dashboard.index', compact('user','successPercentage','totalUsers', 'totalClients', 'totalPeriodesPaie', 'traitementsPaieEnCours','traitementsPaieTerminer', 'traitementsPaieInterrompu', 'latestClients'));
     }
 
+    
+
     // Gestion des utilisateurs
     public function manageUsers(Content $content)
     {

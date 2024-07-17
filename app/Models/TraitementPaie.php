@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\PeriodePaie;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -27,6 +27,34 @@ class TraitementPaie extends Model
         'notes'
     ];
 
+    /**
+     * Boot method to set up model event hooks.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($traitementPaie) {
+            $traitementPaie->reference = $traitementPaie->generateReference();
+        });
+    }
+    public function generateReference()
+    {
+        // Fetch the periode paie reference
+        $periodePaieReference = PeriodePaie::find($this->periode_paie_id)->reference;
+
+        // Fetch the client name based on the client_id
+        $clientName = $this->client->name;
+
+        // Format the date
+        $date = Carbon::now()->format('Ymd');
+
+        // Generate the reference
+        $reference = 'TDP_' . strtoupper(substr($clientName, 0, 4)) . '_' . $periodePaieReference . '_' . $date;
+
+        return $reference;
+    }
+
     public function gestionnaire()
     {
         return $this->belongsTo(User::class, 'gestionnaire_id');
@@ -37,6 +65,10 @@ class TraitementPaie extends Model
         return $this->belongsTo(Client::class, 'client_id');
     }
 
+    // public function traitementPaie()
+    // {
+    //     return $this->belongsTo(traitementPaie::class, 'periode_paie_id');
+    // }
     public function periodePaie()
     {
         return $this->belongsTo(PeriodePaie::class, 'periode_paie_id');

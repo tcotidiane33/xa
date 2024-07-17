@@ -13,14 +13,26 @@ class GestionnaireClient extends Model
         'gestionnaire_id',
         'client_id',
         'is_principal',
+        'gestionnaires_ids',
     ];
+
     protected $table = 'gestionnaire_client';
 
-    // protected $casts = [
-    //    'gestionnaire_id' => 'gestionnaire_id',
-    //     'client_id' => 'client_id',
-    //     'is_principal'=> 'boolean',
-    // ];
+
+    protected $casts = [
+        'gestionnaires_ids' => 'array', // Ensure it's casted as array
+    ];
+
+    // Relations
+    public function gestionnaires()
+    {
+        return $this->belongsToMany(User::class, 'gestionnaire_client', 'client_id', 'gestionnaire_id');
+    }
+
+    public function clients()
+    {
+        return $this->belongsToMany(Client::class, 'gestionnaire_client', 'gestionnaire_id', 'client_id');
+    }
 
     public function gestionnaire()
     {
@@ -32,4 +44,9 @@ class GestionnaireClient extends Model
         return $this->belongsTo(Client::class, 'client_id');
     }
 
+       // Initialize gestionnaires_ids as an empty array if null
+       public function getGestionnairesIdsAttribute($value)
+       {
+           return $value ? $value : [];
+       }
 }

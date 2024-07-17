@@ -39,8 +39,13 @@ class TraitementPaieController extends AdminController
             return Client::find($client_id)->name ?? 'N/A';
         });
         $grid->column('periode_paie_id', __('PERIODE DE PAIE 1/0'))->display(function ($period_id) {
-            return PeriodePaie::find($period_id)->reference ?? 'N/A';
+            $periodePaie = PeriodePaie::find($period_id);
+            $color = $periodePaie->validee ? 'success' : 'danger';
+            return "<span class='badge p-2 bg-{$color}'>{$periodePaie->reference}</span>";
         });
+        // $grid->column('periode_paie_id', __('PERIODE DE PAIE 1/0'))->display(function ($period_id) {
+        //     return PeriodePaie::find($period_id)->reference ?? 'N/A';
+        // });
         $grid->column('nbr_bull', __('NOMBRE DE BULLETINS'));
         $grid->column('maj_fiche_para', __('MAJ FICHE PARA'));
         $grid->column('reception_variable', __('RECEPTION_VARIABLES'));
@@ -73,7 +78,9 @@ class TraitementPaieController extends AdminController
             return Client::find($client_id)->name ?? 'N/A';
         });
         $show->field('periode_paie_id', __('PERIODE DE PAIE 1/0'))->as(function ($period_id) {
-            return PeriodePaie::find($period_id)->reference ?? 'N/A';
+            $periodePaie = PeriodePaie::find($period_id);
+            $color = $periodePaie->validee ? 'success' : 'danger';
+            return "<span class='badge p-2 bg-{$color}'>{$periodePaie->reference}</span>";
         });
         $show->field('nbr_bull', __('NOMBRE DE BULLETINS'));
         $show->field('maj_fiche_para', __('MAJ FICHE PARA'));
