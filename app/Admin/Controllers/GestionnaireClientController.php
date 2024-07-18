@@ -21,7 +21,7 @@ class GestionnaireClientController extends AdminController
 
         $grid->column('id', __('Id'))->hide();
         $grid->column('client_id', __('Client'))->display(function ($client_id) {
-            return User::find($client_id)->name ?? 'N/A';
+            return Client::find($client_id)->name ?? 'N/A';
         });
         $grid->column('gestionnaire_id', __('Gestionnaire'))->display(function ($ges_id) {
             return User::find($ges_id)->name ?? 'N/A';
@@ -42,11 +42,12 @@ class GestionnaireClientController extends AdminController
         $show = new Show(GestionnaireClient::findOrFail($id));
 
         $show->field('id', __('Id'));
-        $show->field('gestionnaire_id', __('Gestionnaire'))->as(function ($ges_id) {
-            return User::find($ges_id)->name ?? 'N/A';
-        });
+
         $show->field('client_id', __('Client'))->as(function ($client_id) {
             return Client::find($client_id)->name ?? 'N/A';
+        });
+        $show->field('gestionnaire_id', __('Gestionnaire'))->as(function ($ges_id) {
+            return User::find($ges_id)->name ?? 'N/A';
         });
         $show->field('is_principal', __('Est Principal ?'))->bool();
         $show->field('gestionnaires_ids', __('Gestionnaires supplémentaires'))->as(function ($gestionnaires_ids) {

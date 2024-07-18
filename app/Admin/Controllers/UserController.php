@@ -77,10 +77,10 @@ class UserController extends AdminController
         $form->text('name', __('Name'))->required();
         $form->email('email', __('Email'))->required();
         $form->password('password', __('Password'))->required();
-        $form->select('role_id', __('Role'))->options(Role::all()->pluck('name', 'id'))->required();
-        $form->select('fonction_id', __('Fonction'))->options(Fonction::all()->pluck('intitule', 'id'))->required();
-        $form->select('domaine_id', __('Domaine d\'intervention'))->options(Domaine::all()->pluck('intitule', 'id'))->required();
-        $form->select('habilitation_id', __('Habilitations'))->options(Habilitation::all()->pluck('intitule', 'id'))->required();
+        $form->select('role_id', __('Role'))->options(Role::all()->pluck('name', 'id'));
+        $form->select('fonction_id', __('Fonction'))->options(Fonction::all()->pluck('intitule', 'id'));
+        $form->select('domaine_id', __('Domaine d\'intervention'))->options(Domaine::all()->pluck('intitule', 'id'));
+        $form->select('habilitation_id', __('Habilitations'))->options(Habilitation::all()->pluck('intitule', 'id'));
         $form->display('created_at', __('Created At'));
         $form->display('updated_at', __('Updated At'));
 

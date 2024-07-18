@@ -45,8 +45,8 @@ class GestionnaireClient extends Model
     }
 
        // Initialize gestionnaires_ids as an empty array if null
-       public function getGestionnairesIdsAttribute($value)
-       {
-           return $value ? $value : [];
-       }
+    public function getGestionnairesIdsAttribute($value)
+    {
+        return $value ? json_decode($value, true) : [];
+    }
 }
