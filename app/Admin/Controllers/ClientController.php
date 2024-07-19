@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\ConventionCollective;
 use App\Models\User;
 use App\Models\Client;
 use OpenAdmin\Admin\Form;
@@ -20,11 +21,19 @@ class ClientController extends AdminController
         $grid->column('id', __('ID'))->sortable();
         $grid->column('name', __('Name'));
         $grid->column('responsable_paie_id', __('Responsable Paie'))->display(function($id) {
-            return User::find($id)->name ?? 'N/A';
+            return User::find($id)->name?? 'N/A';
         });
         $grid->column('gestionnaire_principal_id', __('Gestionnaire Principal'))->display(function($id) {
-            return User::find($id)->name ?? 'N/A';
+            return User::find($id)->name?? 'N/A';
         });
+        $grid->column('date_debut_prestation', __('Date de début de prestation'));
+        $grid->column('convention_collective_id', __('Convention collective'))->display(function($id) {
+            return ConventionCollective::find($id)->name?? 'N/A';
+        });
+        $grid->column('contact_paie', __('Contact paie'));
+        $grid->column('contact_comptabilite', __('Contact comptabilité'));
+        $grid->column('maj_fiche_para', __('Maj fiche para'));
+        $grid->column('code_acces', __('Code accès'));
         $grid->column('created_at', __('Created at'));
         $grid->column('updated_at', __('Updated at'));
 
@@ -38,11 +47,19 @@ class ClientController extends AdminController
         $show->field('id', __('ID'));
         $show->field('name', __('Name'));
         $show->field('responsable_paie_id', __('Responsable Paie'))->as(function($id) {
-            return User::find($id)->name ?? 'N/A';
+            return User::find($id)->name?? 'N/A';
         });
         $show->field('gestionnaire_principal_id', __('Gestionnaire Principal'))->as(function($id) {
-            return User::find($id)->name ?? 'N/A';
+            return User::find($id)->name?? 'N/A';
         });
+        $show->field('date_debut_prestation', __('Date de début de prestation'));
+        $show->field('convention_collective_id', __('Convention collective'))->as(function($id) {
+            return ConventionCollective::find($id)->name?? 'N/A';
+        });
+        $show->field('contact_paie', __('Contact paie'));
+        $show->field('contact_comptabilite', __('Contact comptabilité'));
+        $show->field('maj_fiche_para', __('Maj fiche para'));
+        $show->field('code_acces', __('Code accès'));
         $show->field('created_at', __('Created at'));
         $show->field('updated_at', __('Updated at'));
 
@@ -57,6 +74,12 @@ class ClientController extends AdminController
         $form->text('name', __('Name'))->required();
         $form->select('responsable_paie_id', __('Responsable Paie'))->options(User::all()->pluck('name', 'id'))->required();
         $form->select('gestionnaire_principal_id', __('Gestionnaire Principal'))->options(User::all()->pluck('name', 'id'))->required();
+        $form->date('date_debut_prestation', __('Date de début de prestation'));
+        $form->select('convention_collective_id', __('Convention collective'))->options(ConventionCollective::all()->pluck('name', 'id'));
+        $form->text('contact_paie', __('Contact paie'));
+        $form->text('contact_comptabilite', __('Contact comptabilité'));
+        $form->date('maj_fiche_para', __('Maj fiche para'));
+        $form->text('code_acces', __('Code accès'));
         $form->display('created_at', __('Created At'));
         $form->display('updated_at', __('Updated At'));
 

@@ -81,4 +81,19 @@ class TraitementPaieController extends Controller
         $traitementPaie->delete();
         return redirect()->route('traitements_paie.index')->with('success', 'Traitement de paie supprimé avec succès.');
     }
+
+    public function periodesPaie()
+    {
+        $periodesPaie = PeriodePaie::all();
+        $periode = now()->format('Y-m');
+        $traitementsPaie = TraitementPaie::with(['gestionnaire', 'client', 'periodePaie'])->get(); // Define the $traitementsPaie variable
+
+        return view('periodes_paie.index', compact('periodesPaie', 'periode', 'traitementsPaie')); // Pass all three variables to the view
+    }
+
+    public function clients()
+    {
+        $clients = Client::paginate(10); // paginate 10 clients per page
+        return view('clients.index', compact('clients'));
+    }
 }

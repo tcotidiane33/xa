@@ -9,7 +9,17 @@ class Client extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'responsable_paie_id', 'gestionnaire_principal_id'];
+    protected $fillable = [
+        'name',
+        'esponsable_paie_id',
+        'gestionnaire_principal_id',
+        'date_debut_prestation',
+        'convention_collective',
+        'contact_paie',
+        'contact_comptabilite',
+        'aj_fiche_para',
+        'code_acces',
+    ];
 
     public function responsablePaie()
     {
@@ -34,5 +44,10 @@ class Client extends Model
     public function periodesPaie()
     {
         return $this->hasMany(PeriodePaie::class);
+    }
+
+    public function conventionCollective()
+    {
+        return $this->belongsTo(ConventionCollective::class);
     }
 }

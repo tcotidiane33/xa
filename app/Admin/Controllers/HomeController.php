@@ -9,8 +9,8 @@ use Illuminate\Http\Request;
 use App\Models\TraitementPaie;
 use Illuminate\Support\Facades\DB;
 use OpenAdmin\Admin\Layout\Content;
-use Illuminate\Support\Facades\Auth;
 use OpenAdmin\Admin\Controllers\AdminController;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends AdminController
 {
@@ -41,7 +41,7 @@ class HomeController extends AdminController
             ->view('dashboard.index', compact('user','successPercentage','totalUsers', 'totalClients', 'totalPeriodesPaie', 'traitementsPaieEnCours','traitementsPaieTerminer', 'traitementsPaieInterrompu', 'latestClients'));
     }
 
-    
+
 
     // Gestion des utilisateurs
     public function manageUsers(Content $content)

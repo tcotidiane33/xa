@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Admin\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 // use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PeriodePaieController;
+use App\Http\Controllers\TraitementPaieController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,10 +23,9 @@ use App\Http\Controllers\PeriodePaieController;
         return view('welcome');
     });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::get('/admin', [HomeController::class, 'index'])->name('admin');
 
@@ -34,11 +35,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/periodes-paie', [PeriodePaieController::class, 'index'])->name('periodes_paie.index');
-Route::post('/periodes-paie/valider', [PeriodePaieController::class, 'valider'])->name('periodes_paie.valider');
-Route::post('/traitements-paie/{traitementPaie}/update-field', [PeriodePaieController::class, 'updateField'])->name('traitements_paie.update_field');
-// Route::get('/periodes-paie', [PeriodePaieController::class, 'index'])->name('periodes_paie.index');
-// Route::post('/periodes-paie/valider', [PeriodePaieController::class, 'valider'])->name('periodes_paie.valider');
+Route::resource('traitement-paie', TraitementPaieController::class);
+
+Route::get('traitement-paie/{id}/edit', [TraitementPaieController::class, 'edit'])->name('traitements_paie.edit');
+Route::delete('/traitements_paie/{traitementPaie}', 'TraitementPaieController@destroy')->name('traitements_paie.destroy');
+Route::put('traitement-paie/{id}', [TraitementPaieController::class, 'update'])->name('traitements_paie.update');
+
+Route::get('clients', [TraitementPaieController::class, 'clients'])->name('clients.index');
+Route::get('periodes-paie', [TraitementPaieController::class, 'periodesPaie'])->name('traitement-paie.periodes-paie.index');
+Route::get('periodes-paie/liste', [PeriodePaieController::class, 'periodesPaie'])->name('periodes-paie.index');
+Route::post('periodes-paie/valider', [PeriodePaieController::class, 'valider'])->name('periodes_paie.valider');
+Auth::routes();
+
 require __DIR__.'/auth.php';
 
 
