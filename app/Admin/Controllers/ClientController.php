@@ -76,10 +76,10 @@ class ClientController extends AdminController
         $form->select('gestionnaire_principal_id', __('Gestionnaire Principal'))->options(User::all()->pluck('name', 'id'))->required();
         $form->date('date_debut_prestation', __('Date de début de prestation'));
         $form->select('convention_collective_id', __('Convention collective'))->options(ConventionCollective::all()->pluck('name', 'id'));
-        $form->text('contact_paie', __('Contact paie'));
-        $form->text('contact_comptabilite', __('Contact comptabilité'));
+        $form->email('contact_paie', __('Contact paie'));
+        $form->email('contact_comptabilite', __('Contact comptabilité'));
         $form->date('maj_fiche_para', __('Maj fiche para'));
-        $form->text('code_acces', __('Code accès'));
+        $form->ckeditor('code_acces', __('Annuaire Code accès'));
         $form->display('created_at', __('Created At'));
         $form->display('updated_at', __('Updated At'));
 

@@ -1,9 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MailController;
 use App\Admin\Controllers\HomeController;
-use App\Http\Controllers\ProfileController;
 // use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PeriodePaieController;
 use App\Http\Controllers\TraitementPaieController;
@@ -46,6 +47,10 @@ Route::get('periodes-paie', [TraitementPaieController::class, 'periodesPaie'])->
 Route::get('periodes-paie/liste', [PeriodePaieController::class, 'periodesPaie'])->name('periodes-paie.index');
 Route::post('periodes-paie/valider', [PeriodePaieController::class, 'valider'])->name('periodes_paie.valider');
 Auth::routes();
+
+
+//send mails Alerte
+Route::get('send-mail', [MailController::class, 'index']);
 
 require __DIR__.'/auth.php';
 

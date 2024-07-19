@@ -59,6 +59,10 @@ class ExampleController extends AdminController
         $form = new Form(new ExampleModel);
 
         $form->display('id', __('ID'));
+        $form->ckeditor('content');
+
+// Set config
+$form->ckeditor('content')->options(['lang' => 'fr', 'height' => 500,'contentsCss' => '/css/frontend-body-content.css']);
         $form->display('created_at', __('Created At'));
         $form->display('updated_at', __('Updated At'));
 

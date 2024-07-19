@@ -76,6 +76,7 @@
 
             <div class="row bg-white shadow rounded-lg p-4 mt-4 flex items-center">
                 <div class=" col">
+                    {{-- <h5 class="card-title text-primary">Félicitation Mr ...! 🎉</h5> --}}
                     <h5 class="card-title text-primary">Félicitation Mr {{ Auth::user()->name }}! 🎉</h5>
                     <p class="mb-4">
                         Vous avez du succès <span class="fw-bold">{{ $successPercentage }}%</span> plus d'offres
