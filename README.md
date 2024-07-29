@@ -72,3 +72,6 @@ https://medium.com/@akhmadshaleh/sending-email-with-laravel-10-and-gmail-49be01c
 
 
 # https://mailtrap.io/blog/laravel-send-email-gmail/
+
+<!-- Try to introduce mail alerte : 
+sendEmail -->

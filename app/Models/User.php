@@ -82,4 +82,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(PeriodePaie::class, 'gestionnaire_id');
     }
+
+    /**
+     * Relation : Un utilisateur peut créer plusieurs tickets.
+     */
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    /**
+     * Relation : Un utilisateur peut être assigné à plusieurs tickets (si nécessaire).
+     */
+    public function assignedTickets()
+    {
+        return $this->belongsToMany(Ticket::class, 'ticket_user');
+    }
 }
