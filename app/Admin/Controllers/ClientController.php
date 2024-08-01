@@ -19,14 +19,16 @@ class ClientController extends AdminController
         $grid = new Grid(new Client);
 
         $grid->column('id', __('ID'))->sortable();
-        $grid->column('name', __('Name'));
+        $grid->column('name', __('Name'))->label();
         $grid->column('responsable_paie_id', __('Responsable Paie'))->display(function($id) {
             return User::find($id)->name?? 'N/A';
         });
         $grid->column('gestionnaire_principal_id', __('Gestionnaire Principal'))->display(function($id) {
             return User::find($id)->name?? 'N/A';
-        });
-        $grid->column('date_debut_prestation', __('Date de début de prestation'));
+        })->label();
+        $grid->column('date_debut_prestation', __('Date de début de prestation'))->label('info');
+        $grid->column('date_feedback_mail', __('Date de rappelle par mail'))->label('warning');
+        $grid->column('date_estimate_send_var', __('Date de l\'envoie des variables'))->label('danger');
         $grid->column('convention_collective_id', __('Convention collective'))->display(function($id) {
             return ConventionCollective::find($id)->name?? 'N/A';
         });
@@ -53,6 +55,8 @@ class ClientController extends AdminController
             return User::find($id)->name?? 'N/A';
         });
         $show->field('date_debut_prestation', __('Date de début de prestation'));
+        $show->field('date_feedback_mail', __('Date de rappelle par mail'));
+        $show->field('date_estimate_send_var', __('Date de l\'envoie des variables'));
         $show->field('convention_collective_id', __('Convention collective'))->as(function($id) {
             return ConventionCollective::find($id)->name?? 'N/A';
         });
@@ -75,6 +79,8 @@ class ClientController extends AdminController
         $form->select('responsable_paie_id', __('Responsable Paie'))->options(User::all()->pluck('name', 'id'))->required();
         $form->select('gestionnaire_principal_id', __('Gestionnaire Principal'))->options(User::all()->pluck('name', 'id'))->required();
         $form->date('date_debut_prestation', __('Date de début de prestation'));
+        $form->date('date_feedback_mail', __('Date de rappelle par mail'));
+        $form->date('date_estimate_send_var', __('Date de l\'envoie des variables'));
         $form->select('convention_collective_id', __('Convention collective'))->options(ConventionCollective::all()->pluck('name', 'id'));
         $form->email('contact_paie', __('Contact paie'));
         $form->email('contact_comptabilite', __('Contact comptabilité'));

@@ -29,7 +29,7 @@ class TicketController extends AdminController
         $grid = new Grid(new Ticket);
 
         $grid->column('id', __('ID'))->sortable();
-        $grid->column('title', __('Titre'));
+        $grid->column('title', __('Titre'))->label();
         $grid->column('description', __('Description'));
         $grid->column('status', __('Statut'))->display(function ($status) {
             return ucfirst($status);

@@ -17,8 +17,8 @@ class HabilitationController extends AdminController
         $grid = new Grid(new Habilitation);
 
         $grid->column('id', __('ID'))->sortable();
-        $grid->column('intitule', __('Intitule'));
-        $grid->column('libelle', __('Libelle'));
+        $grid->column('intitule', __('Intitule'))->label();
+        $grid->column('libelle', __('Libelle'))->label('secondary');
         $grid->column('created_at', __('Created at'));
         $grid->column('updated_at', __('Updated at'));
 

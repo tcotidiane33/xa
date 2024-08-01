@@ -9,7 +9,7 @@ use App\Models\Client;
 use OpenAdmin\Admin\Form;
 use OpenAdmin\Admin\Grid;
 use OpenAdmin\Admin\Show;
-use \App\Models\Gestionnaire;
+use App\Models\GestionnaireClient; // Assurez-vous d'inclure ce modèle
 use OpenAdmin\Admin\Controllers\AdminController;
 
 class TraitementPaieController extends AdminController
@@ -40,29 +40,29 @@ class TraitementPaieController extends AdminController
         $grid->column('validation_bp_client', __('VALIDATION BP CLIENT'));
         $grid->column('preparation_envoie_dsn', __('PREPARATION ENVOIE DSN'));
         $grid->column('accuses_dsn', __('ACCUSES DSN'));
-        $grid->column('teledec_urssaf', __('TELEDEC URSSAF'));
+        // $grid->column('teledec_urssaf', __('TELEDEC URSSAF'));
         $grid->column('notes', __('NOTES'));
         $grid->column('pj_nbr_bull', __('PJ NOMBRE DE BULLETINS'))->display(function ($multipleImage) {
-            return $multipleImage ? '<a href="'.asset('storage/'.$multipleImage).'" target="_blank">Voir</a>' : 'N/A';
+            return $multipleImage ? '<a href="' . asset('storage/' . $multipleImage) . '" target="_blank">Voir</a>' : 'N/A';
         });
         $grid->column('pj_maj_fiche_para', __('PJ MAJ FICHE PARA'))->display(function ($multipleImage) {
-            return $multipleImage ? '<a href="'.asset('storage/'.$multipleImage).'" target="_blank">Voir</a>' : 'N/A';
+            return $multipleImage ? '<a href="' . asset('storage/' . $multipleImage) . '" target="_blank">Voir</a>' : 'N/A';
         });
         $grid->column('pj_reception_variable', __('PJ RECEPTION VARIABLES'))->display(function ($multipleImage) {
-            return $multipleImage ? '<a href="'.asset('storage/'.$multipleImage).'" target="_blank">Voir</a>' : 'N/A';
+            return $multipleImage ? '<a href="' . asset('storage/' . $multipleImage) . '" target="_blank">Voir</a>' : 'N/A';
         });
         $grid->column('pj_preparation_bp', __('PJ PREPARATION BP'))->display(function ($multipleImage) {
-            return $multipleImage ? '<a href="'.asset('storage/'.$multipleImage).'" target="_blank">Voir</a>' : 'N/A';
+            return $multipleImage ? '<a href="' . asset('storage/' . $multipleImage) . '" target="_blank">Voir</a>' : 'N/A';
         });
         $grid->column('pj_validation_bp_client', __('PJ VALIDATION BP CLIENT'))->display(function ($multipleImage) {
-            return $multipleImage ? '<a href="'.asset('storage/'.$multipleImage).'" target="_blank">Voir</a>' : 'N/A';
+            return $multipleImage ? '<a href="' . asset('storage/' . $multipleImage) . '" target="_blank">Voir</a>' : 'N/A';
         });
         $grid->column('pj_preparation_envoie_dsn', __('PJ PREPARATION ENVOIE DSN'))->display(function ($multipleImage) {
-            return $multipleImage ? '<a href="'.asset('storage/'.$multipleImage).'" target="_blank">Voir</a>' : 'N/A';
+            return $multipleImage ? '<a href="' . asset('storage/' . $multipleImage) . '" target="_blank">Voir</a>' : 'N/A';
         });
         $grid->column('link_preparation_envoie_dsn', __('LINK PREPARATION ENVOIE DSN'))->link();
         $grid->column('pj_accuses_dsn', __('PJ ACCUSES DSN'))->display(function ($multipleImage) {
-            return $multipleImage ? '<a href="'.asset('storage/'.$multipleImage).'" target="_blank">Voir</a>' : 'N/A';
+            return $multipleImage ? '<a href="' . asset('storage/' . $multipleImage) . '" target="_blank">Voir</a>' : 'N/A';
         });
         $grid->column('link_accuses_dsn', __('LINK ACCUSES DSN'))->link();
         $grid->column('listBoxIsEmpty', __('LISTE VIDE'))->display(function ($isEmpty) {
@@ -96,29 +96,29 @@ class TraitementPaieController extends AdminController
         $show->field('validation_bp_client', __('VALIDATION BP CLIENT'));
         $show->field('preparation_envoie_dsn', __('PREPARATION ENVOIE DSN'));
         $show->field('accuses_dsn', __('ACCUSES DSN'));
-        $show->field('teledec_urssaf', __('TELEDEC URSSAF'));
+        // $show->field('teledec_urssaf', __('TELEDEC URSSAF'));
         $show->field('notes', __('NOTES'));
         $show->field('pj_nbr_bull', __('PJ NOMBRE DE BULLETINS'))->as(function ($multipleImage) {
-            return $multipleImage ? '<a href="'.asset('storage/'.$multipleImage).'" target="_blank">Voir</a>' : 'N/A';
+            return $multipleImage ? '<a href="' . asset('storage/' . $multipleImage) . '" target="_blank">Voir</a>' : 'N/A';
         });
         $show->field('pj_maj_fiche_para', __('PJ MAJ FICHE PARA'))->as(function ($multipleImage) {
-            return $multipleImage ? '<a href="'.asset('storage/'.$multipleImage).'" target="_blank">Voir</a>' : 'N/A';
+            return $multipleImage ? '<a href="' . asset('storage/' . $multipleImage) . '" target="_blank">Voir</a>' : 'N/A';
         });
         $show->field('pj_reception_variable', __('PJ RECEPTION VARIABLES'))->as(function ($multipleImage) {
-            return $multipleImage ? '<a href="'.asset('storage/'.$multipleImage).'" target="_blank">Voir</a>' : 'N/A';
+            return $multipleImage ? '<a href="' . asset('storage/' . $multipleImage) . '" target="_blank">Voir</a>' : 'N/A';
         });
         $show->field('pj_preparation_bp', __('PJ PREPARATION BP'))->as(function ($multipleImage) {
-            return $multipleImage ? '<a href="'.asset('storage/'.$multipleImage).'" target="_blank">Voir</a>' : 'N/A';
+            return $multipleImage ? '<a href="' . asset('storage/' . $multipleImage) . '" target="_blank">Voir</a>' : 'N/A';
         });
         $show->field('pj_validation_bp_client', __('PJ VALIDATION BP CLIENT'))->as(function ($multipleImage) {
-            return $multipleImage ? '<a href="'.asset('storage/'.$multipleImage).'" target="_blank">Voir</a>' : 'N/A';
+            return $multipleImage ? '<a href="' . asset('storage/' . $multipleImage) . '" target="_blank">Voir</a>' : 'N/A';
         });
         $show->field('pj_preparation_envoie_dsn', __('PJ PREPARATION ENVOIE DSN'))->as(function ($multipleImage) {
-            return $multipleImage ? '<a href="'.asset('storage/'.$multipleImage).'" target="_blank">Voir</a>' : 'N/A';
+            return $multipleImage ? '<a href="' . asset('storage/' . $multipleImage) . '" target="_blank">Voir</a>' : 'N/A';
         });
         $show->field('link_preparation_envoie_dsn', __('LINK PREPARATION ENVOIE DSN'))->link();
         $show->field('pj_accuses_dsn', __('PJ ACCUSES DSN'))->as(function ($multipleImage) {
-            return $multipleImage ? '<a href="'.asset('storage/'.$multipleImage).'" target="_blank">Voir</a>' : 'N/A';
+            return $multipleImage ? '<a href="' . asset('storage/' . $multipleImage) . '" target="_blank">Voir</a>' : 'N/A';
         });
         $show->field('link_accuses_dsn', __('LINK ACCUSES DSN'))->link();
         $show->field('listBoxIsEmpty', __('LISTE VIDE'))->as(function ($isEmpty) {
@@ -135,13 +135,17 @@ class TraitementPaieController extends AdminController
         $form = new Form(new TraitementPaie());
 
 
-        // Sélection du client
-        $form->select('client_id', __('Client'))->options(Client::pluck('name', 'id'))->load('gestionnaire_id', '/api/client-gestionnaire');
-        // Affichage du gestionnaire non modifiable
-    //     $form->text('gestionnaire_id', __('Gestionnaire'))->with(function ($gestionnaire_id) {
-    //        $gestionnaire = User::find($gestionnaire_id);
-    //        return $gestionnaire ? $gestionnaire->name : 'N/A';
-    //    });
+
+        $form->select('client_id', __('CLIENT'))
+            ->options(Client::pluck('name', 'id'))
+            ->load('gestionnaire_id', '/api/getClientInfo');
+
+        $form->display('gestionnaire_id', __('GESTIONNAIRE'))->default('N/A');
+        $form->display('responsable_id', __('RESPONSABLE'))->default('N/A');
+        $form->display('superviseur_id', __('SUPERVISEUR'))->default('N/A');
+        $form->multipleSelect('gestionnaires_ids', __('Gestionnaires supplémentaires'))
+            ->options(User::pluck('name', 'id'))
+            ->disable();
 
         $form->select('periode_paie_id', __('PERIODE DE PAIE 1:Validée / 0:Pas Validée'))->options(PeriodePaie::pluck('reference', 'id'));
         $form->number('nbr_bull', __('NOMBRE DE BULLETINS'))->rules('required');
@@ -165,31 +169,24 @@ class TraitementPaieController extends AdminController
 
         $form->saving(function (Form $form) {
             $form->model()->listBoxIsEmpty = $form->model()->checkIfAllFieldsFilled();
-
-            // Convertir les fichiers en chemin de fichier
-            if ($form->pj_nbr_bull) {
-                $form->model()->pj_nbr_bull = $form->pj_nbr_bull->store('uploads/traitements_paie');
-            }
-            if ($form->pj_maj_fiche_para) {
-                $form->model()->pj_maj_fiche_para = $form->pj_maj_fiche_para->store('uploads/traitements_paie');
-            }
-            if ($form->pj_reception_variable) {
-                $form->model()->pj_reception_variable = $form->pj_reception_variable->store('uploads/traitements_paie');
-            }
-            if ($form->pj_preparation_bp) {
-                $form->model()->pj_preparation_bp = $form->pj_preparation_bp->store('uploads/traitements_paie');
-            }
-            if ($form->pj_validation_bp_client) {
-                $form->model()->pj_validation_bp_client = $form->pj_validation_bp_client->store('uploads/traitements_paie');
-            }
-            if ($form->pj_preparation_envoie_dsn) {
-                $form->model()->pj_preparation_envoie_dsn = $form->pj_preparation_envoie_dsn->store('uploads/traitements_paie');
-            }
-            if ($form->pj_accuses_dsn) {
-                $form->model()->pj_accuses_dsn = $form->pj_accuses_dsn->store('uploads/traitements_paie');
+    
+            $fileFields = [
+                'pj_nbr_bull',
+                'pj_maj_fiche_para',
+                'pj_reception_variable',
+                'pj_preparation_bp',
+                'pj_validation_bp_client',
+                'pj_preparation_envoie_dsn',
+                'pj_accuses_dsn'
+            ];
+    
+            foreach ($fileFields as $field) {
+                if ($form->{$field}) {
+                    $form->model()->{$field} = $form->{$field}->store('uploads/traitements_paie');
+                }
             }
         });
-        
+
         return $form;
     }
 }

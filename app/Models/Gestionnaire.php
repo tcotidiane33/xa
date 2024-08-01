@@ -10,14 +10,26 @@ class Gestionnaire extends Model
     use HasFactory;
 
     protected $fillable = [
-        'GID', 'user_id', 'nbr_bull', 'maj_fiche_para', 'reception_variable',
-        'preparation_bp', 'validation_bp_client', 'preparation_envoie_dsn',
-        'accuses_dsn', 'teledec_urssaf', 'notes'
+        'GID',
+        'user_id',
+        'responsable_id',
+        'superviseur_id',
+        'avatar',
+        'notes'
     ];
 
     public function user()
     {
         return $this->hasMany(User::class);
+    }
+    public function responsable()
+    {
+        return $this->belongsTo(User::class, 'responsable_id');
+    }
+
+    public function superviseur()
+    {
+        return $this->belongsTo(User::class, 'superviseur_id');
     }
 
     public function fonction()

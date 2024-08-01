@@ -29,21 +29,19 @@ class GestionnaireController extends AdminController
         $grid = new Grid(new Gestionnaire());
 
         $grid->column('id', __('Id'))->hide();
-        $grid->column('GID', __('GID'));
+        $grid->column('GID', __('GID'))->label();
         $grid->column('user_id', __('Gestionnaire'))->display(function ($user_id) {
             return User::find($user_id)->name ?? 'N/A';
+        })->label('danger');
+        $grid->column('responsable_id', __('Responsable'))->display(function ($responsable_id) {
+            return User::find($responsable_id)->name ?? 'N/A';
+        })->label('primary');
+        $grid->column('superviseur_id', __('Superviseur'))->display(function ($superviseur_id) {
+            return User::find($superviseur_id)->name ?? 'N/A';
+        })->label('secondary');
+        $grid->column('avatar', __('Avatar'))->display(function ($avatar) {
+            return $avatar ? "<img src='" . asset('storage/' . $avatar) . "' width='30' height='30'>" : 'N/A';
         });
-        // $grid->column('nbr_bull', __('Nbr bulletins'));
-        // // $grid->column('client_id', __('Client'))->display(function ($client_id) {
-        // //     return Client::find($client_id)->name ?? 'N/A';
-        // // });
-        // $grid->column('maj_fiche_para', __('Maj fiche para'));
-        // $grid->column('reception_variable', __('Reception variable'));
-        // $grid->column('preparation_bp', __('Preparation BP'));
-        // $grid->column('validation_bp_client', __('Validation BP clientt'));
-        // $grid->column('preparation_envoie_dsn', __('Preparation et envoie DSN'));
-        // $grid->column('accuses_dsn', __('Accuses dsn'));
-        // $grid->column('teledec_urssaf', __('TELEDEC URSSAF'));
         $grid->column('notes', __('NOTES'));
         $grid->column('created_at', __('Created at'))->hide();
         $grid->column('updated_at', __('Updated at'))->hide();
@@ -66,17 +64,15 @@ class GestionnaireController extends AdminController
         $show->field('user_id', __('Gestionnaire'))->as(function ($user_id) {
             return User::find($user_id)->name ?? 'N/A';
         });
-        // $show->field('nbr_bull', __('Nbr bulletins'));
-        // // $show->field('client_id', __('Client'))->as(function ($client_id) {
-        // //     return Client::find($client_id)->name ?? 'N/A';
-        // // });
-        // $show->field('maj_fiche_para', __('Maj fiche para'));
-        // $show->field('reception_variable', __('Reception variable'));
-        // $show->field('preparation_bp', __('Preparation BP'));
-        // $show->field('validation_bp_client', __('Validation BP clientt'));
-        // $show->field('preparation_envoie_dsn', __('Preparation et envoie DSN'));
-        // $show->field('accuses_dsn', __('Accuses dsn'));
-        // $show->field('teledec_urssaf', __('TELEDEC URSSAF'));
+        $show->field('responsable_id', __('Responsable'))->as(function ($responsable_id) {
+            return User::find($responsable_id)->name ?? 'N/A';
+        });
+        $show->field('superviseur_id', __('Superviseur'))->as(function ($superviseur_id) {
+            return User::find($superviseur_id)->name ?? 'N/A';
+        });
+        $show->field('avatar', __('Avatar'))->as(function ($avatar) {
+            return $avatar ? "<img src='" . asset('storage/' . $avatar) . "' width='100' height='100'>" : 'N/A';
+        });
         $show->field('notes', __('NOTES'));
         $show->field('created_at', __('Created at'));
         $show->field('updated_at', __('Updated at'));
@@ -95,15 +91,9 @@ class GestionnaireController extends AdminController
 
         $form->text('GID', __('GID'));
         $form->select('user_id', __('Gestionnaire'))->options(User::pluck('name', 'id'));
-        // $form->number('nbr_bull', __('Nbr bulletins'));
-        // // $form->select('client_id', __('Client'))->options(Client::pluck('name', 'id'));
-        // $form->date('maj_fiche_para', __('Maj fiche para'))->default(date('Y-m-d'));
-        // $form->date('reception_variable', __('Reception variable'))->default(date('Y-m-d'));
-        // $form->date('preparation_bp', __('Preparation BP'))->default(date('Y-m-d'));
-        // $form->date('validation_bp_client', __('Validation BP clientt'))->default(date('Y-m-d'));
-        // $form->date('preparation_envoie_dsn', __('Preparation et envoie DSN'))->default(date('Y-m-d'));
-        // $form->date('accuses_dsn', __('Accuses dsn'))->default(date('Y-m-d'));
-        // $form->date('teledec_urssaf', __('TELEDEC URSSAF'))->default(date('Y-m-d'));
+        $form->select('responsable_id', __('Responsable'))->options(User::pluck('name', 'id'));
+        $form->select('superviseur_id', __('Superviseur'))->options(User::pluck('name', 'id'));
+        $form->image('avatar', __('Avatar'))->removable();
         $form->textarea('notes', __('NOTES'));
 
         return $form;

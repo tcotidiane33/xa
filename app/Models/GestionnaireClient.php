@@ -14,6 +14,9 @@ class GestionnaireClient extends Model
         'client_id',
         'is_principal',
         'gestionnaires_ids',
+        'responsable_id',
+        'superviseur_id',
+        // 'avatar'
     ];
 
     protected $table = 'gestionnaire_client';
@@ -27,6 +30,15 @@ class GestionnaireClient extends Model
     public function gestionnaires()
     {
         return $this->belongsToMany(User::class, 'gestionnaire_client', 'client_id', 'gestionnaire_id');
+    }
+    public function responsable()
+    {
+        return $this->belongsTo(User::class, 'responsable_id');
+    }
+
+    public function superviseur()
+    {
+        return $this->belongsTo(User::class, 'superviseur_id');
     }
 
     public function clients()

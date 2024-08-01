@@ -13,6 +13,9 @@ class TraitementPaie extends Model
 
     protected $fillable = [
         'gestionnaire_id',
+        'superviseur_id',
+        'responsable_id',
+        'gestionnaires_ids',
         'client_id',
         'periode_paie_id',
         'reference',
@@ -36,6 +39,11 @@ class TraitementPaie extends Model
         'pj_accuses_dsn',
         'link_accuses_dsn',
     ];
+
+    protected $casts = [
+        'gestionnaires_ids' => 'array',
+    ];
+
     /**
      * Boot method to set up model event hooks.
      */
@@ -85,6 +93,21 @@ class TraitementPaie extends Model
     public function gestionnaire()
     {
         return $this->belongsTo(User::class, 'gestionnaire_id');
+    }
+
+    public function superviseur()
+    {
+        return $this->belongsTo(User::class, 'superviseur_id');
+    }
+
+    public function responsable()
+    {
+        return $this->belongsTo(User::class, 'responsable_id');
+    }
+
+    public function gestionnairesSupplementaires()
+    {
+        return $this->belongsToMany(User::class, 'gestionnaires_ids');
     }
 
     public function client()

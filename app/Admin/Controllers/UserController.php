@@ -21,20 +21,20 @@ class UserController extends AdminController
         $grid = new Grid(new User);
 
         $grid->column('id', __('ID'))->sortable();
-        $grid->column('name', __('Name'));
+        $grid->column('name', __('Name'))->label();
         $grid->column('email', __('Email'));
         $grid->column('role_id', __('Role'))->display(function($roleId) {
             return Role::find($roleId)->name ?? 'N/A';
-        });
+        })->label('primary');
         $grid->column('fonction_id', __('Fonction'))->display(function($fonctionId) {
             return Fonction::find($fonctionId)->intitule ?? 'N/A';
-        });
+        })->label('secondary');
         $grid->column('domaine_id', __('Domaine'))->display(function($domaineId) {
             return Domaine::find($domaineId)->intitule ?? 'N/A';
-        });
+        })->label('warning');
         $grid->column('habilitation_id', __('Habilitation'))->display(function($habilitationId) {
             return Habilitation::find($habilitationId)->intitule ?? 'N/A';
-        });
+        })->label('danger');
         $grid->column('password', __('Password'));
 
         $grid->column('created_at', __('Created at'));
