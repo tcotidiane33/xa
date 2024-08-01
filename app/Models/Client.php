@@ -11,7 +11,7 @@ class Client extends Model
 
     protected $fillable = [
         'name',
-        'esponsable_paie_id',
+        'responsable_paie_id',
         'gestionnaire_principal_id',
         'date_debut_prestation',
         'convention_collective',
@@ -19,6 +19,8 @@ class Client extends Model
         'contact_comptabilite',
         'aj_fiche_para',
         'code_acces',
+        'date_feedback_mail',
+        'date_estimate_send_var'
     ];
 
     public function responsablePaie()

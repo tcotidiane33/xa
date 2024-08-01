@@ -29,6 +29,8 @@ Route::group([
 
     // $router->resource('/dashboards', DashboardController::class);
 
+    // Tickets
+    $router->resource('tickets', TicketController::class);
 });
 
 

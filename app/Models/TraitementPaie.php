@@ -24,9 +24,18 @@ class TraitementPaie extends Model
         'preparation_envoie_dsn',
         'accuses_dsn',
         'teledec_urssaf',
-        'notes'
+        'notes',
+        'listBoxIsEmpty',
+        'pj_nbr_bull',
+        'pj_maj_fiche_para',
+        'pj_reception_variable',
+        'pj_preparation_bp',
+        'pj_validation_bp_client',
+        'pj_preparation_envoie_dsn',
+        'link_preparation_envoie_dsn',
+        'pj_accuses_dsn',
+        'link_accuses_dsn',
     ];
-
     /**
      * Boot method to set up model event hooks.
      */
@@ -36,23 +45,41 @@ class TraitementPaie extends Model
 
         static::creating(function ($traitementPaie) {
             $traitementPaie->reference = $traitementPaie->generateReference();
+            $traitementPaie->listBoxIsEmpty = $traitementPaie->checkIfAllFieldsFilled();
+        });
+
+        static::updating(function ($traitementPaie) {
+            $traitementPaie->listBoxIsEmpty = $traitementPaie->checkIfAllFieldsFilled();
         });
     }
+
     public function generateReference()
     {
-        // Fetch the periode paie reference
-        $periodePaieReference = PeriodePaie::find($this->periode_paie_id)->reference;
-
-        // Fetch the client name based on the client_id
+        $periodePaieReference = $this->periodePaie->reference;
         $clientName = $this->client->name;
-
-        // Format the date
         $date = Carbon::now()->format('Ymd');
+        return 'TDP_' . strtoupper(substr($clientName, 0, 4)) . '_' . $periodePaieReference . '_' . $date;
+    }
 
-        // Generate the reference
-        $reference = 'TDP_' . strtoupper(substr($clientName, 0, 4)) . '_' . $periodePaieReference . '_' . $date;
-
-        return $reference;
+    public function checkIfAllFieldsFilled()
+    {
+        // Check if all required fields are filled
+        return !empty($this->nbr_bull) &&
+               !empty($this->pj_nbr_bull) &&
+               !empty($this->maj_fiche_para) &&
+               !empty($this->pj_maj_fiche_para) &&
+               !empty($this->reception_variable) &&
+               !empty($this->pj_reception_variable) &&
+               !empty($this->preparation_bp) &&
+               !empty($this->pj_preparation_bp) &&
+               !empty($this->validation_bp_client) &&
+               !empty($this->pj_validation_bp_client) &&
+               !empty($this->preparation_envoie_dsn) &&
+               !empty($this->pj_preparation_envoie_dsn) &&
+               !empty($this->link_preparation_envoie_dsn) &&
+               !empty($this->accuses_dsn) &&
+               !empty($this->link_accuses_dsn) &&
+               !empty($this->pj_accuses_dsn);
     }
 
     public function gestionnaire()
@@ -65,10 +92,6 @@ class TraitementPaie extends Model
         return $this->belongsTo(Client::class, 'client_id');
     }
 
-    // public function traitementPaie()
-    // {
-    //     return $this->belongsTo(traitementPaie::class, 'periode_paie_id');
-    // }
     public function periodePaie()
     {
         return $this->belongsTo(PeriodePaie::class, 'periode_paie_id');
