@@ -28,12 +28,12 @@ class PeriodePaieController extends AdminController
         $grid = new Grid(new PeriodePaie());
 
         $grid->column('id', __('Id'))->hide();
-        $grid->column('reference', __('Référence'));
-        $grid->column('debut', __('Date de début'));
-        $grid->column('fin', __('Date de fin'));
+        $grid->column('reference', __('Référence'))->label('primary');
+        $grid->column('debut', __('Date de début'))->label();
+        $grid->column('fin', __('Date de fin'))->label('danger');
         $grid->column('client_id', __('Client'))->display(function ($client_id) {
             return Client::find($client_id)->name ?? 'N/A';
-        });
+        })->label('warning');
         $grid->column('validee', __('Validité'))->bool(); // Display as boolean
 
         return $grid;
@@ -50,12 +50,12 @@ class PeriodePaieController extends AdminController
         $show = new Show(PeriodePaie::findOrFail($id));
 
         $show->field('id', __('Id'));
-        $show->field('reference', __('Référence'));
-        $show->field('debut', __('Date de début'));
-        $show->field('fin', __('Date de fin'));
+        $show->field('reference', __('Référence'))->label('primary');
+        $show->field('debut', __('Date de début'))->label();
+        $show->field('fin', __('Date de fin'))->label('danger');
         $show->field('client_id', __('Client'))->as(function ($client_id) {
             return Client::find($client_id)->name ?? 'N/A';
-        });
+        })->label('warning');
         $show->field('validee', __('Validité'))->bool(); // Display as boolean
 
         return $show;

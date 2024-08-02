@@ -13,7 +13,7 @@ class PeriodePaie extends Model
 
     protected $table = 'periodes_paie';
 
-    protected $fillable = ['debut', 'reference', 'fin', 'gestionnaire_id', 'client_id', 'validee'];
+    protected $fillable = ['debut','progress', 'reference', 'fin', 'gestionnaire_id', 'client_id', 'validee'];
 
     protected $casts = [
         'debut' => 'date',

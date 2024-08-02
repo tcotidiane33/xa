@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('periodes_paie', function (Blueprint $table) {
+        Schema::create('post_user_mentions', function (Blueprint $table) {
             $table->id();
-            // $table->string('reference')->nullable();
-            $table->date('debut');
-            $table->date('fin');
-            $table->boolean('validee')->default(false);
-            $table->foreignId('client_id')->nullable()->constrained('clients')->onDelete('set null');
+            $table->foreignId('post_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('periode_paie');
+        Schema::dropIfExists('post_user_mentions');
     }
 };

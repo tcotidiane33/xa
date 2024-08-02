@@ -43,6 +43,8 @@ Route::middleware('auth')->group(function () {
     // Routes pour les notifications
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{id}/markAsRead', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    
+    Route::get('/posts', [App\Http\Controllers\PostController::class, 'index'])->name('posts.index');
 });
 
 // Route::resource('/traitement-paie', TraitementPaieController::class);
@@ -60,6 +62,9 @@ Auth::routes();
 
 //send mails Alerte
 Route::get('send-mail', [MailController::class, 'index']);
+
+
+// routes/web.php
 
 require __DIR__ . '/auth.php';
 

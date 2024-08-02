@@ -21,26 +21,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/api/getClientInfo', function (Request $request) {
-    $clientId = $request->get('q');
+Route::get('/getClientInfo', function (Illuminate\Http\Request $request) {
+    $clientId = $request->query('q');
+    $clientInfo = GestionnaireClient::where('client_id', $clientId)->first();
 
-    $relation = GestionnaireClient::where('client_id', $clientId)
-                ->where('is_principal', 1)
-                ->first();
-
-    if ($relation) {
-        $gestionnaire = User::find($relation->gestionnaire_id);
-        $responsable = User::find($relation->responsable_id);
-        $superviseur = User::find($relation->superviseur_id);
-        $gestionnaires = User::whereIn('id', json_decode($relation->gestionnaires_ids, true))->get();
-
+    if ($clientInfo) {
         return response()->json([
-            'gestionnaire' => $gestionnaire ? $gestionnaire->only(['id', 'name', 'email']) : null,
-            'responsable' => $responsable ? $responsable->only(['id', 'name', 'email']) : null,
-            'superviseur' => $superviseur ? $superviseur->only(['id', 'name', 'email']) : null,
-            'gestionnaires' => $gestionnaires->pluck('name', 'id')
+            'gestionnaire' => $clientInfo->gestionnaire,
+            'responsable' => $clientInfo->responsable,
+            'superviseur' => $clientInfo->superviseur,
+            'gestionnaires' => json_decode($clientInfo->gestionnaires_ids)
         ]);
+    } else {
+        return response()->json(null, 404);
     }
-
-    return response()->json(null);
 });

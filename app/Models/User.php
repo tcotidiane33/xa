@@ -99,4 +99,15 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Ticket::class, 'ticket_user');
     }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function mentionedPosts()
+    {
+        return $this->belongsToMany(Post::class, 'post_user_mentions');
+    }
+
 }

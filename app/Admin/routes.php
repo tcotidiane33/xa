@@ -25,7 +25,8 @@ Route::group([
     $router->resource('/traitements-paie', TraitementPaieController::class);
     $router->resource('/users', UserController::class);
     $router->resource('/convention-collectives', ConventionCollectiveController::class);
-
+    //Posts
+    $router->resource('/posts', PostController::class);
 
     // $router->resource('/dashboards', DashboardController::class);
 

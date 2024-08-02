@@ -47,47 +47,6 @@
             $(document).ready(function() {
                 $('.ckeditor').ckeditor();
             });
-
-            $(document).ready(function() {
-                $('select[name="client_id"]').on('change', function() {
-                    var clientId = $(this).val();
-
-                    if (clientId) {
-                        $.ajax({
-                            url: '/api/getClientInfo',
-                            type: 'GET',
-                            data: {
-                                q: clientId
-                            },
-                            success: function(data) {
-                                if (data) {
-                                    $('input[name="gestionnaire_id"]').val(data.gestionnaire ? data
-                                        .gestionnaire.name : 'N/A');
-                                    $('input[name="responsable_id"]').val(data.responsable ? data
-                                        .responsable.name : 'N/A');
-                                    $('input[name="superviseur_id"]').val(data.superviseur ? data
-                                        .superviseur.name : 'N/A');
-
-                                    // Gestionnaires supplémentaires
-                                    var gestionnairesSelect = $(
-                                        'select[name="gestionnaires_ids[]"]');
-                                    gestionnairesSelect.empty();
-                                    $.each(data.gestionnaires, function(id, name) {
-                                        gestionnairesSelect.append(new Option(name, id));
-                                    });
-                                    gestionnairesSelect.trigger('change');
-                                } else {
-                                    $('input[name="gestionnaire_id"]').val('N/A');
-                                    $('input[name="responsable_id"]').val('N/A');
-                                    $('input[name="superviseur_id"]').val('N/A');
-                                    $('select[name="gestionnaires_ids[]"]').empty().trigger(
-                                        'change');
-                                }
-                            }
-                        });
-                    }
-                });
-            });
         </script>
     </div>
 </body>

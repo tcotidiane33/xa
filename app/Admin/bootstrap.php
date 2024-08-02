@@ -29,8 +29,6 @@ Column::extend('popover', Popover::class);
 
 Admin::navbar(function (\OpenAdmin\Admin\Widgets\Navbar $navbar) {
 
-
-
     // $navbar->right('<button type="button" class="btn btn-danger m-1"><a href="/admin" class="btn text-warning">Dashboard de l\'administration</a></button>');
     $navbar->right('<button type="button" class="btn btn-outline-warning m-1"><a href="/admin/periodes-paie" class="btn text-warning"><b>Definir une periode de paie</b></a></button>');
     $navbar->right('<button type="button" class="btn btn-outline-danger m-1"><a href="/admin/traitements-paie" class="btn text-danger"><b>Traiter une fiche de paie</b></a></button>');

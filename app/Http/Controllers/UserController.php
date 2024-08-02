@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Admin\Forms\TraitementPaie;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use OpenAdmin\Admin\Layout\Content;
+
 
 class UserController extends Controller
 {
@@ -76,5 +79,13 @@ class UserController extends Controller
             ->get();
 
         return view('users.index', ['users' => $users]);
+    }
+
+   
+    public function traitementPaie(Content $content)
+    {
+        return $content
+            ->title('Traitements de paie')
+            ->body(new TraitementPaie());
     }
 }

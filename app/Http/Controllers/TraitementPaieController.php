@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TraitementPaie;
 use App\Models\User;
 use App\Models\Client;
 use App\Models\PeriodePaie;
 use Illuminate\Http\Request;
+use App\Models\TraitementPaie;
+use OpenAdmin\Admin\Widgets\Tab;
+use OpenAdmin\Admin\Layout\Content;
+use OpenAdmin\Admin\Widgets\MultipleSteps;
 
 class TraitementPaieController extends Controller
 {
@@ -96,4 +99,22 @@ class TraitementPaieController extends Controller
         $clients = Client::paginate(10); // paginate 10 clients per page
         return view('clients.index', compact('clients'));
     }
+
+
+    public function traitementPaie(Content $content)
+    {
+        // $forms = [
+        //     // 'test'    => Test::class,
+        //     'setting' => TraitementPaie::class,
+        // ];
+        $steps = [
+            'setting' => TraitementPaie::class,
+        ];
+
+        return $content
+            ->title('TraitementPaieForm')
+            ->body(MultipleSteps::make($steps));
+            // ->body(Tab::forms($forms));
+    }
+
 }

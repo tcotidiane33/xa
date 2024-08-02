@@ -194,7 +194,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
+        // Encore\Admin\AdminServiceProvider::class,
     ],
 
     /*
@@ -210,6 +210,8 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
+        // 'Admin' => Encore\Admin\Facades\Admin::class,
+        // 'Form' => Encore\Admin\Form::class,
     ])->toArray(),
 
 ];

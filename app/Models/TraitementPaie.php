@@ -38,6 +38,7 @@ class TraitementPaie extends Model
         'link_preparation_envoie_dsn',
         'pj_accuses_dsn',
         'link_accuses_dsn',
+        'progress'
     ];
 
     protected $casts = [
@@ -73,21 +74,21 @@ class TraitementPaie extends Model
     {
         // Check if all required fields are filled
         return !empty($this->nbr_bull) &&
-               !empty($this->pj_nbr_bull) &&
-               !empty($this->maj_fiche_para) &&
-               !empty($this->pj_maj_fiche_para) &&
-               !empty($this->reception_variable) &&
-               !empty($this->pj_reception_variable) &&
-               !empty($this->preparation_bp) &&
-               !empty($this->pj_preparation_bp) &&
-               !empty($this->validation_bp_client) &&
-               !empty($this->pj_validation_bp_client) &&
-               !empty($this->preparation_envoie_dsn) &&
-               !empty($this->pj_preparation_envoie_dsn) &&
-               !empty($this->link_preparation_envoie_dsn) &&
-               !empty($this->accuses_dsn) &&
-               !empty($this->link_accuses_dsn) &&
-               !empty($this->pj_accuses_dsn);
+            !empty($this->pj_nbr_bull) &&
+            !empty($this->maj_fiche_para) &&
+            !empty($this->pj_maj_fiche_para) &&
+            !empty($this->reception_variable) &&
+            !empty($this->pj_reception_variable) &&
+            !empty($this->preparation_bp) &&
+            !empty($this->pj_preparation_bp) &&
+            !empty($this->validation_bp_client) &&
+            !empty($this->pj_validation_bp_client) &&
+            !empty($this->preparation_envoie_dsn) &&
+            !empty($this->pj_preparation_envoie_dsn) &&
+            !empty($this->link_preparation_envoie_dsn) &&
+            !empty($this->accuses_dsn) &&
+            !empty($this->link_accuses_dsn) &&
+            !empty($this->pj_accuses_dsn);
     }
 
     public function gestionnaire()
