@@ -4,8 +4,52 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ae9fa684f476f8fea034ffa06663bf9f",
+    "content-hash": "7de2d8aa25a3f734f69187b067395743",
     "packages": [
+        {
+            "name": "avihs/laravel-post-comment-reply",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/shivragshukla/laravel-post-comment-reply.git",
+                "reference": "cdaa07481afa120cbc1d516f390ef5a4d384bd24"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/shivragshukla/laravel-post-comment-reply/zipball/cdaa07481afa120cbc1d516f390ef5a4d384bd24",
+                "reference": "cdaa07481afa120cbc1d516f390ef5a4d384bd24",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Avihs\\PostReply\\PostCommentReplyServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Avihs\\PostReply\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Shivrag",
+                    "email": "shivrag.shukla001@gmail.com"
+                }
+            ],
+            "description": "This will create a post, comment, likes and reply & save in database",
+            "support": {
+                "issues": "https://github.com/shivragshukla/laravel-post-comment-reply/issues",
+                "source": "https://github.com/shivragshukla/laravel-post-comment-reply/tree/1.0.2"
+            },
+            "time": "2020-09-05T15:13:41+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.12.1",

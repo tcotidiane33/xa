@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MailController;
-use App\Admin\Controllers\HomeController;
+use App\Http\Controllers\PostController;
 // use App\Http\Controllers\DashboardController;
+use App\Admin\Controllers\HomeController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
@@ -43,8 +44,26 @@ Route::middleware('auth')->group(function () {
     // Routes pour les notifications
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{id}/markAsRead', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
-    
-    Route::get('/posts', [App\Http\Controllers\PostController::class, 'index'])->name('posts.index');
+
+    // Posts Reply Comments
+     // Afficher un post spécifique
+     Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+    Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
+    Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+    Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts.show');
+    Route::get('/posts/{id}/edit', [PostController::class, 'edit'])->name('posts.edit');
+    Route::put('/posts/{id}', [PostController::class, 'update'])->name('posts.update');
+    Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
+    //  Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts.show');
+
+    //  // Créer un nouveau post (utilisation de POST)
+    //  Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+
+    //  // Ajouter un commentaire à un post spécifique (utilisation de POST)
+    //  Route::post('/posts/{postId}/comments', [PostController::class, 'addComment'])->name('posts.comments.store');
+
+     // Ajouter une réponse à un commentaire spécifique (utilisation de POST)
+     Route::post('/comments/{commentId}/replies', [PostController::class, 'addReply'])->name('comments.replies.store');
 });
 
 // Route::resource('/traitement-paie', TraitementPaieController::class);

@@ -8,28 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
-        'user_id', 'content', 'mentions', 'attachments'
-    ];
+    protected $fillable = ['title', 'description', 'status', 'user_id'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function mentions()
+    public function comments()
     {
-        return $this->belongsToMany(User::class, 'post_user_mentions');
-    }
-
-    public function getMentionsAttribute($value)
-    {
-        return json_decode($value, true);
-    }
-
-    public function getAttachmentsAttribute($value)
-    {
-        return json_decode($value, true);
+        return $this->hasMany(Comment::class);
     }
 }

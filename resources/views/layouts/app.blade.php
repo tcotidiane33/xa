@@ -23,6 +23,9 @@
 </head>
 
 <body class="font-sans antialiased">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{{ route('posts.store') }}">Post System</a>
+    </nav>
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
         @include('layouts.navigation')
 
@@ -40,6 +43,11 @@
             {{-- @yield() --}}
             {{-- {{ $slot }} --}}
             <div class="container">
+                @if (session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
                 @yield('content')
             </div>
         </main>

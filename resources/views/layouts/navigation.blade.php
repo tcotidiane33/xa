@@ -16,23 +16,14 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
-                {{-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('traitement-paie.periodes-paie.index')" :active="request()->routeIs('traitement-paie.periodes-paie.index')">
-                        {{ __('Traintement Période de paie') }}
-                    </x-nav-link>
-                </div>
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('periodes-paie.index')" :active="request()->routeIs('periodes-paie.index')">
-                        {{ __('Liste Période de paie') }}
-                    </x-nav-link>
-                </div> --}}
+
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.index')">
                         {{ __('Notifications') }}
                     </x-nav-link>
                 </div>
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
+                    <x-nav-link :href="route('posts.store')" :active="request()->routeIs('posts.store')">
                         {{ __('Posts') }}
                     </x-nav-link>
                 </div>

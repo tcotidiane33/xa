@@ -3,14 +3,16 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Laravel\Sanctum\HasApiTokens;
+use Avihs\PostReply\Traits\HasPost;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    use HasPost;
 
     /**
      * The attributes that are mass assignable.
@@ -105,9 +107,9 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
-    public function mentionedPosts()
+    public function mentionedInPosts()
     {
-        return $this->belongsToMany(Post::class, 'post_user_mentions');
+        return $this->belongsToMany(Post::class, 'post_user_mentions', 'user_id', 'post_id');
     }
 
 }
