@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
-    protected $fillable = ['title', 'description', 'status', 'user_id'];
+    protected $fillable = [
+        'title', 'description', 'status', 'user_id', 'attachments'
+    ];
 
     public function user()
     {
@@ -19,4 +21,9 @@ class Post extends Model
     {
         return $this->hasMany(Comment::class);
     }
+
+    // public function attachments()
+    // {
+    //     return $this->hasMany(Attachment::class);
+    // }
 }

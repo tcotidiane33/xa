@@ -195,6 +195,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         // Encore\Admin\AdminServiceProvider::class,
+        Notify\Laravel\NotifyServiceProvider::class,
     ],
 
     /*
@@ -212,6 +213,8 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
         // 'Admin' => Encore\Admin\Facades\Admin::class,
         // 'Form' => Encore\Admin\Form::class,
+        'Notify' => Notify\Laravel\Facades\Notify::class,
+
     ])->toArray(),
 
 ];

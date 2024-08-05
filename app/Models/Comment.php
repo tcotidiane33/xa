@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Comment extends Model
 {
     use HasFactory;
-    protected $fillable = ['content', 'status', 'post_id', 'user_id'];
+    protected $fillable = ['content', 'status', 'post_id', 'user_id', 'attachment'];
 
+    // Utilisation des timestamps
+    public $timestamps = true;
     public function post()
     {
         return $this->belongsTo(Post::class);

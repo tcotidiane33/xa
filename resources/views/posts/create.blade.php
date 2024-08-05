@@ -1,22 +1,26 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Create Post</h1>
-
-    <form action="{{ route('posts.store') }}" method="POST">
-        @csrf
-        <div class="form-group">
-            <label for="title">Title</label>
-            <input type="text" name="title" id="title" class="form-control" required>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Create New Post</h5>
+            <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="attachment" class="form-label">Attachment</label>
+                    <input type="file" class="form-control" id="attachment" name="attachment">
+                </div>
+                <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+                <button type="submit" class="btn btn-primary">Create Post</button>
+            </form>
         </div>
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea name="description" id="description" rows="3" class="form-control" required></textarea>
-        </div>
-        <div class="form-group">
-            <label for="user_id">User ID</label>
-            <input type="number" name="user_id" id="user_id" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Create</button>
-    </form>
+    </div>
 @endsection

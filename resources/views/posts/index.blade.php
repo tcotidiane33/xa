@@ -2,35 +2,39 @@
 
 
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>Posts</h1>
-        <a href="{{ route('posts.create') }}" class="btn btn-primary">Create Post</a>
-    </div>
-
-    @foreach($posts as $post)
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">{{ $post->title }}</h5>
-                <p class="card-text">{{ $post->description }}</p>
-                <p class="card-text"><small class="text-muted">Posted by {{ $post->user->name }}</small></p>
-                <a href="{{ route('posts.show', $post->id) }}" class="btn btn-primary">View Post</a>
-            </div>
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1>Posts</h1>
+            <a href="{{ route('posts.create') }}" class="btn btn-primary">Create Post</a>
         </div>
-    @endforeach
 
-    <h1>Posts</h1>
-    <a href="{{ route('posts.create') }}" class="btn btn-primary">Create Post</a>
-
-    <div>
-        @foreach ($posts as $post)
-            <div>
-                <h3>{{ $post->title }}</h3>
-                <p>{{ $post->description }}</p>
-                <p>Posted by {{ $post->user->name }}</p>
-                <a href="{{ route('posts.show', $post->id) }}" class="btn btn-primary">View Post</a>
+        @foreach($posts as $post)
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ $post->title }}</h5>
+                    <p class="card-text">{{ $post->description }}</p>
+                    <p class="card-text"><small class="text-muted">Posted by {{ $post->user->name }}</small></p>
+                    <a href="{{ route('posts.show', $post->id) }}" class="btn btn-primary">View Post</a>
+                </div>
             </div>
         @endforeach
     </div>
+
+    {{-- <div class="container bg-dark p-4">
+        <h1>Posts</h1>
+        <a href="{{ route('posts.create') }}" class="btn btn-primary">Create Post</a>
+
+        <div>
+            @foreach ($posts as $post)
+                <div>
+                    <h3>{{ $post->title }}</h3>
+                    <p>{{ $post->description }}</p>
+                    <p>Posted by {{ $post->user->name }}</p>
+                    <a href="{{ route('posts.show', $post->id) }}" class="btn btn-primary">View Post</a>
+                </div>
+            @endforeach
+        </div>
+    </div> --}}
 
     <div class="container">
 

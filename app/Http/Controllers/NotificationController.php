@@ -3,52 +3,38 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Throwable;
+use Notify\Laravel\Exception\NotifyException;
+use Notify;
 
 class NotificationController extends Controller
 {
-    // Assurez-vous que l'utilisateur est authentifié pour toutes les méthodes du contrôleur
-    public function __construct()
+    public function create()
     {
-        $this->middleware('auth');
+        return view('notifications.create');
     }
 
-    public function index()
+    public function store(Request $request)
     {
-        // Récupère l'utilisateur actuellement authentifié
-        $user = Auth::user();
+        $request->validate([
+            'content' => 'required|string',
+        ]);
 
-        // Vérifie si l'utilisateur est bien authentifié
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'Veuillez vous connecter pour voir vos notifications.');
+        try {
+            $content = $request->content;
+
+            // Send notification
+            Notify::send($content, [], 'slack'); // or use 'mail' for email notifications
+
+            return redirect()->route('notifications.create')->with('success', 'Notification sent successfully.');
+        } catch (Throwable $exception) {
+            try {
+                Notify::send($exception, [], 'mail'); // Fallback to email notification on failure
+
+                return redirect()->route('notifications.create')->with('success', 'Notification sent successfully via email.');
+            } catch (NotifyException $ne) {
+                return redirect()->back()->with('error', 'Failed to send notification.');
+            }
         }
-
-        // Récupère les notifications de l'utilisateur
-        $notifications = $user->notifications;
-
-        // Retourne la vue avec les notifications
-        return view('notifications.index', compact('notifications'));
-    }
-
-    public function markAsRead($id)
-    {
-        // Récupère l'utilisateur actuellement authentifié
-        $user = Auth::user();
-
-        // Vérifie si l'utilisateur est bien authentifié
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'Veuillez vous connecter pour marquer les notifications comme lues.');
-        }
-
-        // Récupère la notification spécifique
-        $notification = $user->notifications()->find($id);
-
-        // Vérifie si la notification existe et est associée à l'utilisateur
-        if ($notification) {
-            $notification->markAsRead();
-        }
-
-        // Retourne à la page précédente
-        return redirect()->back();
     }
 }

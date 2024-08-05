@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Reply extends Model
 {
     use HasFactory;
-    protected $fillable = ['content', 'status', 'comment_id', 'user_id'];
-
+    protected $fillable = ['content', 'status', 'comment_id', 'user_id','attachement'];
+    // Utilisation des timestamps
+    public $timestamps = true;
     public function comment()
     {
         return $this->belongsTo(Comment::class);

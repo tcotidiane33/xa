@@ -2,8 +2,9 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Notify\Laravel\Exception\NotifyException;
 
 class Handler extends ExceptionHandler
 {
@@ -44,5 +45,24 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    public function report(Throwable $exception)
+    {
+        if ($this->shouldReport($exception)) {
+            try {
+                \Notify::send($exception);
+            } catch (NotifyException $ne) {
+                try {
+                    \Notify::send($ne, ['to' => 'uphub42@gmail.com'], 'mail');
+                } catch (NotifyException $ne2) {
+                    parent::report($ne2);
+                }
+            } catch (Throwable $e) {
+                parent::report($e);
+            }
+        }
+
+        parent::report($exception);
     }
 }

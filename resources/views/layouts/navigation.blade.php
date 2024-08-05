@@ -18,7 +18,7 @@
                 </div>
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.index')">
+                    <x-nav-link :href="route('notifications.store')" :active="request()->routeIs('notifications.store')">
                         {{ __('Notifications') }}
                     </x-nav-link>
                 </div>

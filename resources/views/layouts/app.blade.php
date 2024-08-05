@@ -24,6 +24,7 @@
 
 <body class="font-sans antialiased">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="{{ route('notifications.create') }}">Notification System</a>
         <a class="navbar-brand" href="{{ route('posts.store') }}">Post System</a>
     </nav>
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -48,6 +49,11 @@
                         {{ session('success') }}
                     </div>
                 @endif
+                @if(session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
                 @yield('content')
             </div>
         </main>

@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Reply;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -17,7 +18,6 @@ class PostController extends Controller
 
     public function create()
     {
-        // Afficher le formulaire de création
         return view('posts.create');
     }
 
@@ -27,9 +27,15 @@ class PostController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'user_id' => 'required|exists:users,id',
+            'attachment' => 'nullable|file|mimes:jpg,png,pdf,doc,docx|max:2048',
         ]);
 
-        Post::create($request->all());
+        $data = $request->all();
+        if ($request->hasFile('attachment')) {
+            $data['attachment'] = $request->file('attachment')->store('attachments');
+        }
+
+        Post::create($data);
 
         return redirect()->route('posts.index')->with('success', 'Post créé avec succès.');
     }
@@ -45,17 +51,25 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
         return view('posts.edit', compact('post'));
     }
-
     public function update(Request $request, $id)
     {
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'user_id' => 'required|exists:users,id',
+            'attachment' => 'nullable|file|mimes:jpg,png,pdf,doc,docx|max:2048',
         ]);
 
         $post = Post::findOrFail($id);
-        $post->update($request->all());
+        $data = $request->all();
+        if ($request->hasFile('attachment')) {
+            if ($post->attachment) {
+                Storage::delete($post->attachment);
+            }
+            $data['attachment'] = $request->file('attachment')->store('attachments');
+        }
+
+        $post->update($data);
 
         return redirect()->route('posts.index')->with('success', 'Post mis à jour avec succès.');
     }
@@ -63,6 +77,12 @@ class PostController extends Controller
     public function destroy($id)
     {
         $post = Post::findOrFail($id);
+
+        // Suppression des pièces jointes associées
+        foreach ($post->attachments as $attachment) {
+            Storage::delete($attachment);
+        }
+
         $post->delete();
 
         return redirect()->route('posts.index')->with('success', 'Post supprimé avec succès.');
@@ -73,10 +93,16 @@ class PostController extends Controller
         $request->validate([
             'content' => 'required|string',
             'user_id' => 'required|exists:users,id',
+            'attachment' => 'nullable|file|mimes:jpg,png,pdf,doc,docx|max:2048',
         ]);
 
         $post = Post::findOrFail($postId);
-        $post->comments()->create($request->all());
+        $data = $request->all();
+        if ($request->hasFile('attachment')) {
+            $data['attachment'] = $request->file('attachment')->store('attachments');
+        }
+
+        $post->comments()->create($data);
 
         return redirect()->route('posts.show', $postId)->with('success', 'Comment added successfully.');
     }
@@ -86,10 +112,16 @@ class PostController extends Controller
         $request->validate([
             'content' => 'required|string',
             'user_id' => 'required|exists:users,id',
+            'attachment' => 'nullable|file|mimes:jpg,png,pdf,doc,docx|max:2048',
         ]);
 
         $comment = Comment::findOrFail($commentId);
-        $comment->replies()->create($request->all());
+        $data = $request->all();
+        if ($request->hasFile('attachment')) {
+            $data['attachment'] = $request->file('attachment')->store('attachments');
+        }
+
+        $comment->replies()->create($data);
 
         return redirect()->route('posts.show', $comment->post_id)->with('success', 'Reply added successfully.');
     }
