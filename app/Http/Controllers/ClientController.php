@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Client;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Traits\TracksUserActions;
+use App\Notifications\NewClientCreated;
+use App\Http\Requests\StoreClientRequest;
+use App\Http\Requests\UpdateClientRequest;
 
 class ClientController extends Controller
 {
@@ -13,10 +18,30 @@ class ClientController extends Controller
      */
     use TracksUserActions;
 
-    public function index()
+    public function index(Request $request)
     {
-        $clients = Client::paginate(15);
+        $this->authorize('viewAny', Client::class);
+        $clients = Client::with(['responsablePaie', 'gestionnairePrincipal'])
+                         ->filter($request->only(['search', 'status']))
+                         ->paginate(15);
         return view('clients.index', compact('clients'));
+    }
+
+    public function store(StoreClientRequest $request)
+    {
+        $this->authorize('create', Client::class);
+        $client = Client::create($request->validated());
+        $this->logAction('create_client', "Création du client #{$client->id}");
+        Notification::send(User::role('admin')->get(), new NewClientCreated($client));
+        return redirect()->route('clients.show', $client)->with('success', 'Client créé avec succès.');
+    }
+
+    public function update(UpdateClientRequest $request, Client $client)
+    {
+        $this->authorize('update', $client);
+        $client->update($request->validated());
+        $this->logAction('update_client', "Mise à jour du client #{$client->id}");
+        return redirect()->route('clients.show', $client)->with('success', 'Client mis à jour avec succès.');
     }
 
 
@@ -33,13 +58,7 @@ class ClientController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([/* ... */]);
-        $client = Client::create($validated);
-        $this->logAction('create_client', "Création du client #{$client->id}");
-        return redirect()->route('clients.show', $client);
-    }
+  
     /**
      * Display the specified resource.
      */
@@ -53,20 +72,7 @@ class ClientController extends Controller
         return view('clients.edit', compact('client'));
     }
 
-    public function update(Request $request, Client $client)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'responsable_paie_id' => 'required|exists:users,id',
-            'gestionnaire_principal_id' => 'required|exists:users,id',
-            'date_debut_prestation' => 'nullable|date',
-            'contact_paie' => 'nullable|string|max:255',
-            'contact_comptabilite' => 'nullable|string|max:255',
-        ]);
 
-        $client->update($validated);
-        return redirect()->route('clients.show', $client)->with('success', 'Client mis à jour avec succès.');
-    }
 
     public function destroy(Client $client)
     {

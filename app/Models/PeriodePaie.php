@@ -2,24 +2,27 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PeriodePaie extends Model
 {
-    use HasFactory;
-    protected $table = 'periodes_paie';
-    protected $fillable = ['reference', 'debut', 'fin', 'validee', 'client_id'];
+    protected $fillable = ['debut', 'fin', 'validee'];
 
-    public function client()
-    {
-        return $this->belongsTo(Client::class);
-    }
+    protected $dates = ['debut', 'fin'];
 
-    public function traitementsPaie()
+    protected $casts = [
+        'validee' => 'boolean',
+    ];
+
+    public function traitementsPaie(): HasMany
     {
         return $this->hasMany(TraitementPaie::class);
     }
+
+    public function canBeValidated()
+{
+    // Vérifiez si tous les traitements de paie pour cette période sont complets
+    return $this->traitementsPaie()->where('teledec_urssaf', null)->count() === 0;
+}
 }

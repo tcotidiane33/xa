@@ -57,4 +57,26 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $('#save-traitement').on('click', function() {
+    var form = $('#edit-traitement-form')[0];
+    var formData = new FormData(form);
+
+    $.ajax({
+        url: form.action,
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            $('#edit-traitement-modal').modal('hide');
+            // Rafraîchir la grille ou la ligne mise à jour
+        },
+        error: function(xhr) {
+            // Gérer les erreurs
+        }
+    });
+});
+    </script>
 </x-app-layout>

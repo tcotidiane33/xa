@@ -33,11 +33,12 @@ class HomeController extends AdminController
             $query->where('validee', '');
         })->count();
         $latestClients = Client::latest()->take(5)->get();
+        $avatar = $user?->avatar ?? 'default-avatar.png';
 
         return $content
             ->title('Tableau de bord')
             ->description('Statistiques et informations principales')
-            ->view('admin.dashboard.index', compact('user','successPercentage','totalUsers', 'totalClients', 'totalPeriodesPaie', 'traitementsPaieEnCours','traitementsPaieTerminer', 'traitementsPaieInterrompu', 'latestClients'));
+            ->view('admin.dashboard.index', compact('user', 'avatar','successPercentage','totalUsers', 'totalClients', 'totalPeriodesPaie', 'traitementsPaieEnCours','traitementsPaieTerminer', 'traitementsPaieInterrompu', 'latestClients'));
     }
 
     public function manageUsers(Content $content)

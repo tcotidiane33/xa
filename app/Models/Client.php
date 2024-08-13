@@ -2,36 +2,42 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Client extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'name', 'responsable_paie_id', 'gestionnaire_principal_id',
-        'date_debut_prestation', 'date_estimative_envoi_variables',
-        'date_rappel_mail', 'contact_paie', 'contact_comptabilite'
+        'name', 'responsable_paie_id', 'gestionnaire_principal_id', 'date_debut_prestation',
+        'contact_paie', 'contact_comptabilite', 'nb_bulletins', 'maj_fiche_para',
+        'convention_collective', 'status'
     ];
 
-    public function responsablePaie()
+    protected $dates = ['date_debut_prestation', 'maj_fiche_para'];
+
+    public function responsablePaie(): BelongsTo
     {
         return $this->belongsTo(User::class, 'responsable_paie_id');
     }
 
-    public function gestionnairePrincipal()
+    public function gestionnairePrincipal(): BelongsTo
     {
         return $this->belongsTo(User::class, 'gestionnaire_principal_id');
     }
 
-    public function gestionnaires()
+    public function gestionnaireSecondaires(): HasMany
     {
-        return $this->belongsToMany(User::class, 'gestionnaire_client', 'client_id', 'gestionnaire_id');
+        return $this->hasMany(GestionnaireSecondaire::class);
     }
 
-    public function periodesPaie()
+    public function traitementsPaie(): HasMany
     {
-        return $this->hasMany(PeriodePaie::class);
+        return $this->hasMany(TraitementPaie::class);
     }
+    public function conventionCollective()
+    {
+        return $this->belongsTo(ConventionCollective::class);
+    }
+
 }
