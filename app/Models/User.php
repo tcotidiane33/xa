@@ -75,4 +75,23 @@ class User extends Authenticatable
      {
          return $this->hasMany(Post::class);
      }
+
+     public function supervisor()
+{
+    return $this->belongsTo(User::class, 'supervisor_id');
+}
+
+public function responsible()
+{
+    return $this->belongsTo(User::class, 'responsible_id');
+}
+
+public function clients()
+{
+    return $this->belongsToMany(Client::class, 'gestionnaire_client');
+}
+public function gestionnaire()
+{
+    return $this->hasOne(Gestionnaire::class);
+}
 }

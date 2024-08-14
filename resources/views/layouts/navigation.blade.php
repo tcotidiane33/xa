@@ -22,6 +22,11 @@
                     </x-nav-link>
                 </div>
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('gestionnaire-client.index')" :active="request()->routeIs('gestionnaire-client.index')">
+                        {{ __('Relation Client Gestionnaire') }}
+                    </x-nav-link>
+                </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('periodes-paie.index')" :active="request()->routeIs('periodes-paie.index')">
                         {{ __('Periode Paie') }}
                     </x-nav-link>

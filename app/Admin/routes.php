@@ -15,15 +15,15 @@ Route::group([
     $router->get('/infos', 'HomeController@info')->name('info');
 
     $router->resource('/clients', ClientController::class);
-    $router->resource('/domaines', DomaineController::class);
-    $router->resource('/fonctions', FonctionController::class);
+    // $router->resource('/domaines', DomaineController::class);
+    // $router->resource('/fonctions', FonctionController::class);
+    $router->resource('/users', UserController::class);
     $router->resource('/gestionnaires', GestionnaireController::class);
     $router->resource('/gestionnaire-clients', GestionnaireClientController::class);
-    $router->resource('/habilitations', HabilitationController::class);
     $router->resource('/periodes-paie', PeriodePaieController::class);
     $router->resource('/roles', RoleController::class);
+    $router->resource('/habilitations', PermissionController::class);
     $router->resource('/traitements-paie', TraitementPaieController::class);
-    $router->resource('/users', UserController::class);
     $router->resource('/convention-collectives', ConventionCollectiveController::class);
     //Posts
     $router->resource('/posts', PostController::class);

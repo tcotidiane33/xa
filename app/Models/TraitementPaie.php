@@ -18,7 +18,7 @@ class TraitementPaie extends Model
         'preparation_envoi_dsn_file',
         'accuses_dsn_file',
     ];
-
+    protected $table = 'traitements_paie';
     protected $dates = [
         'reception_variables', 'preparation_bp', 'validation_bp_client',
         'preparation_envoi_dsn', 'accuses_dsn', 'teledec_urssaf'

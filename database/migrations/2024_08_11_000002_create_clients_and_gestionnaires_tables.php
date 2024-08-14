@@ -39,6 +39,7 @@ return new class extends Migration {
             $table->foreignId('gestionnaire_id')->constrained();
             $table->foreignId('client_id')->constrained();
             $table->boolean('is_principal')->default(false);
+            $table->text('notes')->nullable;
             $table->timestamps();
         });
     }

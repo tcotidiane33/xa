@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PeriodePaieController;
 use App\Admin\Controllers\ClientController;
 use App\Admin\Controllers\TraitementPaieController;
+use App\Http\Controllers\Admin\GestionnaireClientController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,21 +39,29 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
-    Route::get('/admin', [App\Admin\Controllers\HomeController::class, 'index'])->name('admin');
-    
+    Route::get('/admin/auth/login', [App\Admin\Controllers\HomeController::class, 'index'])->name('admin');
+
     // Route::resource('roles', RoleController::class);
     Route::resource('roles', RoleController::class)->except(['show']);
     Route::get('/permissions/create', [RoleController::class, 'createPermission'])->name('permissions.create');
     Route::post('/permissions', [RoleController::class, 'storePermission'])->name('permissions.store');
     Route::get('/roles/assign', [RoleController::class, 'assignRole'])->name('roles.assign');
-Route::post('/roles/assign', [RoleController::class, 'storeAssignRole'])->name('roles.assign.store');
+    Route::post('/roles/assign', [RoleController::class, 'storeAssignRole'])->name('roles.assign.store');
 
-Route::resource('clients', ClientController::class);
-Route::resource('traitements-paie', TraitementPaieController::class);
+    Route::resource('clients', ClientController::class);
+    Route::resource('traitements-paie', TraitementPaieController::class);
     Route::resource('/periodes-paie', PeriodePaieController::class);
     Route::resource('/tickets', TicketController::class);
     Route::resource('/users', UserController::class);
+
+
+    Route::resource('gestionnaire-client', GestionnaireClientController::class);
 });
+
+
+
+// Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']], function () {
+// });
 
 // Route::group(['middleware' => ['role:admin']], function () {
 //     Route::resource('roles', RoleController::class);
@@ -61,4 +70,4 @@ Route::resource('traitements-paie', TraitementPaieController::class);
 // Route::group(['middleware' => ['permission:view clients']], function () {
 //     Route::get('/clients', [ClientController::class, 'index']);
 // });
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

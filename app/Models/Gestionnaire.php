@@ -2,26 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Gestionnaire extends Model
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'GID',
-        'user_id',
-        'responsable_id',
-        'superviseur_id',
-        'avatar',
-        'notes'
-    ];
+    protected $fillable = ['GID', 'user_id', 'responsable_id', 'superviseur_id', 'notes'];
 
     public function user()
     {
-        return $this->hasMany(User::class);
+        return $this->belongsTo(User::class);
     }
+
     public function responsable()
     {
         return $this->belongsTo(User::class, 'responsable_id');
@@ -32,18 +23,19 @@ class Gestionnaire extends Model
         return $this->belongsTo(User::class, 'superviseur_id');
     }
 
-    public function fonction()
+    public function clients()
     {
-        return $this->user ? $this->user->fonction() : null;
+        return $this->belongsToMany(Client::class, 'gestionnaire_client')
+                    ->withPivot('is_principal', 'gestionnaires_secondaires');
     }
 
-    public function domaine()
+    public function clientsPrincipaux()
     {
-        return $this->user ? $this->user->domaine() : null;
+        return $this->clients()->wherePivot('is_principal', true);
     }
 
-    public function habilitation()
+    public function clientsSecondaires()
     {
-        return $this->user ? $this->user->habilitation() : null;
+        return $this->clients()->wherePivot('is_principal', false);
     }
 }

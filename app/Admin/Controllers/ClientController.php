@@ -16,7 +16,7 @@ class ClientController extends AdminController
         $grid = new Grid(new Client());
 
         $grid->column('id', __('ID'))->sortable();
-        $grid->column('name', __('Nom'))->editable();
+        $grid->column('name', __('Nom'));
         $grid->column('responsablePaie.name', __('Responsable Paie'))->label();
         $grid->column('gestionnairePrincipal.name', __('Gestionnaire Principal'))->label('info');
         $grid->column('nb_bulletins', __('NB Bulletins'));

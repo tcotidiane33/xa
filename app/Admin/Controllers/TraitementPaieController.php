@@ -14,21 +14,21 @@ use OpenAdmin\Admin\Controllers\AdminController;
 
 class TraitementPaieController extends AdminController
 {
-    public function __construct()
-{
-    $this->middleware('role:admin|responsable|gestionnaire');
-}
+//     public function __construct()
+// {
+//     $this->middleware('role:admin|responsable|gestionnaire');
+// }
 
     protected function grid()
     {
         $grid = new Grid(new TraitementPaie());
 
-        if (auth()->user()->hasRole('gestionnaire')) {
-            $grid->model()->where('gestionnaire_id', auth()->id());
-        } elseif (auth()->user()->hasRole('responsable')) {
-            $gestionnaires = User::role('gestionnaire')->where('responsable_id', auth()->id())->pluck('id');
-            $grid->model()->whereIn('gestionnaire_id', $gestionnaires);
-        }
+        // if (auth()->user()->hasRole('gestionnaire')) {
+        //     $grid->model()->where('gestionnaire_id', auth()->id());
+        // } elseif (auth()->user()->hasRole('responsable')) {
+        //     $gestionnaires = User::role('gestionnaire')->where('responsable_id', auth()->id())->pluck('id');
+        //     $grid->model()->whereIn('gestionnaire_id', $gestionnaires);
+        // }
 
         $grid->model()->orderBy('id', 'desc');
 
@@ -53,7 +53,9 @@ class TraitementPaieController extends AdminController
         $grid->filter(function($filter){
             $filter->equal('periode_paie_id', 'Période')->select(PeriodePaie::pluck('debut', 'id'));
             $filter->equal('client_id', 'Client')->select(Client::pluck('name', 'id'));
-            if (Auth::user()->hasRole('admin') || Auth::user()->hasRole('responsable')) {
+            
+            $user = Auth::guard('admin')->user();
+            if ($user instanceof Administrator && ($user->hasRole('admin') || $user->hasRole('responsable'))) {
                 $filter->equal('gestionnaire_id', 'Gestionnaire')->select(User::role('gestionnaire')->pluck('name', 'id'));
             }
         });

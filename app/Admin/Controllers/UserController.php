@@ -2,43 +2,34 @@
 
 namespace App\Admin\Controllers;
 
-use App\Models\Domaine;
-use App\Models\Fonction;
-use App\Models\Habilitation;
 use App\Models\User;
-use App\Models\Role;
 use OpenAdmin\Admin\Controllers\AdminController;
 use OpenAdmin\Admin\Form;
 use OpenAdmin\Admin\Grid;
 use OpenAdmin\Admin\Show;
+use Spatie\Permission\Models\Role;
 
 class UserController extends AdminController
 {
-    protected $title = 'User';
+    protected $title = 'Utilisateurs';
 
     protected function grid()
     {
-        $grid = new Grid(new User);
+        $grid = new Grid(new User());
 
         $grid->column('id', __('ID'))->sortable();
-        $grid->column('name', __('Name'))->label();
-        $grid->column('email', __('Email'));
-        $grid->column('role_id', __('Role'))->display(function($roleId) {
-            return Role::find($roleId)->name ?? 'N/A';
-        })->label('primary');
-        $grid->column('fonction_id', __('Fonction'))->display(function($fonctionId) {
-            return Fonction::find($fonctionId)->intitule ?? 'N/A';
+        $grid->column('name', __('Nom'))->sortable()->label();
+        $grid->column('email', __('Email'))->sortable()->label('danger');
+        $grid->column('roles', __('Rôles'))->display(function ($roles) {
+            return $this->roles->pluck('name')->implode(', ');
         })->label('secondary');
-        $grid->column('domaine_id', __('Domaine'))->display(function($domaineId) {
-            return Domaine::find($domaineId)->intitule ?? 'N/A';
-        })->label('warning');
-        $grid->column('habilitation_id', __('Habilitation'))->display(function($habilitationId) {
-            return Habilitation::find($habilitationId)->intitule ?? 'N/A';
-        })->label('danger');
-        $grid->column('password', __('Password'));
+        $grid->column('created_at', __('Créé le'))->sortable();
 
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
+        $grid->filter(function($filter){
+            $filter->like('name', 'Nom');
+            $filter->like('email', 'Email');
+            $filter->equal('roles.name', 'Rôle')->select(Role::pluck('name', 'name'));
+        });
 
         return $grid;
     }
@@ -48,42 +39,37 @@ class UserController extends AdminController
         $show = new Show(User::findOrFail($id));
 
         $show->field('id', __('ID'));
-        $show->field('name', __('Name'));
+        $show->field('name', __('Nom'));
         $show->field('email', __('Email'));
-        $show->field('role_id', __('Role'))->as(function($roleId) {
-            return Role::find($roleId)->name ?? 'N/A';
+        $show->field('roles', __('Rôles'))->as(function ($roles) {
+            return $this->roles->pluck('name')->implode(', ');
         });
-        $show->field('fonction_id', __('Fonction'))->display(function($fonctionId) {
-            return Fonction::find($fonctionId)->intitule ?? 'N/A';
-        });
-        $show->field('domaine_id', __('Domaine'))->display(function($domaineId) {
-            return Domaine::find($domaineId)->intitule ?? 'N/A';
-        });
-        $show->field('habilitation_id', __('Habilitations'))->display(function($habilitationId) {
-            return Habilitation::find($habilitationId)->intitule ?? 'N/A';
-        });
-        $show->field('password', __('Password'));
-        $show->field('created_at', __('Created at'));
-        $show->field('updated_at', __('Updated at'));
+ 
+        $show->field('created_at', __('Créé le'));
+        $show->field('updated_at', __('Mis à jour le'));
 
         return $show;
     }
 
     protected function form()
-    {
-        $form = new Form(new User);
+{
+    $form = new Form(new User());
 
-        $form->display('id', __('ID'));
-        $form->text('name', __('Name'))->required();
-        $form->email('email', __('Email'))->required();
-        $form->password('password', __('Password'))->required();
-        $form->select('role_id', __('Role'))->options(Role::all()->pluck('name', 'id'));
-        $form->select('fonction_id', __('Fonction'))->options(Fonction::all()->pluck('intitule', 'id'));
-        $form->select('domaine_id', __('Domaine d\'intervention'))->options(Domaine::all()->pluck('intitule', 'id'));
-        $form->select('habilitation_id', __('Habilitations'))->options(Habilitation::all()->pluck('intitule', 'id'));
-        $form->display('created_at', __('Created At'));
-        $form->display('updated_at', __('Updated At'));
+    $form->text('name', __('Nom'))->rules('required');
+    $form->email('email', __('Email'))->rules('required|email|unique:users,email,{{id}}');
+    $form->password('password', __('Mot de passe'))->rules('required|min:6')->default(function ($form) {
+        return $form->model()->password;
+    });
 
-        return $form;
-    }
+    $form->multipleSelect('roles', __('Rôles'))->options(Role::pluck('name', 'id'));
+
+
+    $form->saving(function (Form $form) {
+        if ($form->password && $form->model()->password != $form->password) {
+            $form->password = bcrypt($form->password);
+        }
+    });
+
+    return $form;
+}
 }
