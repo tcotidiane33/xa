@@ -11,6 +11,42 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        // Implémentez votre logique de recherche ici
+        // Par exemple, vous pouvez rechercher des utilisateurs ou des posts
+        $results = []; // Remplacez ceci par vos résultats de recherche réels
+        return response()->json($results);
+    }
+
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('profile.index', compact('user'));
+    }
+
+    public function settings()
+    {
+        $user = Auth::user();
+        return view('profile.settings', compact('user'));
+    }
+
+    public function updateAccount(Request $request)
+    {
+        $user = Auth::user();
+        $user->update($request->validated());
+        return redirect()->back()->with('success', 'Account updated successfully');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
+    }
     /**
      * Display the user's profile form.
      */

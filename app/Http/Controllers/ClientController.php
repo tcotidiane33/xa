@@ -6,17 +6,14 @@ use App\Models\User;
 use App\Models\Client;
 use App\Models\Notification;
 use Illuminate\Http\Request;
-use App\Traits\TracksUserActions;
+// use App\Traits\TracksUserActions;
 use App\Notifications\NewClientCreated;
-use App\Http\Requests\StoreClientRequest;
-use App\Http\Requests\UpdateClientRequest;
+use App\Http\Requests\Client\StoreClientRequest;
+use App\Http\Requests\Client\UpdateClientRequest;
 
 class ClientController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    use TracksUserActions;
+    // use TracksUserActions;
 
     public function index(Request $request)
     {
@@ -27,13 +24,34 @@ class ClientController extends Controller
         return view('clients.index', compact('clients'));
     }
 
+    public function create()
+    {
+        $this->authorize('create', Client::class);
+        $users = User::all();
+        return view('clients.create', compact('users'));
+    }
+
     public function store(StoreClientRequest $request)
     {
         $this->authorize('create', Client::class);
         $client = Client::create($request->validated());
         $this->logAction('create_client', "Création du client #{$client->id}");
-        Notification::send(User::role('admin')->get(), new NewClientCreated($client));
+        // Notification::send(User::role('admin')->get(), new NewClientCreated($client));
         return redirect()->route('clients.show', $client)->with('success', 'Client créé avec succès.');
+    }
+
+    // public function show(Client $client)
+    // {
+    //     $this->authorize('view', $client);
+    //     $client->load(['responsablePaie', 'gestionnairePrincipal']);
+    //     return view('clients.show', compact('client'));
+    // }
+
+    public function edit(Client $client)
+    {
+        $this->authorize('update', $client);
+        $users = User::all();
+        return view('clients.edit', compact('client', 'users'));
     }
 
     public function update(UpdateClientRequest $request, Client $client)
@@ -44,39 +62,11 @@ class ClientController extends Controller
         return redirect()->route('clients.show', $client)->with('success', 'Client mis à jour avec succès.');
     }
 
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('clients.create');
-    }
-
-
-    /**
-     * Store a newly created resource in storage.
-     */
-  
-    /**
-     * Display the specified resource.
-     */
-     public function show(Client $client)
-    {
-        return view('clients.show', compact('client'));
-    }
-
-    public function edit(Client $client)
-    {
-        return view('clients.edit', compact('client'));
-    }
-
-
-
     public function destroy(Client $client)
     {
+        $this->authorize('delete', $client);
         $client->delete();
+        $this->logAction('delete_client', "Suppression du client #{$client->id}");
         return redirect()->route('clients.index')->with('success', 'Client supprimé avec succès.');
     }
 }

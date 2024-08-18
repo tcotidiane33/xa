@@ -1,72 +1,116 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('layouts.admin')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("You're logged in!") }}
+@section('title', 'Admin Dashboard')
+
+@section('content')
+<div class="main-page">
+    <div class="container-fluid">
+        <br><br><br>
+    </div>
+    <div class="col_3 ml-1">
+        <div class="col-md-1">
+            <span></span>
+        </div>
+        <div class="col-md-3 widget widget1">
+            <div class="r3_counter_box">
+                <i class="pull-left fa fa-users icon-rounded"></i>
+                <div class="stats">
+                  <h5><strong>{{ $totalUsers }}</strong></h5>
+                  <span>Total Utilisateurs</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 widget widget1">
+            <div class="r3_counter_box">
+                <i class="pull-left fa fa-building user1 icon-rounded"></i>
+                <div class="stats">
+                  <h5><strong>{{ $totalClients }}</strong></h5>
+                  <span>Total Clients</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 widget widget1">
+            <div class="r3_counter_box">
+                <i class="pull-left fa fa-calendar user2 icon-rounded"></i>
+                <div class="stats">
+                  <h5><strong>{{ $totalPeriodesPaie }}</strong></h5>
+                  <span>Périodes de paie</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 widget widget1">
+            <div class="r3_counter_box">
+                <i class="pull-left fa fa-pie-chart dollar1 icon-rounded"></i>
+                <div class="stats">
+                  <h5><strong>{{ $successPercentage }}%</strong></h5>
+                  <span>Taux de réussite</span>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"> </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Traitements de paie</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="col-md-4">
+                        <div class="mini-stat clearfix bg-info">
+                            <span class="mini-stat-icon"><i class="fa fa-clock-o"></i></span>
+                            <div class="mini-stat-info">
+                                <span>{{ $traitementsPaieEnCours }}</span>
+                                En cours
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mini-stat clearfix bg-success">
+                            <span class="mini-stat-icon"><i class="fa fa-check-circle-o"></i></span>
+                            <div class="mini-stat-info">
+                                <span>{{ $traitementsPaieTerminer }}</span>
+                                Terminés
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mini-stat clearfix bg-danger">
+                            <span class="mini-stat-icon"><i class="fa fa-pause-circle-o"></i></span>
+                            <div class="mini-stat-info">
+                                <span>{{ $traitementsPaieInterrompu }}</span>
+                                Interrompus
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-       <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="bg-blue-500 p-4 rounded-lg shadow-md">
-                            <h3 class="text-xl font-bold text-white">Utilisateurs</h3>
-                            <p class="text-3xl font-bold text-white">{{ $totalUsers }}</p>
-                        </div>
-                        <div class="bg-green-500 p-4 rounded-lg shadow-md">
-                            <h3 class="text-xl font-bold text-white">Clients</h3>
-                            <p class="text-3xl font-bold text-white">{{ $totalClients }}</p>
-                        </div>
-                        <div class="bg-yellow-500 p-4 rounded-lg shadow-md">
-                            <h3 class="text-xl font-bold text-white">Périodes de paie</h3>
-                            <p class="text-3xl font-bold text-white">{{ $totalPeriodesPaie }}</p>
-                        </div>
-                        <div class="bg-red-500 p-4 rounded-lg shadow-md">
-                            <h3 class="text-xl font-bold text-white">Taux de réussite</h3>
-                            <p class="text-3xl font-bold text-white">{{ $successPercentage }}%</p>
-                        </div>
-                    </div>
 
-                    <div class="mt-8">
-                        <h3 class="text-2xl font-bold mb-4">Traitements de paie</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="bg-indigo-500 p-4 rounded-lg shadow-md">
-                                <h4 class="text-lg font-bold text-white">En cours</h4>
-                                <p class="text-2xl font-bold text-white">{{ $traitementsPaieEnCours }}</p>
-                            </div>
-                            <div class="bg-purple-500 p-4 rounded-lg shadow-md">
-                                <h4 class="text-lg font-bold text-white">Terminés</h4>
-                                <p class="text-2xl font-bold text-white">{{ $traitementsPaieTerminer }}</p>
-                            </div>
-                            <div class="bg-pink-500 p-4 rounded-lg shadow-md">
-                                <h4 class="text-lg font-bold text-white">Interrompus</h4>
-                                <p class="text-2xl font-bold text-white">{{ $traitementsPaieInterrompu }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-8">
-                        <h3 class="text-2xl font-bold mb-4">Derniers clients ajoutés</h3>
-                        <ul class="bg-gray-100 dark:bg-gray-700 rounded-lg shadow-md">
-                            @foreach($latestClients as $client)
-                                <li class="p-4 border-b border-gray-200 dark:border-gray-600 last:border-b-0">
-                                    {{ $client->name }}
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Derniers clients ajoutés</h3>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-group">
+                        @foreach($latestClients as $client)
+                            <li class="list-group-item">{{ $client->name }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+</div>
+@endsection
+
+@push('scripts')
+<script src="{{ asset('web/js/SimpleChart.js') }}"></script>
+<script>
+    // Add any dashboard-specific JavaScript here
+</script>
+@endpush

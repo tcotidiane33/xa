@@ -14,10 +14,10 @@ class GestionnaireClientController extends Controller
    public function index()
 {
     $relations = GestionnaireClient::with(['client', 'gestionnaire.user'])->get();
-    
+
     return view('admin.gestionnaire-client.index', compact('relations'));
 }
-    
+
     public function create()
     {
         $clients = Client::pluck('name', 'id');
@@ -27,7 +27,7 @@ class GestionnaireClientController extends Controller
         })->pluck('name', 'id');
         return view('admin.gestionnaire-client.create', compact('clients', 'gestionnaires', 'responsables'));
     }
-    
+
     public function edit(GestionnaireClient $gestionnaireClient)
     {
         $clients = Client::pluck('name', 'id');

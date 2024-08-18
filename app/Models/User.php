@@ -55,6 +55,10 @@ class User extends Authenticatable
      {
          return $this->belongsToMany(Role::class);
      }
+     public function profile()
+{
+    return $this->hasOne(Profile::class);
+}
 
      public function gestionnaireClients()
      {

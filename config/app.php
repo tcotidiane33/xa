@@ -195,7 +195,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         // Encore\Admin\AdminServiceProvider::class,
         // Notify\Laravel\NotifyServiceProvider::class,
-        App\Providers\UserServiceProvider::class,
+        // App\Providers\UserServiceProvider::class,
     ],
 
     /*
