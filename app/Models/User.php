@@ -25,7 +25,10 @@ class User extends Authenticatable
         'email',
         'password',
         'avatar',
-        'role_id', 'fonction_id', 'domaine_id', 'habilitation_id'
+        'role_id',
+        'fonction_id',
+        'domaine_id',
+        'habilitation_id'
     ];
 
     /**
@@ -47,55 +50,59 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-      /**
+    /**
      * Get the clients & gestionnaire that owns the Echeancier.
      */
 
-     public function roles()
-     {
-         return $this->belongsToMany(Role::class);
-     }
-     public function profile()
-{
-    return $this->hasOne(Profile::class);
-}
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
 
-     public function gestionnaireClients()
-     {
-         return $this->hasMany(GestionnaireClient::class, 'gestionnaire_id');
-     }
+    public function gestionnaireClients()
+    {
+        return $this->hasMany(GestionnaireClient::class, 'gestionnaire_id');
+    }
 
-     public function traitementsPaie()
-     {
-         return $this->hasMany(TraitementPaie::class, 'gestionnaire_id');
-     }
+    public function traitementsPaie()
+    {
+        return $this->hasMany(TraitementPaie::class, 'gestionnaire_id');
+    }
 
-     public function tickets()
-     {
-         return $this->hasMany(Ticket::class, 'createur_id');
-     }
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'createur_id');
+    }
 
-     public function posts()
-     {
-         return $this->hasMany(Post::class);
-     }
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
 
-     public function supervisor()
-{
-    return $this->belongsTo(User::class, 'supervisor_id');
-}
+    public function supervisor()
+    {
+        return $this->belongsTo(User::class, 'supervisor_id');
+    }
 
-public function responsible()
-{
-    return $this->belongsTo(User::class, 'responsible_id');
-}
+    public function responsible()
+    {
+        return $this->belongsTo(User::class, 'responsible_id');
+    }
 
-public function clients()
-{
-    return $this->belongsToMany(Client::class, 'gestionnaire_client');
-}
-public function gestionnaire()
-{
-    return $this->hasOne(Gestionnaire::class);
-}
+    public function clients()
+    {
+        return $this->belongsToMany(Client::class, 'gestionnaire_client');
+    }
+    public function gestionnaire()
+    {
+        return $this->hasOne(Gestionnaire::class);
+    }
+    public function materials()
+    {
+        return $this->hasMany(Material::class);
+    }
 }

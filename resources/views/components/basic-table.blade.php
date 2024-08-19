@@ -1,3 +1,4 @@
+{{-- components/basic-table.blade.php --}}
 <div class="panel-body widget-shadow">
     <h4>{{ $title ?? 'Basic Table' }}</h4>
     <table class="table">
@@ -11,8 +12,12 @@
         <tbody>
             @foreach($rows as $row)
                 <tr>
-                    @foreach($row as $cell)
-                        <td>{{ $cell }}</td>
+                    @foreach($row as $key => $cell)
+                        @if(isset($rawColumns) && in_array($key, $rawColumns))
+                            <td>{!! $cell !!}</td>
+                        @else
+                            <td>{{ $cell }}</td>
+                        @endif
                     @endforeach
                 </tr>
             @endforeach

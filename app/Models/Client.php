@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Client extends Model
 {
+    use Filterable;
     protected $fillable = [
         'name',
         'responsable_paie_id',
@@ -20,8 +22,25 @@ class Client extends Model
         'convention_collective',
         'status'
     ];
+    protected $dates = ['date_debut_prestation', 'date_estimative_envoi_variables', 'maj_fiche_para'];
 
-    protected $dates = ['date_debut_prestation', 'maj_fiche_para'];
+    protected $casts = [
+        'date_debut_prestation' => 'datetime',
+        'date_estimative_envoi_variables' => 'datetime',
+        'maj_fiche_para' => 'datetime',
+    ];
+
+    protected function filterSearch($query, $value)
+    {
+        return $query->where('name', 'like', "%{$value}%")
+            ->orWhere('contact_paie', 'like', "%{$value}%")
+            ->orWhere('contact_comptabilite', 'like', "%{$value}%");
+    }
+
+    protected function filterStatus($query, $value)
+    {
+        return $query->where('status', $value);
+    }
 
     public function responsablePaie(): BelongsTo
     {
@@ -40,9 +59,9 @@ class Client extends Model
             ->withPivot('is_principal', 'gestionnaires_secondaires');
     }
 
-    public function gestionnairePrincipal()
+    public function gestionnairePrincipal(): BelongsTo
     {
-        return $this->gestionnaires()->wherePivot('is_principal', true);
+        return $this->belongsTo(User::class, 'gestionnaire_principal_id');
     }
 
     public function gestionnairesSecondaires()
@@ -50,9 +69,9 @@ class Client extends Model
         return $this->gestionnaires()->wherePivot('is_principal', false);
     }
     //     public function gestionnaires()
-// {
-//     return $this->belongsToMany(User::class, 'gestionnaire_client');
-// }
+    // {
+    //     return $this->belongsToMany(User::class, 'gestionnaire_client');
+    // }
 
     public function traitementsPaie(): HasMany
     {
@@ -61,6 +80,11 @@ class Client extends Model
     public function conventionCollective()
     {
         return $this->belongsTo(ConventionCollective::class);
+    }
+
+    public function materials()
+    {
+        return $this->hasMany(Material::class);
     }
 
 }
