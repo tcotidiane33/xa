@@ -4,7 +4,7 @@
 <div class="main-page">
     <h2 class="title1">Ajouter un document pour {{ $client->name }}</h2>
     <div class="form-three widget-shadow">
-        <form action="{{ route('clients.materials.store', $client) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('materials.store', $client) }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-group">
                 <label for="title">Titre</label>

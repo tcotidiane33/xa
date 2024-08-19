@@ -36,7 +36,6 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('clients', ClientController::class);
     Route::resource('clients.materials', MaterialController::class);
-
     Route::resource('materials', MaterialController::class);
     Route::resource('gestionnaire-client', GestionnaireClientController::class);
     Route::resource('periodes-paie', PeriodePaieController::class);

@@ -1,8 +1,5 @@
-@php
-    $body_classes = $body_classes ?? '';
-@endphp
+@extends('layouts.admin')
 
-@extends('admin::index')
 
 @section('content')
 <div class="card">
@@ -10,7 +7,7 @@
         <h3 class="card-title">Liste des relations Gestionnaire-Client</h3>
     </div>
     <div class="card-body">
-        <a href="{{ admin_url('gestionnaire-client/create') }}" class="btn btn-success mb-3">Ajouter une nouvelle relation</a>
+        {{-- <a href="{{ admin_url('gestionnaire-client/create') }}" class="btn btn-success mb-3">Ajouter une nouvelle relation</a> --}}
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -33,12 +30,12 @@
                     <td>{{ $relation->gestionnaires_secondaires ? implode(', ', $relation->gestionnaires_secondaires) : 'Aucun' }}</td>
                     <td>Non assigné</td>
                     <td>
-                        <a href="{{ admin_url('gestionnaire-client/'.$relation->id.'/edit') }}" class="btn btn-primary btn-sm">Éditer</a>
-                        <form action="{{ admin_url('gestionnaire-client/'.$relation->id) }}" method="POST" style="display: inline;">
+                        {{-- <a href="{{ admin_url('gestionnaire-client/'.$relation->id.'/edit') }}" class="btn btn-primary btn-sm">Éditer</a> --}}
+                        {{-- <form action="{{ admin_url('gestionnaire-client/'.$relation->id) }}" method="POST" style="display: inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette relation ?')">Supprimer</button>
-                        </form>
+                        </form> --}}
                     </td>
                 </tr>
                 @endforeach

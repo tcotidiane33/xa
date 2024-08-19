@@ -26,21 +26,21 @@
                             <i class="fa fa-users"></i> <span>{{ __('Client') }}</span>
                         </a>
                     </li>
-                    @if (isset($client))
+                    {{-- @if (isset($client))
                         <li class="{{ request()->routeIs('clients.materials.index') ? 'active' : '' }}">
                             <a href="{{ route('clients.materials.index', $client) }}">
                                 <i class="fa fa-file"></i>
                                 <span>{{ __('Materials Client') }}</span>
                             </a>
                         </li>
-                    @else
+                    @else --}}
                         <li class="{{ request()->routeIs('materials.index') ? 'active' : '' }}">
                             <a href="{{ route('materials.index') }}">
                                 <i class="fa fa-file"></i>
                                 <span>{{ __('Tous les Materials') }}</span>
                             </a>
                         </li>
-                    @endif
+                    {{-- @endif --}}
                     <li class="{{ request()->routeIs('gestionnaire-client.index') ? 'active' : '' }}">
                         <a href="{{ route('gestionnaire-client.index') }}">
                             <i class="fa fa-link"></i> <span>{{ __('Relation Client Gestionnaire') }}</span>

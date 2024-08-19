@@ -13,8 +13,8 @@
         @if($material->content_url)
             <p><strong>URL du contenu:</strong> <a href="{{ $material->content_url }}" target="_blank">{{ $material->content_url }}</a></p>
         @endif
-        <a href="{{ route('clients.materials.edit', [$client, $material]) }}" class="btn btn-warning">Modifier</a>
-        <form action="{{ route('clients.materials.destroy', [$client, $material]) }}" method="POST" style="display:inline;">
+        <a href="{{ route('materials.edit', [$client, $material]) }}" class="btn btn-warning">Modifier</a>
+        <form action="{{ route('materials.destroy', [$client, $material]) }}" method="POST" style="display:inline;">
             @csrf
             @method('DELETE')
             <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce document ?')">Supprimer</button>

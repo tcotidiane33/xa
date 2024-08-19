@@ -4,7 +4,7 @@
 <div class="main-page">
     <h2 class="title1">Modifier le document pour {{ $client->name }}</h2>
     <div class="form-three widget-shadow">
-        <form action="{{ route('clients.materials.update', [$client, $material]) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('materials.update', [$client, $material]) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="form-group">
