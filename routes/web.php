@@ -2,14 +2,15 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\PeriodePaieController;
 use App\Http\Controllers\TraitementPaieController;
+use App\Http\Controllers\ConventionCollectiveController;
 use App\Http\Controllers\Admin\GestionnaireClientController;
 
 Route::get('/', function () {
@@ -32,26 +33,51 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/search', [ProfileController::class, 'search'])->name('search');
 
     // Resource routes
-    Route::resource('roles', RoleController::class)->except(['show']);
     Route::resource('users', UserController::class);
     Route::resource('clients', ClientController::class);
     Route::resource('clients.materials', MaterialController::class);
     Route::resource('materials', MaterialController::class);
-    Route::resource('gestionnaire-client', GestionnaireClientController::class);
-    Route::resource('periodes-paie', PeriodePaieController::class);
-    Route::resource('traitements-paie', TraitementPaieController::class);
-    Route::resource('tickets', TicketController::class);
 
-    // Additional role and permission routes
-    Route::get('/permissions/create', [RoleController::class, 'createPermission'])->name('permissions.create');
-    Route::post('/permissions', [RoleController::class, 'storePermission'])->name('permissions.store');
-    Route::get('/roles/assign', [RoleController::class, 'assignRole'])->name('roles.assign');
-    Route::post('/roles/assign', [RoleController::class, 'storeAssignRole'])->name('roles.assign.store');
+    // Route::resource('periodes-paie', PeriodePaieController::class);
+    // Routes pour PeriodePaie
+    Route::get('/periodes-paie', [PeriodePaieController::class, 'index'])->name('periodes-paie.index');
+    Route::get('/periodes-paie/create', [PeriodePaieController::class, 'create'])->name('periodes-paie.create');
+    Route::post('/periodes-paie', [PeriodePaieController::class, 'store'])->name('periodes-paie.store');
+    Route::get('/periodes-paie/{periodePaie}', [PeriodePaieController::class, 'show'])->name('periodes-paie.show');
+    Route::get('/periodes-paie/{periodePaie}/edit', [PeriodePaieController::class, 'edit'])->name('periodes-paie.edit');
+    Route::put('/periodes-paie/{periodePaie}', [PeriodePaieController::class, 'update'])->name('periodes-paie.update');
+    Route::delete('/periodes-paie/{periodePaie}', [PeriodePaieController::class, 'destroy'])->name('periodes-paie.destroy');
+    
+
+    // Route::resource('traitements-paie', TraitementPaieController::class);
+    Route::get('/traitements-paie', [TraitementPaieController::class, 'index'])->name('traitements-paie.index');
+    Route::get('/traitements-paie/create', [TraitementPaieController::class, 'create'])->name('traitements-paie.create');
+    Route::post('/traitements-paie', [TraitementPaieController::class, 'store'])->name('traitements-paie.store');
+    Route::get('/traitements-paie/{traitementPaie}', [TraitementPaieController::class, 'show'])->name('traitements-paie.show');
+    Route::get('/traitements-paie/{traitementPaie}/edit', [TraitementPaieController::class, 'edit'])->name('traitements-paie.edit');
+    Route::put('/traitements-paie/{traitementPaie}', [TraitementPaieController::class, 'update'])->name('traitements-paie.update');
+    Route::delete('/traitements-paie/{traitementPaie}', [TraitementPaieController::class, 'destroy'])->name('traitements-paie.destroy');
+    
+    Route::resource('tickets', TicketController::class);
+    Route::resource('convention-collectives', ConventionCollectiveController::class);
+
+
 });
 
 // Admin routes
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:admin']], function () {
     Route::get('/', [App\Http\Controllers\Admin\HomeController::class, 'index'])->name('index');
+    Route::resource('gestionnaire-client', GestionnaireClientController::class);
+    Route::post('gestionnaire-client/{gestionnaireClient}/transfer', [GestionnaireClientController::class, 'transfer'])->name('gestionnaire-client.transfer');
+    // Additional role and permission routes
+    Route::resource('roles', RoleController::class)->except(['show']);
+    Route::get('/permissions/create', [RoleController::class, 'createPermission'])->name('permissions.create');
+    Route::post('/permissions', [RoleController::class, 'storePermission'])->name('permissions.store');
+    Route::get('/roles/assign', [RoleController::class, 'assignRole'])->name('roles.assign');
+    // Route::post('/roles/assign', [RoleController::class, 'storeAssignRole'])->name('roles.assign.store');
+    Route::get('assign-roles', [RoleController::class, 'assignRoles'])->name('roles.assign');
+    Route::post('assign-roles', [RoleController::class, 'storeAssignRoles'])->name('roles.assign.store');
+    Route::patch('users/{user}/toggle-status', [RoleController::class, 'toggleUserStatus'])->name('users.toggle-status');
 });
 
 require __DIR__ . '/auth.php';

@@ -19,7 +19,7 @@ class Client extends Model
         'contact_comptabilite',
         'nb_bulletins',
         'maj_fiche_para',
-        'convention_collective',
+        'convention_collective_id', // Ajoutez cette ligne
         'status'
     ];
     protected $dates = ['date_debut_prestation', 'date_estimative_envoi_variables', 'maj_fiche_para'];
@@ -53,10 +53,15 @@ class Client extends Model
     // }
 
 
+    // public function gestionnaires()
+    // {
+    //     return $this->belongsToMany(Gestionnaire::class, 'gestionnaire_client')
+    //         ->withPivot('is_principal', 'gestionnaires_secondaires');
+    // }
     public function gestionnaires()
     {
-        return $this->belongsToMany(Gestionnaire::class, 'gestionnaire_client')
-            ->withPivot('is_principal', 'gestionnaires_secondaires');
+        return $this->belongsToMany(User::class, 'gestionnaire_client', 'client_id', 'gestionnaire_id')
+                    ->withPivot('is_principal');
     }
 
     public function gestionnairePrincipal(): BelongsTo

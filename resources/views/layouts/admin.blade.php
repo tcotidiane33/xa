@@ -14,15 +14,24 @@
 
     <!-- font-awesome icons CSS -->
     <link href="{{ asset('web/css/font-awesome.css') }}" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flowbite@1.4.7/dist/flowbite.min.css">
     <!-- side nav css file -->
     <link href="{{ asset('web/css/SidebarNav.min.css') }}" media='all' rel='stylesheet' type='text/css' />
-
+<!-- Dans la section head -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+ <style>
+        .main-content{
+            padding: 1rem;
+            /* margin-left: 1rem; */
+        }
+   
+       
+    </style>
     @stack('styles')
 </head>
 
 <body class="cbp-spmenu-push">
-    <div class="main-content">
+    <div class="main">
         @include('admin.partials.sidebar')
 
         <!-- header-starts -->
@@ -806,6 +815,9 @@
     </script>
 
     @stack('scripts')
+    <!-- Juste avant la fermeture de la balise body -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </body>
 
 </html>

@@ -1,82 +1,175 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Traitements de paie') }}
-        </h2>
-    </x-slot>
+@extends('layouts.admin')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <a href="{{ route('traitements-paie.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Nouveau traitement de paie</a>
+@section('title', 'Admin Traitements des paies')
 
-                    <table class="min-w-full">
+@section('content')
+    <div class="main-content">
+        <div class="main-page">
+            <div class="row">
+                <br>
+                <br>
+            </div>
+            <div class="row">
+                <div class="container">
+                    <form action="{{ route('traitements-paie.index') }}" method="GET" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <select name="client_id" class="form-control">
+                                    <option value="">Tous les clients</option>
+                                    @foreach($clients as $client)
+                                        <option value="{{ $client->id }}" {{ request('client_id') == $client->id ? 'selected' : '' }}>
+                                            {{ $client->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="gestionnaire_id" class="form-control">
+                                    <option value="">Tous les gestionnaires</option>
+                                    @foreach($gestionnaires as $gestionnaire)
+                                        <option value="{{ $gestionnaire->id }}" {{ request('gestionnaire_id') == $gestionnaire->id ? 'selected' : '' }}>
+                                            {{ $gestionnaire->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="periode_paie_id" class="form-control">
+                                    <option value="">Toutes les périodes</option>
+                                    @foreach($periodesPaie as $periode)
+                                        <option value="{{ $periode->id }}" {{ request('periode_paie_id') == $periode->id ? 'selected' : '' }}>
+                                            {{ $periode->reference }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary">Filtrer</button>
+                            </div>
+                        </div>
+                    </form>
+                
+                    <a href="{{ route('traitements-paie.create') }}" class="btn btn-success mb-3">Créer un nouveau traitement</a>
+                
+                    <table class="table">
                         <thead>
                             <tr>
-                                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Référence</th>
-                                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Client</th>
-                                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Période</th>
-                                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Nb Bulletins</th>
-                                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th>Client</th>
+                                <th>Gestionnaire</th>
+                                <th>Période</th>
+                                <th>Nombre de bulletins</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($traitements as $traitement)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">{{ $traitement->reference }}</td>
-                                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">{{ $traitement->client->name }}</td>
-                                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">{{ $traitement->periodePaie->reference }}</td>
-                                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">{{ $traitement->nbr_bull }}</td>
-                                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                        @if($traitement->est_verrouille)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Verrouillé</span>
-                                        @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">En cours</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 font-medium">
-                                        <a href="{{ route('traitements-paie.show', $traitement) }}" class="text-indigo-600 hover:text-indigo-900 mr-2">Voir</a>
-                                        <a href="{{ route('traitements-paie.edit', $traitement) }}" class="text-indigo-600 hover:text-indigo-900 mr-2">Modifier</a>
-                                        <form action="{{ route('traitements-paie.destroy', $traitement) }}" method="POST" class="inline-block">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce traitement de paie ?')">Supprimer</button>
-                                        </form>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td>{{ $traitement->client->name }}</td>
+                                <td>{{ $traitement->gestionnaire->name }}</td>
+                                <td>{{ $traitement->periodePaie->reference }}</td>
+                                <td>{{ $traitement->nbr_bull }}</td>
+                                <td>
+                                    <a href="{{ route('traitements-paie.show', $traitement) }}" class="btn btn-sm btn-info">Voir</a>
+                                    <a href="{{ route('traitements-paie.edit', $traitement) }}" class="btn btn-sm btn-warning">Modifier</a>
+                                    <form action="{{ route('traitements-paie.destroy', $traitement) }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce traitement ?')">Supprimer</button>
+                                    </form>
+                                </td>
+                            </tr>
                             @endforeach
                         </tbody>
                     </table>
-
-                    <div class="mt-4">
-                        {{ $traitements->links() }}
-                    </div>
+                
+                    {{ $traitements->links() }}
                 </div>
             </div>
         </div>
+
+       
     </div>
+@endsection
 
+@push('scripts')
     <script>
-        $('#save-traitement').on('click', function() {
-    var form = $('#edit-traitement-form')[0];
-    var formData = new FormData(form);
+        $(document).ready(function() {
 
-    $.ajax({
-        url: form.action,
-        method: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function(response) {
-            $('#edit-traitement-modal').modal('hide');
-            // Rafraîchir la grille ou la ligne mise à jour
-        },
-        error: function(xhr) {
-            // Gérer les erreurs
-        }
-    });
-});
+            // Fonction pour ouvrir le modal d'édition
+            function openEditModal(traitementId) {
+                $.get('/traitements-paie/' + traitementId + '/edit', function(data) {
+                    $('#traitementModal .modal-body').html(data);
+                    $('#traitementModal').modal('show');
+                });
+            }
+
+            // Fonction pour ouvrir le modal de création
+            function openCreateModal() {
+                $.get('/traitements-paie/create', function(data) {
+                    $('#traitementModal .modal-body').html(data);
+                    $('#traitementModal').modal('show');
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error("Erreur lors de l'ouverture du modal de création :", textStatus,
+                        errorThrown);
+                });
+
+                // Événement pour le bouton de création
+                $(document).on('click', '#createTraitement', function() {
+                    openCreateModal();
+                });
+            }
+            // Événement pour le bouton d'édition
+            $('.edit-traitement').on('click', function() {
+                var traitementId = $(this).data('id');
+                openEditModal(traitementId);
+            });
+
+            // Événement pour le bouton de créat
+            $('#createTraitement').on('click', function() {
+                openCreateModal();
+            });
+
+            // Gestion de la soumission du formulaire
+            $(document).on('submit', '#traitementForm', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var url = form.attr('action');
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        $('#traitementModal').modal('hide');
+                        location.reload(); // Recharger la page pour afficher les changements
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            });
+
+            // Fonction pour colorer les cellules de date
+            function colorDateCells() {
+                $('.date-cell').each(function() {
+                    var date = new Date($(this).text());
+                    var today = new Date();
+                    var threeMonthsAgo = new Date();
+                    threeMonthsAgo.setMonth(today.getMonth() - 3);
+
+                    if (date < threeMonthsAgo) {
+                        $(this).css('background-color', 'red');
+                    } else if (date >= threeMonthsAgo && date <= today) {
+                        $(this).css('background-color', 'orange');
+                    } else {
+                        $(this).css('background-color', 'green');
+                    }
+                });
+            }
+
+            // Appeler la fonction de coloration au chargement de la page
+            colorDateCells();
+        });
     </script>
-</x-app-layout>
+@endpush

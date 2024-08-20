@@ -1,29 +1,41 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Détails de l\'utilisateur') }}
-        </h2>
-    </x-slot>
+@extends('layouts.admin')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <h3 class="text-lg font-semibold mb-4">{{ $user->name }}</h3>
-                    <p><strong>Email:</strong> {{ $user->email }}</p>
-                    <p><strong>Rôles:</strong>
-                        @foreach($user->roles as $role)
-                            <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">{{ $role->name }}</span>
-                        @endforeach
-                    </p>
-                    <p><strong>Créé le:</strong> {{ $user->created_at->format('d/m/Y H:i') }}</p>
-                    <p><strong>Dernière mise à jour:</strong> {{ $user->updated_at->format('d/m/Y H:i') }}</p>
+@section('title', 'Utilisateur')
 
-                    <div class="mt-4">
-                        <a href="{{ route('users.edit', $user) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Modifier</a>
+@section('content')
+    <div class="main-content">
+        <div class="row">
+        </br>
+        </br>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="breadcrumb">
+                        <h1>Utilisateurs</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="flex flex-wrap -mx-3">
+                            <div class="w-full md:w-1/2 xl:w-1/3 p-3">
+                                <div class="text-lg font-bold">Nom</div>
+                                <div class="text-gray-600">{{ $user->name }}</div>
+                            </div>
+                            <div class="w-full md:w-1/2 xl:w-1/3 p-3">
+                                <div class="text-lg font-bold">Email</div>
+                                <div class="text-gray-600">{{ $user->email }}</div>
+                            </div>
+                            <div class="w-full md:w-1/2 xl:w-1/3 p-3">
+                                <div class="text-lg font-bold">Rôles</div>
+                                <ul>
+                                    @foreach($user->roles as $role)
+                                        <li class="text-gray-600">{{ $role->name }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

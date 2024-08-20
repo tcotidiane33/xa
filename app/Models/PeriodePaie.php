@@ -11,11 +11,13 @@ class PeriodePaie extends Model
 {
     protected $table = 'periodes_paie';
 
-    protected $fillable = ['debut', 'fin', 'validee'];
+    protected $fillable = ['reference', 'debut', 'fin', 'validee', 'client_id'];
 
     protected $dates = ['debut', 'fin'];
 
     protected $casts = [
+        'debut' => 'date',
+        'fin' => 'date',
         'validee' => 'boolean',
     ];
     public function client()

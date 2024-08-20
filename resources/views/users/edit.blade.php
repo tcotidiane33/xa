@@ -1,46 +1,46 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Modifier l\'utilisateur') }}
-        </h2>
-    </x-slot>
+@extends('layouts.admin')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <form method="POST" action="{{ route('users.update', $user) }}">
-                        @csrf
-                        @method('PUT')
+@section('title', 'Éditer un utilisateur')
 
-                        <div class="mb-4">
-                            <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nom:</label>
-                            <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
-                            <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Nouveau mot de passe (laissez vide pour ne pas changer):</label>
-                            <input type="password" name="password" id="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="password_confirmation" class="block text-gray-700 text-sm font-bold mb-2">Confirmer le nouveau mot de passe:</label>
-                            <input type="password" name="password_confirmation" id="password_confirmation" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                Mettre à jour
-                            </button>
-                        </div>
-                    </form>
+@section('content')
+    <div class="main-content">
+        <div class="row">
+        </br>
+        </br>
+    </div>
+        <div class="container">
+            <div class="breadcrumb">
+            <h1>Éditer un utilisateur</h1>
+            </div>
+            <form action="{{ route('users.update', $user) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="form-group">
+                    <label for="name">Nom</label>
+                    <input type="text" id="name" name="name" class="form-control" value="{{ $user->name }}" required>
                 </div>
+              <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" value="{{ $user->email }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Mot de passe (laisser vide pour ne pas modifier)</label>
+                        <input type="password" id="password" name="password" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="password_confirmation">Confirmer le mot de passe</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="roles">Rôles</label>
+                        <select id="roles" name="roles[]" class="form-control" multiple required>
+                            @foreach($roles as $role)
+                                <option value="{{ $role->id }}" {{ $user->roles->contains($role) ? 'selected' : '' }}>{{ $role->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                </form>
             </div>
         </div>
-    </div>
-</x-app-layout>
+    @endsection

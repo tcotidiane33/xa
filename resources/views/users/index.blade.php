@@ -1,58 +1,50 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Tickets') }}
-        </h2>
-    </x-slot>
+@extends('layouts.admin')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
+@section('title', 'Liste des utilisateurs')
 
-                    <h1>Liste des Utilisateurs</h1>
-                    <a href="{{ route('users.create') }}" class="btn btn-primary">Ajouter un utilisateur</a>
-
-                    <table class="table mt-3">
-                        <thead>
-                            <tr>
-                                <th>Nom</th>
-                                <th>Email</th>
-                                <th>Rôles</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($users as $user)
-                                <tr>
-                                    <td>{{ $user->name }}</td>
-                                    <td>{{ $user->email }}</td>
-                                    <td>
-                                        @foreach ($user->roles as $role)
-                                            <span class="badge badge-info">{{ $role->name }}</span>
-                                        @endforeach
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('users.show', $user) }}" class="btn btn-sm btn-info">Voir</a>
-                                        <a href="{{ route('users.edit', $user) }}"
-                                            class="btn btn-sm btn-warning">Éditer</a>
-                                        <form action="{{ route('users.destroy', $user) }}" method="POST"
-                                            style="display:inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger"
-                                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?')">Supprimer</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    <div class="mt-4">
-                        {{ $users->links() }}
-                    </div>
-                </div>
+@section('content')
+    <div class="main-content">
+        <div class="row">
+            </br>
+            </br>
+        </div>
+        <div class="container">
+            <div class="breadcrumb">
+            <h1>Liste des utilisateurs</h1>
             </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Rôles</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($users as $user)
+                        <tr>
+                            <td>{{ $user->name }}</td>
+                            <td>{{ $user->email }}</td>
+                            <td>
+                                @foreach($user->roles as $role)
+                                    {{ $role->name }}<br>
+                                @endforeach
+                            </td>
+                            <td>
+                                <a href="{{ route('users.show', $user) }}" class="btn btn-info">Voir</a>
+                                <a href="{{ route('users.edit', $user) }}" class="btn btn-primary">Éditer</a>
+                                <form action="{{ route('users.destroy', $user) }}" method="POST" style="display: inline-block;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            {{ $users->links() }}
         </div>
     </div>
-</x-app-layout>
+@endsection

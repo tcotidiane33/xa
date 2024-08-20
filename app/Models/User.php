@@ -28,7 +28,8 @@ class User extends Authenticatable
         'role_id',
         'fonction_id',
         'domaine_id',
-        'habilitation_id'
+        'habilitation_id',
+        'is_active'
     ];
 
     /**
@@ -48,12 +49,16 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
     /**
      * Get the clients & gestionnaire that owns the Echeancier.
      */
-
+    public function isAdmin()
+{
+    return $this->hasRole('admin'); // ou toute autre logique pour déterminer si l'utilisateur est admin
+}
     public function roles()
     {
         return $this->belongsToMany(Role::class);
@@ -96,6 +101,11 @@ class User extends Authenticatable
     public function clients()
     {
         return $this->belongsToMany(Client::class, 'gestionnaire_client');
+    }
+    public function clientsGeres()
+    {
+        return $this->belongsToMany(Client::class, 'gestionnaire_client', 'gestionnaire_id', 'client_id')
+                    ->withPivot('is_principal');
     }
     public function gestionnaire()
     {

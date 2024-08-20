@@ -2,59 +2,56 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Client;
 use App\Models\PeriodePaie;
 use Illuminate\Http\Request;
 use App\Models\TraitementPaie;
-use App\Traits\TracksUserActions;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\TraitementPaie\TraitementPaieRequest;
 
 class TraitementPaieController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    use TracksUserActions;
-
-    public function index()
+    public function index(Request $request)
     {
-        $traitements = TraitementPaie::with('client', 'periodePaie')->paginate(15);
-        return view('traitements_paie.index', compact('traitements'));
+        $query = TraitementPaie::with(['client', 'gestionnaire', 'periodePaie']);
+
+        // Ajout de filtres
+        if ($request->has('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+        if ($request->has('gestionnaire_id')) {
+            $query->where('gestionnaire_id', $request->gestionnaire_id);
+        }
+        if ($request->has('periode_paie_id')) {
+            $query->where('periode_paie_id', $request->periode_paie_id);
+        }
+
+        $traitements = $query->paginate(15);
+        $clients = Client::all();
+        $gestionnaires = User::role('gestionnaire')->get();
+        $periodesPaie = PeriodePaie::all();
+
+        return view('traitements_paie.index', compact('traitements', 'clients', 'gestionnaires', 'periodesPaie'));
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
-
- public function create()
+    public function create()
     {
         $clients = Client::all();
-        $periodesPaie = PeriodePaie::where('validee', true)->get();
-        return view('traitements_paie.create', compact('clients', 'periodesPaie'));
+        $gestionnaires = User::role('gestionnaire')->get();
+        $periodesPaie = PeriodePaie::all();
+        return view('traitements_paie.create', compact('clients', 'gestionnaires', 'periodesPaie'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-
-    public function store(Request $request)
+    public function store(TraitementPaieRequest $request)
     {
-        $validated = $request->validate([/* ... */]);
-        $traitement = TraitementPaie::create($validated);
-
-        // Gérer les pièces jointes
-        if ($request->hasFile('pj_nbr_bull')) {
-            $path = $request->file('pj_nbr_bull')->store('pieces_jointes/traitements_paie');
-            $traitement->update(['pj_nbr_bull' => $path]);
-        }
-        // ... autres pièces jointes ...
-
-        $this->logAction('create_traitement_paie', "Création du traitement de paie #{$traitement->id}");
-        return redirect()->route('traitements_paie.show', $traitement);
+        $validatedData = $request->validated();
+        $this->handleFileUploads($request, $validatedData);
+        
+        TraitementPaie::create($validatedData);
+        return redirect()->route('traitements-paie.index')->with('success', 'Traitement de paie créé avec succès.');
     }
-    /**
-     * Display the specified resource.
-     */
+
     public function show(TraitementPaie $traitementPaie)
     {
         return view('traitements_paie.show', compact('traitementPaie'));
@@ -63,54 +60,37 @@ class TraitementPaieController extends Controller
     public function edit(TraitementPaie $traitementPaie)
     {
         $clients = Client::all();
-        $periodesPaie = PeriodePaie::where('validee', true)->get();
-        return view('traitements_paie.edit', compact('traitementPaie', 'clients', 'periodesPaie'));
+        $gestionnaires = User::role('gestionnaire')->get();
+        $periodesPaie = PeriodePaie::all();
+        return view('traitements_paie.edit', compact('traitementPaie', 'clients', 'gestionnaires', 'periodesPaie'));
     }
 
-    public function update(Request $request, $id)
-{
-    $traitementPaie = TraitementPaie::findOrFail($id);
+    public function update(TraitementPaieRequest $request, TraitementPaie $traitementPaie)
+    {
+        $validatedData = $request->validated();
+        $this->handleFileUploads($request, $validatedData);
 
-    $data = $request->validate([
-        'nb_bulletins' => 'nullable|integer',
-        'maj_fiche_para' => 'nullable|date',
-        'reception_variables' => 'nullable|date',
-        'preparation_bp' => 'nullable|date',
-        'validation_bp_client' => 'nullable|date',
-        'preparation_envoi_dsn' => 'nullable|date',
-        'accuses_dsn' => 'nullable|date',
-        'notes' => 'nullable|string',
-    ]);
-
-    // Gérer les fichiers uploadés
-    $fileFields = [
-        'nb_bulletins_file',
-        'maj_fiche_para_file',
-        'reception_variables_file',
-        'preparation_bp_file',
-        'validation_bp_client_file',
-        'preparation_envoi_dsn_file',
-        'accuses_dsn_file',
-    ];
-
-    foreach ($fileFields as $field) {
-        if ($request->hasFile($field)) {
-            $file = $request->file($field);
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('traitement_paie_files', $filename, 'public');
-            $data[$field] = $filename;
-        }
+        $traitementPaie->update($validatedData);
+        return redirect()->route('traitements-paie.index')->with('success', 'Traitement de paie mis à jour avec succès.');
     }
-
-    $traitementPaie->update($data);
-
-    return response()->json(['success' => true])->redirect()->route('traitements_paie.show', $traitementPaie)->with('success', 'Traitement de paie mis à jour avec succès.');
-
-}
 
     public function destroy(TraitementPaie $traitementPaie)
     {
         $traitementPaie->delete();
-        return redirect()->route('traitements_paie.index')->with('success', 'Traitement de paie supprimé avec succès.');
+        return redirect()->route('traitements-paie.index')->with('success', 'Traitement de paie supprimé avec succès.');
+    }
+
+    private function handleFileUploads(Request $request, array &$validatedData)
+    {
+        $fileFields = [
+            'maj_fiche_para_file', 'reception_variables_file', 'preparation_bp_file',
+            'validation_bp_client_file', 'preparation_envoi_dsn_file', 'accuses_dsn_file'
+        ];
+
+        foreach ($fileFields as $field) {
+            if ($request->hasFile($field)) {
+                $validatedData[$field] = $request->file($field)->store('traitements_paie');
+            }
+        }
     }
 }

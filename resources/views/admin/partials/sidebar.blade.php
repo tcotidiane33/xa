@@ -1,3 +1,4 @@
+{{-- use App\Http\Controllers\ConventionCollectiveController; --}}
 <div class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-left " id="cbp-spmenu-s1">
     <aside class="sidebar-left">
         <nav class="navbar navbar-inverse">
@@ -26,23 +27,21 @@
                             <i class="fa fa-users"></i> <span>{{ __('Client') }}</span>
                         </a>
                     </li>
-                    {{-- @if (isset($client))
-                        <li class="{{ request()->routeIs('clients.materials.index') ? 'active' : '' }}">
-                            <a href="{{ route('clients.materials.index', $client) }}">
-                                <i class="fa fa-file"></i>
-                                <span>{{ __('Materials Client') }}</span>
-                            </a>
-                        </li>
-                    @else --}}
+                   
                         <li class="{{ request()->routeIs('materials.index') ? 'active' : '' }}">
                             <a href="{{ route('materials.index') }}">
                                 <i class="fa fa-file"></i>
                                 <span>{{ __('Tous les Materials') }}</span>
                             </a>
                         </li>
-                    {{-- @endif --}}
-                    <li class="{{ request()->routeIs('gestionnaire-client.index') ? 'active' : '' }}">
-                        <a href="{{ route('gestionnaire-client.index') }}">
+                        <li class="{{ request()->routeIs('convention-collectives.index') ? 'active' : '' }}">
+                            <a href="{{ route('convention-collectives.index') }}">
+                                <i class="fa fa-square"></i>
+                                <span>{{ __('Conventions Collectives') }}</span>
+                            </a>
+                        </li>
+                    <li class="{{ request()->routeIs('admin.gestionnaire-client.index') ? 'active' : '' }}">
+                        <a href="{{ route('admin.gestionnaire-client.index') }}">
                             <i class="fa fa-link"></i> <span>{{ __('Relation Client Gestionnaire') }}</span>
                         </a>
                     </li>
@@ -66,8 +65,8 @@
                             <i class="fa fa-user"></i> <span>{{ __('Utilisateur') }}</span>
                         </a>
                     </li>
-                    <li class="{{ request()->routeIs('roles.index') ? 'active' : '' }}">
-                        <a href="{{ route('roles.index') }}">
+                    <li class="{{ request()->routeIs('admin.roles.index') ? 'active' : '' }}">
+                        <a href="{{ route('admin.roles.index') }}">
                             <i class="fa fa-lock"></i> <span>{{ __('Rôles et permissions') }}</span>
                         </a>
                     </li>

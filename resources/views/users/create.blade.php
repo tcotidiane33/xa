@@ -1,53 +1,45 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Créer un nouveau ticket') }}
-        </h2>
-    </x-slot>
+@extends('layouts.admin')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
+@section('title', 'Créer un utilisateur')
 
-                    <h1>Créer un nouvel utilisateur</h1>
-                    <form action="{{ route('users.store') }}" method="POST">
-                        @csrf
-                        <div class="form-group">
-                            <label for="name">Nom</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Mot de passe</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="password_confirmation">Confirmer le mot de passe</label>
-                            <input type="password" class="form-control" id="password_confirmation"
-                                name="password_confirmation" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Rôles</label>
-                            @foreach ($roles as $role)
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="roles[]"
-                                        value="{{ $role->id }}" id="role_{{ $role->id }}">
-                                    <label class="form-check-label" for="role_{{ $role->id }}">
-                                        {{ $role->name }}
-                                    </label>
-                                </div>
-                            @endforeach
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <button type="submit" class="btn btn-primary">Créer</button>
-                        </div>
-                    </form>
-                </div>
+@section('content')
+    <div class="main-content">
+        <div class="row">
+        </br>
+        </br>
+    </div>
+        <div class="container">
+            <div class="breadcrumb">
+            <h1>Créer un utilisateur</h1>
             </div>
+            <form action="{{ route('users.store') }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label for="name">Nom</label>
+                    <input type="text" id="name" name="name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="password_confirmation">Confirmer le mot de passe</label>
+                    <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="roles">Rôles</label>
+                    <select id="roles" name="roles[]" class="form-control" multiple required>
+                        @foreach($roles as $role)
+                            <option value="{{ $role->id }}">{{ $role->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Créer</button>
+            </form>
         </div>
     </div>
-</x-app-layout>
+@endsection
