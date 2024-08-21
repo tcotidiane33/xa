@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 
 class TraitementPaie extends Model
@@ -26,6 +27,14 @@ class TraitementPaie extends Model
         'preparation_envoie_dsn', 'accuses_dsn', 'teledec_urssaf'
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($traitementPaie) {
+            $traitementPaie->reference = 'TP-' . Str::upper(Str::random(8));
+        });
+    }
     public function gestionnaire()
     {
         return $this->belongsTo(User::class, 'gestionnaire_id');

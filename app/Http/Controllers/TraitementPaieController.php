@@ -43,15 +43,43 @@ class TraitementPaieController extends Controller
         return view('traitements_paie.create', compact('clients', 'gestionnaires', 'periodesPaie'));
     }
 
+
     public function store(TraitementPaieRequest $request)
-    {
-        $validatedData = $request->validated();
-        $this->handleFileUploads($request, $validatedData);
-        
-        TraitementPaie::create($validatedData);
-        return redirect()->route('traitements-paie.index')->with('success', 'Traitement de paie créé avec succès.');
+{
+    $validatedData = $request->validated();
+    
+    // Gérer les uploads de fichiers
+    $fileFields = [
+        'maj_fiche_para_file', 'reception_variables_file', 'preparation_bp_file',
+        'validation_bp_client_file', 'preparation_envoi_dsn_file', 'accuses_dsn_file'
+    ];
+
+    foreach ($fileFields as $field) {
+        if ($request->hasFile($field)) {
+            $validatedData[$field] = $request->file($field)->store('traitements_paie');
+        }
     }
 
+    // Vérifiez que gestionnaire_id est bien présent
+    if (!isset($validatedData['gestionnaire_id'])) {
+        return back()->withInput()->withErrors(['gestionnaire_id' => 'Le gestionnaire est requis.']);
+    }
+    // Vérifiez que client_id est bien présent
+    if (!isset($validatedData['client_id'])) {
+        return back()->withInput()->withErrors(['client_id' => 'Le client est requis.']);
+    }
+    // Vérifiez que periode_paie_id est bien présent
+    if (!isset($validatedData['periode_paie_id'])) {
+        return back()->withInput()->withErrors(['periode_paie_id' => 'La période de paie est requis.']);
+    }
+
+
+    // La référence sera automatiquement générée grâce au boot method du modèle
+    $traitementPaie = TraitementPaie::create($validatedData);
+
+    return redirect()->route('traitements-paie.index')
+        ->with('success', 'Traitement de paie créé avec succès. Référence : ' . $traitementPaie->reference);
+}
     public function show(TraitementPaie $traitementPaie)
     {
         return view('traitements_paie.show', compact('traitementPaie'));

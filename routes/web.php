@@ -26,6 +26,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
+    Route::post('/profile/update-settings', [ProfileController::class, 'updateSettings'])->name('profile.update-settings');
     Route::post('/profile/update-account', [ProfileController::class, 'updateAccount'])->name('profile.update-account');
     Route::post('/logout', [ProfileController::class, 'logout'])->name('logout');
 
@@ -57,7 +58,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/traitements-paie/{traitementPaie}/edit', [TraitementPaieController::class, 'edit'])->name('traitements-paie.edit');
     Route::put('/traitements-paie/{traitementPaie}', [TraitementPaieController::class, 'update'])->name('traitements-paie.update');
     Route::delete('/traitements-paie/{traitementPaie}', [TraitementPaieController::class, 'destroy'])->name('traitements-paie.destroy');
-    
+
     Route::resource('tickets', TicketController::class);
     Route::resource('convention-collectives', ConventionCollectiveController::class);
 

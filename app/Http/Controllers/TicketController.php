@@ -35,14 +35,22 @@ class TicketController extends Controller
      * Store a newly created resource in storage.
      */
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([/* ... */]);
-        $ticket = Ticket::create($validated);
-        $this->logAction('create_ticket', "Création du ticket #{$ticket->id}");
-        return redirect()->route('tickets.show', $ticket);
-    }
-
+     public function store(Request $request)
+     {
+         $validated = $request->validate([
+             'titre' => 'required|string|max:255',
+             'description' => 'required|string',
+             'priorite' => 'required|in:basse,moyenne,haute',
+             'assigne_a_id' => 'nullable|exists:users,id',
+         ]);
+     
+         $validated['createur_id'] = auth()->id();
+         $validated['statut'] = 'ouvert';
+     
+         $ticket = Ticket::create($validated);
+        //  $this->logAction('create_ticket', "Création du ticket #{$ticket->id}");
+         return redirect()->route('tickets.show', $ticket)->with('success', 'Ticket créé avec succès.');
+     }
 
     /**
      * Display the specified resource.

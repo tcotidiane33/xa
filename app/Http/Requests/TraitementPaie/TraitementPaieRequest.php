@@ -15,6 +15,9 @@ class TraitementPaieRequest extends FormRequest
     {
         return [
             'nbr_bull' => 'required|integer',
+            'gestionnaire_id' => 'required|exists:users,id',
+            'client_id' => 'required|exists:clients,id',
+            'periode_paie_id' => 'required|exists:periodes_paie,id',
             'reception_variable' => 'nullable|date',
             'preparation_bp' => 'nullable|date',
             'validation_bp_client' => 'nullable|date',
