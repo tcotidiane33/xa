@@ -69,7 +69,7 @@
                         <label for="accuses_dsn">Accusés DSN</label>
                         <input type="date" class="form-control" id="accuses_dsn" name="accuses_dsn">
                     </div>
-{{-- 
+{{--
                     <div class="form-group">
                         <label for="teledec_urssaf">TELEDEC URSSAF</label>
                         <input type="date" class="form-control" id="teledec_urssaf" name="teledec_urssaf">
@@ -111,7 +111,7 @@
                         <input type="file" class="form-control-file" id="accuses_dsn_file" name="accuses_dsn_file">
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Créer</button>
+                    <button type="submit" class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Créer</button>
                 </form>
             </div>
         </div>

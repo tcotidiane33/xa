@@ -2,75 +2,105 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Material;
 use App\Models\Client;
+use App\Models\Material;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreMaterialRequest;
-use App\Http\Requests\UpdateMaterialRequest;
+use App\Models\MaterialHistory;
+use Illuminate\Support\Facades\Auth;
 
 class MaterialController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Client $client)
+    public function index(Request $request)
     {
-        $materials = $client->materials()->paginate(15);
-        return view('materials.index', compact('client', 'materials'));
-    }
-    
+        $query = Material::query();
 
-    public function create(Client $client)
-    {
-        return view('materials.create', compact('client'));
-    }
-
-    public function store(StoreMaterialRequest $request, Client $client)
-    {
-        $material = new Material($request->validated());
-        $material->client_id = $client->id;
-        $material->user_id = auth()->id();
-
-        if ($request->hasFile('content')) {
-            $path = $request->file('content')->store('materials', 'public');
-            $material->content = $path;
+        // Apply filters
+        if ($request->has('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
         }
 
-        $material->save();
+        $materials = $query->with(['client', 'user'])->paginate(10);
+        // Fetch all clients for the dropdown
+        $clients = Client::all();
 
-        return redirect()->route('clients.materials.index', $client)
-            ->with('success', 'Document ajouté avec succès.');
+        $this->logAction('read', 'Viewed materials list');
+
+        return view('materials.index', compact('materials'));
     }
 
-    public function show(Client $client, Material $material)
+    public function create()
     {
-        return view('materials.show', compact('client', 'material'));
+        return view('materials.create');
     }
 
-    public function edit(Client $client, Material $material)
+    public function store(Request $request)
     {
-        return view('materials.edit', compact('client', 'material'));
+        $validated = $request->validate([
+            'client_id' => 'required|exists:clients,id',
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:autre,document,image',
+            'content' => 'nullable|string',
+            'content_url' => 'nullable|url',
+            'field_name' => 'nullable|string|max:255',
+        ]);
+
+        $material = Material::create($validated + ['user_id' => Auth::id()]);
+
+        $this->logAction('create', 'Created new material: ' . $material->title);
+
+        return redirect()->route('materials.index')->with('success', 'Material created successfully.');
     }
 
-    public function update(UpdateMaterialRequest $request, Client $client, Material $material)
+    public function show(Material $material)
     {
-        $material->fill($request->validated());
+        $this->logAction('read', 'Viewed material: ' . $material->title);
 
-        if ($request->hasFile('content')) {
-            $path = $request->file('content')->store('materials', 'public');
-            $material->content = $path;
-        }
-
-        $material->save();
-
-        return redirect()->route('clients.materials.index', $client)
-            ->with('success', 'Document mis à jour avec succès.');
+        return view('materials.show', compact('material'));
     }
 
-    public function destroy(Client $client, Material $material)
+    public function edit(Material $material)
     {
+        return view('materials.edit', compact('material'));
+    }
+
+    public function update(Request $request, Material $material)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:autre,document,image',
+            'content' => 'nullable|string',
+            'content_url' => 'nullable|url',
+            'field_name' => 'nullable|string|max:255',
+        ]);
+
+        $material->update($validated);
+
+        $this->logAction('update', 'Updated material: ' . $material->title);
+
+        return redirect()->route('materials.index')->with('success', 'Material updated successfully.');
+    }
+
+    public function destroy(Material $material)
+    {
+        $materialTitle = $material->title;
         $material->delete();
-        return redirect()->route('clients.materials.index', $client)
-            ->with('success', 'Document supprimé avec succès.');
+
+        $this->logAction('delete', 'Deleted material: ' . $materialTitle);
+
+        return redirect()->route('materials.index')->with('success', 'Material deleted successfully.');
+    }
+
+    private function logAction($action, $details)
+    {
+        MaterialHistory::create([
+            // 'material_id' => $material->id ?? null,
+            'material_id' => null, // Set this to the actual material_id when applicable
+            'user_id' => Auth::id(),
+            'action' => $action,
+            'details' => $details,
+        ]);
     }
 }

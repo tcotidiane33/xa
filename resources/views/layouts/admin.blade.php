@@ -18,15 +18,16 @@
     <!-- side nav css file -->
     <link href="{{ asset('web/css/SidebarNav.min.css') }}" media='all' rel='stylesheet' type='text/css' />
 <!-- Dans la section head -->
-<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
  <style>
         .main-content{
             padding: 1rem;
             /* margin-left: 1rem; */
         }
-   
-       
+
+
     </style>
     @stack('styles')
 </head>

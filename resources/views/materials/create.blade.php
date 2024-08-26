@@ -30,7 +30,7 @@
                 <label for="field_name">Champ associé</label>
                 <input type="text" class="form-control" id="field_name" name="field_name">
             </div>
-            <button type="submit" class="btn btn-primary">Ajouter</button>
+            <button type="submit" class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Ajouter</button>
         </form>
     </div>
 </div>

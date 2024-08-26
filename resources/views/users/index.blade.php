@@ -10,8 +10,11 @@
         </div>
         <div class="container">
             <div class="breadcrumb">
-            <h1>Liste des utilisateurs</h1>
+                <h1>Liste des utilisateurs</h1>
             </div>
+            <a href="{{ route('users.create') }}"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Nouveau
+                membre</a>
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -22,19 +25,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($users as $user)
+                    @foreach ($users as $user)
                         <tr>
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
                             <td>
-                                @foreach($user->roles as $role)
+                                @foreach ($user->roles as $role)
                                     {{ $role->name }}<br>
                                 @endforeach
                             </td>
                             <td>
                                 <a href="{{ route('users.show', $user) }}" class="btn btn-info">Voir</a>
                                 <a href="{{ route('users.edit', $user) }}" class="btn btn-primary">Éditer</a>
-                                <form action="{{ route('users.destroy', $user) }}" method="POST" style="display: inline-block;">
+                                <form action="{{ route('users.destroy', $user) }}" method="POST"
+                                    style="display: inline-block;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">Supprimer</button>

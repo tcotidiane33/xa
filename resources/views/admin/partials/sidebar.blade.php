@@ -24,7 +24,7 @@
                     <!-- Add more menu items here -->
                     <li class="{{ request()->routeIs('clients.index') ? 'active' : '' }}">
                         <a href="{{ route('clients.index') }}">
-                            <i class="fa fa-users"></i> <span>{{ __('Client') }}</span>
+                            <i class="fa fa-users"></i> <span>{{ __('Clients') }}</span>
                         </a>
                     </li>
                    
@@ -57,12 +57,12 @@
                     </li>
                     <li class="{{ request()->routeIs('tickets.index') ? 'active' : '' }}">
                         <a href="{{ route('tickets.index') }}">
-                            <i class="fa fa-ticket"></i> <span>{{ __('Ticket') }}</span>
+                            <i class="fa fa-ticket"></i> <span>{{ __('Tickets') }}</span>
                         </a>
                     </li>
                     <li class="{{ request()->routeIs('users.index') ? 'active' : '' }}">
                         <a href="{{ route('users.index') }}">
-                            <i class="fa fa-user"></i> <span>{{ __('Utilisateur') }}</span>
+                            <i class="fa fa-user"></i> <span>{{ __('Utilisateurs') }}</span>
                         </a>
                     </li>
                     <li class="{{ request()->routeIs('admin.roles.index') ? 'active' : '' }}">

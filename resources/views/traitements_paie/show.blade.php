@@ -9,7 +9,7 @@
         <div class="row">
             <div class="container">
                 <h1>Détails du Traitement de Paie</h1>
-                <div class="card">
+                <div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">Client: {{ $traitementPaie->client->name }}</h5>
                         <p><strong>Gestionnaire:</strong> {{ $traitementPaie->gestionnaire->name }}</p>
@@ -44,8 +44,10 @@
                         @endif
                     </div>
                 </div>
-                <a href="{{ route('traitements-paie.edit', $traitementPaie->id) }}" class="btn btn-primary mt-3">Modifier</a>
-                <a href="{{ route('traitements-paie.index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+                    <div class="form-group card m-4">
+                        <a href="{{ route('traitements-paie.edit', $traitementPaie->id) }}" class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Modifier</a>
+                        <a href="{{ route('traitements-paie.index') }}" class="text-white bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Retour à la liste</a>
+                    </div>
             </div>
         </div>
     </div>

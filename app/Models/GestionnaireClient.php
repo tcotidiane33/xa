@@ -20,18 +20,22 @@ class GestionnaireClient extends Model
     {
         return $this->belongsTo(Gestionnaire::class, 'gestionnaire_id');
     }
-    
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
+
     public function responsablePaie()
-{
-    return $this->belongsTo(User::class, 'user_id')
-        ->whereHas('roles', function($query) {
-            $query->where('name', 'responsable');
-        })
-        ->withDefault([
-            'name' => 'Non assigné'
-        ]);
-}
-    
+    {
+        return $this->belongsTo(User::class, 'user_id')
+            ->whereHas('roles', function ($query) {
+                $query->where('name', 'responsable');
+            })
+            ->withDefault([
+                'name' => 'Non assigné'
+            ]);
+    }
+
     public function client()
     {
         return $this->belongsTo(Client::class);
