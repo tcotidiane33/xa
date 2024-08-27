@@ -16,7 +16,9 @@ class TicketController extends Controller
 
     public function index()
     {
-        $tickets = Ticket::with('createur', 'assigneA')->paginate(15);
+        // $tickets = Ticket::with('createur', 'assigneA')->paginate(15);
+        $tickets = Ticket::latest()->paginate(10); // Paginer par 10 éléments par page
+
         return view('tickets.index', compact('tickets'));
     }
   /**

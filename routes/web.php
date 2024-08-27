@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\TicketController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\PeriodePaieController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TraitementPaieController;
 use App\Http\Controllers\ConventionCollectiveController;
 use App\Http\Controllers\Admin\GestionnaireClientController;
@@ -19,6 +21,8 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
+    Route::resource('posts', PostController::class);
+    Route::delete('posts/attachments/{attachment}', [PostController::class, 'removeAttachment'])->name('posts.remove-attachment');
 
     // Profile routes
     Route::post('/profile', [ProfileController::class, 'index'])->name('profile.index');
@@ -62,6 +66,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('tickets', TicketController::class);
     Route::resource('convention-collectives', ConventionCollectiveController::class);
 
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
 });
 
@@ -69,6 +74,7 @@ Route::middleware(['auth'])->group(function () {
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:admin']], function () {
     Route::get('/', [App\Http\Controllers\Admin\HomeController::class, 'index'])->name('index');
     Route::resource('gestionnaire-client', GestionnaireClientController::class);
+    Route::get('/admin/client/{id}/info', [GestionnaireClientController::class, 'getClientInfo'])->name('admin.client.info');
     Route::post('gestionnaire-client/{gestionnaireClient}/transfer', [GestionnaireClientController::class, 'transfer'])->name('gestionnaire-client.transfer');
     // Additional role and permission routes
     Route::resource('roles', RoleController::class)->except(['show']);

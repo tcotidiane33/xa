@@ -1,9 +1,9 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="main-page signup-page">
-    <h2 class="title1">{{ __('Register') }}</h2>
-    <div class="sign-up-row widget-shadow">
+<div class="container mx-auto p-4 pt-6 md:p-6">
+    <h2 class="text-2xl font-bold mb-4">{{ __('Register') }}</h2>
+    <div class="bg-white rounded-lg shadow-md p-4">
         @include('components.validation-form', [
             'action' => route('register'),
             'fields' => [
@@ -44,9 +44,9 @@
             'submit_text' => __('Register')
         ])
 
-        <div class="registration">
+        <div class="text-sm text-gray-500 mb-4">
             {{ __('Already registered?') }}
-            <a class="" href="{{ route('login') }}">
+            <a class="text-blue-600 hover:text-blue-700" href="{{ route('login') }}">
                 {{ __('Login') }}
             </a>
         </div>

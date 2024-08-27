@@ -10,42 +10,37 @@ class GestionnaireClient extends Model
     use HasFactory;
 
     protected $table = 'gestionnaire_client';
-    protected $casts = [
-        'gestionnaires_secondaires' => 'array',
-        'is_principal' => 'boolean',
+
+    protected $fillable = [
+        'client_id',
+        'gestionnaire_id',
+        'is_principal',
+        'gestionnaires_secondaires',
+        'user_id',
+        'notes'
     ];
-    protected $fillable = ['gestionnaire_id', 'client_id', 'is_principal', 'user_id', 'gestionnaires_secondaires', 'notes'];
 
-    public function gestionnaire()
-    {
-        return $this->belongsTo(Gestionnaire::class, 'gestionnaire_id');
-    }
-    public function documents()
-    {
-        return $this->hasMany(Document::class);
-    }
-
-    public function responsablePaie()
-    {
-        return $this->belongsTo(User::class, 'user_id')
-            ->whereHas('roles', function ($query) {
-                $query->where('name', 'responsable');
-            })
-            ->withDefault([
-                'name' => 'Non assigné'
-            ]);
-    }
+    protected $casts = [
+        'is_principal' => 'boolean',
+        'gestionnaires_secondaires' => 'array',
+    ];
 
     public function client()
     {
         return $this->belongsTo(Client::class);
     }
 
-    public function getGestionnairesSecondairesAttribute($value)
+    public function gestionnaire()
     {
-        if (is_string($value)) {
-            return json_decode($value, true);
-        }
-        return $value;
+        return $this->belongsTo(User::class, 'gestionnaire_id');
+    }
+    public function gestionnairesSecondaires()
+{
+    return User::whereIn('id', $this->gestionnaires_secondaires ?: []);
+}
+
+    public function responsablePaie()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

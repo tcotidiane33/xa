@@ -17,7 +17,10 @@
     <!-- side nav css file -->
     <link href="{{ asset('web/css/SidebarNav.min.css') }}" media='all' rel='stylesheet' type='text/css'/>
 
-    @stack('styles')
+     <!-- Flowbite CSS -->
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flowbite@1.5.3/dist/flowbite.min.css" />
+
+     @stack('styles')
 </head>
 <body class="cbp-spmenu-push">
     <div class="main-content">
@@ -69,6 +72,9 @@
 
 
 	<!-- //for index page weekly sales java script -->
+
+    <!-- Flowbite JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@1.5.3/dist/flowbite.min.js"></script>
 
     @stack('scripts')
 </body>

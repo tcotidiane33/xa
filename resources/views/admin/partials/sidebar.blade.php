@@ -1,7 +1,25 @@
-{{-- use App\Http\Controllers\ConventionCollectiveController; --}}
-<div class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-left " id="cbp-spmenu-s1">
+<style>
+    .sidebar-left {
+        height: 100vh;
+        overflow: auto;
+        overflow-y: hidden;
+        /* overflow-anchor: none; */
+
+        /* background: #2c072569; */
+        /* overflow-y: scroll; */
+        /* padding: 2em 1em 0; */
+        /* background-color: #f5f5f5b4; */
+    }
+
+    .sidebar-menu {
+        padding-bottom: 60px;
+        /* Espace en bas pour éviter que le dernier élément ne soit caché */
+    }
+</style>
+
+<div class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-left" id="cbp-spmenu-s1">
     <aside class="sidebar-left">
-        <nav class="navbar navbar-inverse">
+        <nav class="navbar navbar-inverse relative overflow-y-auto">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".collapse"
                     aria-expanded="false">
@@ -21,25 +39,22 @@
                             <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                         </a>
                     </li>
-                    <!-- Add more menu items here -->
                     <li class="{{ request()->routeIs('clients.index') ? 'active' : '' }}">
                         <a href="{{ route('clients.index') }}">
                             <i class="fa fa-users"></i> <span>{{ __('Clients') }}</span>
                         </a>
                     </li>
-                   
-                        <li class="{{ request()->routeIs('materials.index') ? 'active' : '' }}">
-                            <a href="{{ route('materials.index') }}">
-                                <i class="fa fa-file"></i>
-                                <span>{{ __('Tous les Materials') }}</span>
-                            </a>
-                        </li>
-                        <li class="{{ request()->routeIs('convention-collectives.index') ? 'active' : '' }}">
-                            <a href="{{ route('convention-collectives.index') }}">
-                                <i class="fa fa-square"></i>
-                                <span>{{ __('Conventions Collectives') }}</span>
-                            </a>
-                        </li>
+                  
+                    <li class="{{ request()->routeIs('materials.index') ? 'active' : '' }}">
+                        <a href="{{ route('materials.index') }}">
+                            <i class="fa fa-file"></i> <span>{{ __('Tous les Materials') }}</span>
+                        </a>
+                    </li>
+                    <li class="{{ request()->routeIs('convention-collectives.index') ? 'active' : '' }}">
+                        <a href="{{ route('convention-collectives.index') }}">
+                            <i class="fa fa-book"></i> <span>{{ __('Conventions Collectives') }}</span>
+                        </a>
+                    </li>
                     <li class="{{ request()->routeIs('admin.gestionnaire-client.index') ? 'active' : '' }}">
                         <a href="{{ route('admin.gestionnaire-client.index') }}">
                             <i class="fa fa-link"></i> <span>{{ __('Relation Client Gestionnaire') }}</span>
@@ -55,11 +70,6 @@
                             <i class="fa fa-money"></i> <span>{{ __('Traitement Paie') }}</span>
                         </a>
                     </li>
-                    <li class="{{ request()->routeIs('tickets.index') ? 'active' : '' }}">
-                        <a href="{{ route('tickets.index') }}">
-                            <i class="fa fa-ticket"></i> <span>{{ __('Tickets') }}</span>
-                        </a>
-                    </li>
                     <li class="{{ request()->routeIs('users.index') ? 'active' : '' }}">
                         <a href="{{ route('users.index') }}">
                             <i class="fa fa-user"></i> <span>{{ __('Utilisateurs') }}</span>
@@ -73,6 +83,21 @@
                     <li class="{{ request()->routeIs('admin.index') ? 'active' : '' }}">
                         <a href="{{ route('admin.index') }}">
                             <i class="fa fa-cogs"></i> <span>{{ __('Panneau de configuration') }}</span>
+                        </a>
+                    </li>
+                    <li class="{{ request()->routeIs('tickets.index') ? 'active' : '' }}">
+                        <a href="{{ route('tickets.index') }}">
+                            <i class="fa fa-ticket"></i> <span>{{ __('Tickets') }}</span>
+                        </a>
+                    </li>
+                    <li class="{{ request()->routeIs('notifications.index') ? 'active' : '' }}">
+                        <a href="{{ route('notifications.index') }}">
+                            <i class="fa fa-bell"></i> <span>{{ __('Notifications') }}</span>
+                        </a>
+                    </li>
+                    <li class="{{ request()->routeIs('posts.index') ? 'active' : '' }}">
+                        <a href="{{ route('posts.index') }}">
+                            <i class="fa fa-pencil"></i> <span>{{ __('Posts') }}</span>
                         </a>
                     </li>
                 </ul>

@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;  
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Client extends Model
@@ -44,54 +44,61 @@ class Client extends Model
         return $query->where('status', $value);
     }
 
-    public function responsablePaie(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'responsable_paie_id');
-    }
-
-    // public function gestionnairePrincipal(): BelongsTo
-    // {
-    //     return $this->belongsTo(User::class, 'gestionnaire_principal_id');
-    // }
-
-
-    // public function gestionnaires()
-    // {
-    //     return $this->belongsToMany(Gestionnaire::class, 'gestionnaire_client')
-    //         ->withPivot('is_principal', 'gestionnaires_secondaires');
-    // }
     public function gestionnaires()
     {
         return $this->belongsToMany(User::class, 'gestionnaire_client', 'client_id', 'gestionnaire_id')
-                    ->withPivot('is_principal');
+            ->withPivot('is_principal');
     }
 
-    public function gestionnairePrincipal(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'gestionnaire_principal_id');
-    }
+
 
     public function gestionnairesSecondaires()
     {
         return $this->gestionnaires()->wherePivot('is_principal', false);
     }
-    //     public function gestionnaires()
-    // {
-    //     return $this->belongsToMany(User::class, 'gestionnaire_client');
-    // }
+
 
     public function traitementsPaie(): HasMany
     {
         return $this->hasMany(TraitementPaie::class);
     }
-    public function conventionCollective()
-    {
-        return $this->belongsTo(ConventionCollective::class);
-    }
+
 
     public function materials()
     {
         return $this->hasMany(Material::class);
+    }
+    public function transferGestionnaire($oldGestionnaireId, $newGestionnaireId)
+    {
+        $this->gestionnaireClients()->where('gestionnaire_id', $oldGestionnaireId)->update(['gestionnaire_id' => $newGestionnaireId]);
+
+        if ($this->gestionnaire_principal_id == $oldGestionnaireId) {
+            $this->gestionnaire_principal_id = $newGestionnaireId;
+            $this->save();
+        }
+    }
+    public function allGestionnaires()
+    {
+        $principal = $this->gestionnairePrincipal;
+        $secondaires = $this->gestionnaireClients()->with('gestionnairesSecondaires')->get()->pluck('gestionnairesSecondaires')->flatten();
+
+        return $principal->merge($secondaires)->unique('id');
+    }
+
+    // Dans le modèle Client
+    public function responsablePaie()
+    {
+        return $this->belongsTo(User::class, 'responsable_paie_id');
+    }
+
+    public function gestionnairePrincipal()
+    {
+        return $this->belongsTo(User::class, 'gestionnaire_principal_id');
+    }
+
+    public function conventionCollective()
+    {
+        return $this->belongsTo(ConventionCollective::class);
     }
 
 }

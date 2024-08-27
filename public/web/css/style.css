@@ -91,6 +91,9 @@ span.dashboard_text {
 }
 .header-right {
     float: right;
+    /* width: 50%; */
+    margin-right: 5%;
+	position: relative;
 }
 /* ----menu-icon----*/
 button#showLeftPush {

@@ -6,153 +6,102 @@
         <div class="profile_details_left">
             <!-- notifications of menu start -->
             <ul class="nofitications-dropdown">
+                <!-- Tickets -->
                 <li class="dropdown head-dpdn">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i
-                            class="fa fa-envelope"></i><span class="badge">4</span></a>
-                    <!-- Add dropdown menu items here -->
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-ticket"></i><span class="badge">{{ $tickets->count() }}</span>
+                    </a>
                     <ul class="dropdown-menu">
                         <li>
                             <div class="notification_header">
-                                <h3>You have 3 new messages</h3>
+                                <h3>Vous avez {{ $tickets->count() }} nouveaux tickets</h3>
                             </div>
                         </li>
-                        <li><a href="#">
-                                <div class="user_img"><img src="images/1.jpg" alt=""></div>
-                                <div class="notification_desc">
-                                    <p>Lorem ipsum dolor amet</p>
-                                    <p><span>1 hour ago</span></p>
-                                </div>
-                                <div class="clearfix"></div>
-                            </a></li>
-                        <li class="odd"><a href="#">
-                                <div class="user_img"><img src="images/4.jpg" alt=""></div>
-                                <div class="notification_desc">
-                                    <p>Lorem ipsum dolor amet </p>
-                                    <p><span>1 hour ago</span></p>
-                                </div>
-                                <div class="clearfix"></div>
-                            </a></li>
-                        <li><a href="#">
-                                <div class="user_img"><img src="images/3.jpg" alt=""></div>
-                                <div class="notification_desc">
-                                    <p>Lorem ipsum dolor amet </p>
-                                    <p><span>1 hour ago</span></p>
-                                </div>
-                                <div class="clearfix"></div>
-                            </a></li>
-                        <li><a href="#">
-                                <div class="user_img"><img src="images/2.jpg" alt=""></div>
-                                <div class="notification_desc">
-                                    <p>Lorem ipsum dolor amet </p>
-                                    <p><span>1 hour ago</span></p>
-                                </div>
-                                <div class="clearfix"></div>
-                            </a></li>
+                        @foreach ($tickets->take(4) as $ticket)
+                            <li>
+                                <a href="{{ route('tickets.show', $ticket) }}">
+                                    <div class="user_img">
+                                        @if ($ticket->creator && $ticket->creator->avatar)
+                                            <img src="{{ $ticket->creator->avatar }}" alt="Avatar du créateur">
+                                        @else
+                                            <img src="{{ asset('images/default-avatar.png') }}" alt="Avatar par défaut">
+                                        @endif
+                                    </div>
+                                    <div class="notification_desc">
+                                        <p>{{ Str::limit($ticket->title, 30) }}</p>
+                                        <p><span>{{ $ticket->created_at->diffForHumans() }}</span></p>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </a>
+                            </li>
+                        @endforeach
                         <li>
                             <div class="notification_bottom">
-                                <a href="#">See all messages</a>
+                                <a href="{{ route('tickets.index') }}">Voir tous les tickets</a>
                             </div>
                         </li>
                     </ul>
+                </li>
 
-                </li>
-                <!-- Add more notification items here -->
+                <!-- Notifications -->
                 <li class="dropdown head-dpdn">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i
-                            class="fa fa-bell"></i><span class="badge blue">4</span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-bell"></i><span
+                            class="badge blue">{{ auth()->user()->unreadNotifications->count() }}</span>
+                    </a>
                     <ul class="dropdown-menu">
                         <li>
                             <div class="notification_header">
-                                <h3>You have 3 new notification</h3>
+                                <h3>Vous avez {{ auth()->user()->unreadNotifications->count() }} nouvelles notifications
+                                </h3>
                             </div>
                         </li>
-                        <li><a href="#">
-                                <div class="user_img"><img src="images/4.jpg" alt=""></div>
-                                <div class="notification_desc">
-                                    <p>Lorem ipsum dolor amet</p>
-                                    <p><span>1 hour ago</span></p>
-                                </div>
-                                <div class="clearfix"></div>
-                            </a></li>
-                        <li class="odd"><a href="#">
-                                <div class="user_img"><img src="images/1.jpg" alt=""></div>
-                                <div class="notification_desc">
-                                    <p>Lorem ipsum dolor amet </p>
-                                    <p><span>1 hour ago</span></p>
-                                </div>
-                                <div class="clearfix"></div>
-                            </a></li>
-                        <li><a href="#">
-                                <div class="user_img"><img src="images/3.jpg" alt=""></div>
-                                <div class="notification_desc">
-                                    <p>Lorem ipsum dolor amet </p>
-                                    <p><span>1 hour ago</span></p>
-                                </div>
-                                <div class="clearfix"></div>
-                            </a></li>
-                        <li><a href="#">
-                                <div class="user_img"><img src="images/2.jpg" alt=""></div>
-                                <div class="notification_desc">
-                                    <p>Lorem ipsum dolor amet </p>
-                                    <p><span>1 hour ago</span></p>
-                                </div>
-                                <div class="clearfix"></div>
-                            </a></li>
+                        @foreach (auth()->user()->unreadNotifications->take(4) as $notification)
+                            <li><a href="{{ route('notifications.show', $notification->id) }}">
+                                    <div class="user_img"><img src="{{ asset('images/notification.png') }}"
+                                            alt=""></div>
+                                    <div class="notification_desc">
+                                        <p>{{ Str::limit($notification->data['message'], 30) }}</p>
+                                        <p><span>{{ $notification->created_at->diffForHumans() }}</span></p>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </a></li>
+                        @endforeach
                         <li>
                             <div class="notification_bottom">
-                                <a href="#">See all notifications</a>
+                                <a href="{{ route('notifications.index') }}">Voir toutes les notifications</a>
                             </div>
                         </li>
                     </ul>
                 </li>
+
+                <!-- Posts -->
                 <li class="dropdown head-dpdn">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i
-                            class="fa fa-tasks"></i><span class="badge blue1">8</span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-tasks"></i><span class="badge blue1">{{ $posts->count() }}</span>
+                    </a>
                     <ul class="dropdown-menu">
                         <li>
                             <div class="notification_header">
-                                <h3>You have 8 pending task</h3>
+                                <h3>Il y a {{ $posts->count() }} nouveaux posts</h3>
                             </div>
                         </li>
-                        <li><a href="#">
-                                <div class="task-info">
-                                    <span class="task-desc">Database update</span><span class="percentage">40%</span>
-                                    <div class="clearfix"></div>
-                                </div>
-                                <div class="progress progress-striped active">
-                                    <div class="bar yellow" style="width:40%;"></div>
-                                </div>
-                            </a></li>
-                        <li><a href="#">
-                                <div class="task-info">
-                                    <span class="task-desc">Dashboard done</span><span class="percentage">90%</span>
-                                    <div class="clearfix"></div>
-                                </div>
-                                <div class="progress progress-striped active">
-                                    <div class="bar green" style="width:90%;"></div>
-                                </div>
-                            </a></li>
-                        <li><a href="#">
-                                <div class="task-info">
-                                    <span class="task-desc">Mobile App</span><span class="percentage">33%</span>
-                                    <div class="clearfix"></div>
-                                </div>
-                                <div class="progress progress-striped active">
-                                    <div class="bar red" style="width: 33%;"></div>
-                                </div>
-                            </a></li>
-                        <li><a href="#">
-                                <div class="task-info">
-                                    <span class="task-desc">Issues fixed</span><span class="percentage">80%</span>
-                                    <div class="clearfix"></div>
-                                </div>
-                                <div class="progress progress-striped active">
-                                    <div class="bar  blue" style="width: 80%;"></div>
-                                </div>
-                            </a></li>
+                        @foreach ($posts->take(4) as $post)
+                            <li><a href="{{ route('posts.show', $post) }}">
+                                    <div class="task-info">
+                                        <span class="task-desc">{{ Str::limit($post->title, 20) }}</span>
+                                        <span class="percentage">{{ $post->created_at->diffForHumans() }}</span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="progress progress-striped active">
+                                        <div class="bar {{ ['yellow', 'green', 'red', 'blue'][array_rand(['yellow', 'green', 'red', 'blue'])] }}"
+                                            style="width:100%;"></div>
+                                    </div>
+                                </a></li>
+                        @endforeach
                         <li>
                             <div class="notification_bottom">
-                                <a href="#">See all pending tasks</a>
+                                <a href="{{ route('posts.index') }}">Voir tous les posts</a>
                             </div>
                         </li>
                     </ul>
@@ -160,29 +109,46 @@
             </ul>
             <div class="clearfix"> </div>
         </div>
-        <div class="clearfix"> </div>
-    </div>
-    <div class="header-right">
-        <!-- Add header right content here -->
-
         <!--search-box-->
-        <div class="search-box">
-            <form class="input" id="search-form">
-                <input class="sb-search-input input__field--madoka" placeholder="Search..." type="search" id="input-31" />
-                <label class="input__label" for="input-31">
+        <div class="search-box mt-3 pl-4">
+
+            <form class="input max-w-sm mx-auto" id="search-form">
+                <input type="text" id="search-navbar"
+                    class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Search...">
+                <button type="button" data-collapse-toggle="navbar-search" aria-controls="navbar-search"
+                    aria-expanded="false"
+                    class="md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 me-1">
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                    </svg>
+                    <span class="sr-only">Search</span>
+                </button>
+                {{-- <input class="sb-search-input input__field--madoka" placeholder="Search..." type="search" id="input-31" />
+                <label class="input__label" for="input-31" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     <svg class="graphic" width="100%" height="100%" viewBox="0 0 404 77" preserveAspectRatio="none">
                         <path d="m0,0l404,0l0,77l-404,0l0,-77z" />
                     </svg>
-                </label>
+                </label> --}}
+
             </form>
         </div>
+        <div class="clearfix"> </div>
+    </div>
+    <div class="header-right mt-2">
+        <!-- Add header right content here -->
+
         {{-- end search --}}
         <div class="profile_details">
             <ul>
                 <li class="dropdown profile_details_drop">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                         <div class="profile_img">
-                            <span class="prfil-img"><img src="{{ auth()->user()->avatar ?? 'images/default-avatar.jpg' }}" width="50" height="50" alt=""> </span>
+                            <span class="prfil-img"><img
+                                    src="{{ auth()->user()->avatar ?? 'images/default-avatar.jpg' }}" width="50"
+                                    height="50" alt=""> </span>
                             <div class="user-name">
                                 <p>{{ auth()->user()->name }}</p>
                                 <span>{{ auth()->user()->roles->first()->name ?? 'User' }}</span>
@@ -194,11 +160,13 @@
                     </a>
                     <ul class="dropdown-menu drp-mnu">
                         <li> <a href="{{ route('profile.settings') }}"><i class="fa fa-cog"></i> Settings</a> </li>
-                        <li> <a href="{{ route('profile.update-account') }}"><i class="fa fa-user"></i> My Account</a> </li>
+                        <li> <a href="{{ route('profile.update-account') }}"><i class="fa fa-user"></i> My
+                                Account</a> </li>
                         {{-- <li> <a href="{{ route('profile.update') }}"><i class="fa fa-user"></i> My Account</a> </li> --}}
                         <li> <a href="{{ route('profile.index') }}"><i class="fa fa-suitcase"></i> Profile</a> </li>
                         <li>
-                            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <a href="#"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fa fa-sign-out"></i> Logout
                             </a>
                         </li>

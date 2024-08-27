@@ -1,10 +1,10 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="main-page login-page">
+<div class="main-page login-page flow-container">
     <h2 class="title1">{{ __('Login') }}</h2>
-    <div class="widget-shadow">
-        <div class="login-body">
+    <div class="widget-shadow flow-card">
+        <div class="login-body flow-form">
             @include('components.auth-session-status', ['status' => session('status')])
 
             @include('components.validation-form', [
@@ -38,7 +38,7 @@
 
             <div class="forgot-grid">
                 @if (Route::has('password.request'))
-                    <div class="forgot">
+                    <div class="forgot flow-link">
                         <a href="{{ route('password.request') }}">{{ __('Forgot your password?') }}</a>
                     </div>
                 @endif

@@ -34,14 +34,7 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        Schema::create('gestionnaire_client', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('gestionnaire_id')->constrained();
-            $table->foreignId('client_id')->constrained();
-            $table->boolean('is_principal')->default(false);
-            $table->text('notes')->nullable;
-            $table->timestamps();
-        });
+ 
     }
 
     /**
@@ -51,6 +44,5 @@ return new class extends Migration {
     {
         Schema::dropIfExists('clients');
         Schema::dropIfExists('gestionnaires');
-        Schema::dropIfExists('gestionnaire_client');
     }
 };

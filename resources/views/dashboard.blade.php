@@ -3,112 +3,94 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
-    <div class="main-page">
-        <div class="row">
-            </br></br></br>
-        </div>
-        <div class="row">
-            <div class="col_3 ml-1">
-                <div class="col-md-1">
-                    <span></span>
-                </div>
-                <div class="col-md-3 widget widget1">
-                    <div class="r3_counter_box">
-                        <i class="pull-left fa fa-users icon-rounded"></i>
-                        <div class="stats">
-                            <h5><strong>{{ $totalUsers }}</strong></h5>
-                            <span>Total Utilisateurs</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 widget widget1">
-                    <div class="r3_counter_box">
-                        <i class="pull-left fa fa-building user1 icon-rounded"></i>
-                        <div class="stats">
-                            <h5><strong>{{ $totalClients }}</strong></h5>
-                            <span>Total Clients</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 widget widget1">
-                    <div class="r3_counter_box">
-                        <i class="pull-left fa fa-calendar user2 icon-rounded"></i>
-                        <div class="stats">
-                            <h5><strong>{{ $totalPeriodesPaie }}</strong></h5>
-                            <span>Périodes de paie</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 widget widget1">
-                    <div class="r3_counter_box">
-                        <i class="pull-left fa fa-pie-chart dollar1 icon-rounded"></i>
-                        <div class="stats">
-                            <h5><strong>{{ $successPercentage }}%</strong></h5>
-                            <span>Taux de réussite</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="clearfix"> </div>
-            </div>
-        </div>
-        <div class="row">
-            </br>
+    <div class="container mx-auto p-4 pt-6 md:p-6">
+        <div class="flex justify-center mb-4">
+            <h2 class="text-2xl font-bold">{{ __('Admin Dashboard') }}</h2>
         </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Traitements de paie</h3>
+        <div class="grid grid-cols-4 gap-4 mb-4">
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <div class="flex items-center">
+                    <i class="fa fa-users text-2xl text-gray-500 mr-2"></i>
+                    <div>
+                        <h5 class="text-lg font-bold">{{ $totalUsers }}</h5>
+                        <span class="text-gray-500">Total Utilisateurs</span>
                     </div>
-                    <div class="panel-body">
-                        <div class="col-md-4">
-                            <div class="mini-stat clearfix bg-info p-2">
-                                <span class="mini-stat-icon"><i class="fa fa-clock-o"></i></span>
-                                <div class="mini-stat-info">
-                                    <span>{{ $traitementsPaieEnCours }}</span>
-                                    En cours
-                                </div>
-                            </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <div class="flex items-center">
+                    <i class="fa fa-building text-2xl text-gray-500 mr-2"></i>
+                    <div>
+                        <h5 class="text-lg font-bold">{{ $totalClients }}</h5>
+                        <span class="text-gray-500">Total Clients</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <div class="flex items-center">
+                    <i class="fa fa-calendar text-2xl text-gray-500 mr-2"></i>
+                    <div>
+                        <h5 class="text-lg font-bold">{{ $totalPeriodesPaie }}</h5>
+                        <span class="text-gray-500">Périodes de paie</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <div class="flex items-center">
+                    <i class="fa fa-pie-chart text-2xl text-gray-500 mr-2"></i>
+                    <div>
+                        <h5 class="text-lg font-bold">{{ $successPercentage }}%</h5>
+                        <span class="text-gray-500">Taux de réussite</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+            <div class="flex justify-between mb-4">
+                <h3 class="text-lg font-bold">Traitements de paie</h3>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-info p-4 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fa fa-clock-o text-2xl text-white mr-2"></i>
+                        <div>
+                            <h5 class="text-lg font-bold">{{ $traitementsPaieEnCours }}</h5>
+                            <span class="text-white">En cours</span>
                         </div>
-                        <div class="col-md-4">
-                            <div class="mini-stat clearfix bg-success p-2">
-                                <span class="mini-stat-icon"><i class="fa fa-check-circle-o"></i></span>
-                                <div class="mini-stat-info">
-                                    <span>{{ $traitementsPaieTerminer }}</span>
-                                    Terminés
-                                </div>
-                            </div>
+                    </div>
+                </div>
+                <div class="bg-success p-4 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fa fa-check-circle-o text-2xl text-white mr-2"></i>
+                        <div>
+                            <h5 class="text-lg font-bold">{{ $traitementsPaieTerminer }}</h5>
+                            <span class="text-white">Terminés</span>
                         </div>
-                        <div class="col-md-4">
-                            <div class="mini-stat clearfix bg-danger p-2">
-                                <span class="mini-stat-icon"><i class="fa fa-pause-circle-o"></i></span>
-                                <div class="mini-stat-info">
-                                    <span>{{ $traitementsPaieInterrompu }}</span>
-                                    Interrompus
-                                </div>
-                            </div>
+                    </div>
+                </div>
+                <div class="bg-danger p-4 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fa fa-pause-circle-o text-2xl text-white mr-2"></i>
+                        <div>
+                            <h5 class="text-lg font-bold">{{ $traitementsPaieInterrompu }}</h5>
+                            <span class="text-white">Interrompus</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Derniers clients ajoutés</h3>
-                    </div>
-                    <div class="panel-body">
-                        <ul class="list-group">
-                            @foreach ($latestClients as $client)
-                                <li class="list-group-item  text-white bg-[#3b5998] hover:bg-[#3b5998]/90 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 me-2 mb-2">{{ $client->name }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
+        <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+            <div class="flex justify-between mb-4">
+                <h3 class="text-lg font-bold">Derniers clients ajoutés</h3>
             </div>
+            <ul class="list-group">
+                @foreach ($latestClients as $client)
+                    <li class="list-group-item bg-[#3b5998] hover:bg-[#3b5998]/90 text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center">{{ $client->name }}</li>
+                @endforeach
+            </ul>
         </div>
     </div>
 @endsection
