@@ -26,6 +26,8 @@ class StoreClientRequest extends FormRequest
             'nb_bulletins' => 'required|integer|min:0',
             'maj_fiche_para' => 'nullable|date',
             'convention_collective_id' => 'nullable|exists:convention_collective,id',
+            'is_portfolio' => 'boolean',
+            'parent_client_id' => 'nullable|exists:clients,id',
         ];
     }
 }

@@ -20,7 +20,7 @@ class GestionnaireClientController extends Controller
 {
     public function index(Request $request)
     {
-        $query = GestionnaireClient::with(['client', 'gestionnaire.user', 'responsablePaie']);
+        $query = GestionnaireClient::with(['client', 'gestionnaire', 'responsablePaie']);
 
         if ($request->filled('client_id')) {
             $query->where('client_id', $request->client_id);
@@ -46,6 +46,14 @@ class GestionnaireClientController extends Controller
         $superviseurs = User::role('superviseur')->pluck('name', 'id');
 
         return view('admin.gestionnaire-client.create', compact('clients', 'gestionnaires', 'superviseurs'));
+    }
+    public function edit(GestionnaireClient $gestionnaireClient)
+    {
+        $clients = Client::pluck('name', 'id');
+        $gestionnaires = User::role('gestionnaire')->pluck('name', 'id');
+        $superviseurs = User::role('superviseur')->pluck('name', 'id');
+
+        return view('admin.gestionnaire-client.edit', compact('gestionnaireClient', 'clients', 'gestionnaires', 'superviseurs'));
     }
     public function getClientInfo($id)
     {
@@ -176,15 +184,17 @@ class GestionnaireClientController extends Controller
 
         DB::transaction(function () use ($validated, $gestionnaireClient) {
             $oldGestionnaire = $gestionnaireClient->gestionnaire;
-            $newGestionnaire = Gestionnaire::find($validated['new_gestionnaire_id']);
+            $newGestionnaire = User::findOrFail($validated['new_gestionnaire_id']);
+
+            $gestionnaireClient->update([
+                'gestionnaire_id' => $newGestionnaire->id
+            ]);
 
             if ($gestionnaireClient->is_principal) {
-                $gestionnaireClient->client->gestionnaire_principal_id = $newGestionnaire->id;
-                $gestionnaireClient->client->save();
+                $gestionnaireClient->client->update([
+                    'gestionnaire_principal_id' => $newGestionnaire->id
+                ]);
             }
-
-            $gestionnaireClient->gestionnaire_id = $newGestionnaire->id;
-            $gestionnaireClient->save();
 
             // Envoyer des notifications
             $this->sendNotifications($gestionnaireClient, 'transfert', $oldGestionnaire);
@@ -197,10 +207,10 @@ class GestionnaireClientController extends Controller
     private function sendNotifications(GestionnaireClient $gestionnaireClient, $action, $oldGestionnaire = null)
     {
         $detailsMessage = "Client: " . ($gestionnaireClient->client->name ?? 'N/A') .
-            ", Gestionnaire: " . ($gestionnaireClient->gestionnaire->user->name ?? 'N/A');
+            ", Gestionnaire: " . ($gestionnaireClient->gestionnaire->name ?? 'N/A');
 
         $usersToNotify = [
-            $gestionnaireClient->gestionnaire->user ?? null,
+            $gestionnaireClient->gestionnaire ?? null,
             $gestionnaireClient->client->responsablePaie ?? null,
             $gestionnaireClient->responsablePaie ?? null,
         ];
@@ -212,8 +222,8 @@ class GestionnaireClientController extends Controller
             $usersToNotify[] = $oldGestionnaire->user ?? null;
         }
 
-        foreach ($gestionnaireClient->gestionnairesSecondaires as $secondaryGestionnaire) {
-            $usersToNotify[] = $secondaryGestionnaire ?? null;
+        foreach ($gestionnaireClient->gestionnairesSecondaires() as $secondaryGestionnaire) {
+            $usersToNotify[] = $secondaryGestionnaire;
         }
 
         // Filtrer à nouveau pour enlever les éventuelles valeurs null
@@ -227,7 +237,9 @@ class GestionnaireClientController extends Controller
         \Log::info("Notification envoyée", [
             'action' => $action,
             'details' => $detailsMessage,
-            'users' => $usersToNotify->pluck('id')
+            'users' => array_map(function ($user) {
+                return $user->id;
+            }, $usersToNotify)
         ]);
     }
 }

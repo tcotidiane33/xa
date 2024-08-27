@@ -72,6 +72,19 @@
                             'options' => ['actif' => 'Actif', 'inactif' => 'Inactif'],
                             'required' => true,
                         ],
+                        [
+                            'type' => 'select',
+                            'name' => 'is_portfolio',
+                            'label' => 'Client Portefeuille',
+                            'options' => [0 => 'Non', 1 => 'Oui'],
+                            'required' => true,
+                        ],
+                        [
+                            'type' => 'select',
+                            'name' => 'parent_client_id',
+                            'label' => 'Client Parent (si sous-client)',
+                            'options' => ['' => 'Aucun (client principal)'] + $portfolioClients->pluck('name', 'id')->toArray(),
+                        ],
                     ],
                     'submit_text' => 'Créer',
                 ])

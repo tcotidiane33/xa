@@ -81,7 +81,7 @@
                                 </table>
 
                                 <div class="mt-4">
-                                    {{ $tickets->links() }}
+                                    {{-- {{ $tickets->links() }} --}}
                                     {{-- {{ $tickets->links('pagination::tailwind') }} --}}
                                 </div>
                             </div>

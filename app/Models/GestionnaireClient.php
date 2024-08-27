@@ -34,13 +34,17 @@ class GestionnaireClient extends Model
     {
         return $this->belongsTo(User::class, 'gestionnaire_id');
     }
-    public function gestionnairesSecondaires()
-{
-    return User::whereIn('id', $this->gestionnaires_secondaires ?: []);
-}
+    //     public function gestionnairesSecondaires()
+// {
+//     return User::whereIn('id', $this->gestionnaires_secondaires ?: []);
+// }
 
     public function responsablePaie()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+    public function gestionnairesSecondaires()
+    {
+        return User::whereIn('id', $this->gestionnaires_secondaires ?: [])->get();
     }
 }

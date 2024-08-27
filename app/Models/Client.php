@@ -22,10 +22,25 @@ class Client extends Model
         'nb_bulletins',
         'maj_fiche_para',
         'convention_collective_id', // Ajoutez cette ligne
-        'status'
+        'status',
+        'is_portfolio',
+        'parent_client_id'
     ];
-    protected $dates = ['date_debut_prestation', 'date_estimative_envoi_variables', 'maj_fiche_para'];
+    protected $dates = [
+        'date_debut_prestation',
+        'date_estimative_envoi_variables',
+        'maj_fiche_para',
+        'is_portfolio' => 'boolean',
+    ];
+    public function subClients()
+    {
+        return $this->hasMany(Client::class, 'parent_client_id');
+    }
 
+    public function parentClient()
+    {
+        return $this->belongsTo(Client::class, 'parent_client_id');
+    }
     protected $casts = [
         'date_debut_prestation' => 'datetime',
         'date_estimative_envoi_variables' => 'datetime',

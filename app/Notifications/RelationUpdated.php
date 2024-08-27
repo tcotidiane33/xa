@@ -23,15 +23,15 @@ class RelationUpdated extends Notification
 
     public function via($notifiable)
     {
-        return ['database', 'log']; // Ajoutez 'log' ici
+        return ['database', 'log'];
     }
 
     public function toMail($notifiable)
     {
         return (new MailMessage)
                     ->line('Une action a été effectuée sur une relation Gestionnaire-Client.')
-                    ->line('Action: ' . $this->action)
-                    ->line('Détails: ' . $this->detailsMessage);
+                    ->line('Action : ' . $this->action)
+                    ->line('Détails : ' . $this->detailsMessage);
     }
 
     public function toArray($notifiable)
@@ -44,10 +44,10 @@ class RelationUpdated extends Notification
 
     public function toLog($notifiable)
     {
-        Log::info('Notification RelationUpdated', [
+        return [
             'action' => $this->action,
             'details' => $this->detailsMessage,
             'notifiable' => $notifiable->id
-        ]);
+        ];
     }
 }

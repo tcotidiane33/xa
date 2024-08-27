@@ -2,9 +2,11 @@
 // app/Http/Controllers/UserController.php
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
+use App\Models\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -81,5 +83,80 @@ class UserController extends Controller
     {
         $user->delete();
         return redirect()->route('users.index')->with('success', 'Utilisateur supprimé avec succès.');
+    }
+
+
+    public function manageClients(User $user)
+    {
+        $clients = Client::whereHas('gestionnaires', function($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->paginate(15);
+        
+        return view('users.manage_clients', compact('user', 'clients'));
+    }
+
+    public function attachClient(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'client_id' => 'required|exists:clients,id',
+        ]);
+
+        $user->clients()->syncWithoutDetaching([$validated['client_id']]);
+
+        return redirect()->route('users.manage_clients', $user)
+            ->with('success', 'Client rattaché avec succès.');
+    }
+
+    public function detachClient(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'client_id' => 'required|exists:clients,id',
+        ]);
+
+        $user->clients()->detach($validated['client_id']);
+
+        return redirect()->route('users.manage_clients', $user)
+            ->with('success', 'Client détaché avec succès.');
+    }
+
+    public function transferClients(Request $request, User $fromUser)
+    {
+        $validated = $request->validate([
+            'to_user_id' => 'required|exists:users,id',
+            'client_ids' => 'required|array',
+            'client_ids.*' => 'exists:clients,id',
+        ]);
+
+        $toUser = User::findOrFail($validated['to_user_id']);
+
+        DB::transaction(function () use ($fromUser, $toUser, $validated) {
+            foreach ($validated['client_ids'] as $clientId) {
+                $client = Client::findOrFail($clientId);
+                
+                // Si c'est un client portefeuille, transférer tous ses sous-clients
+                if ($client->is_portfolio) {
+                    $subClients = $client->subClients;
+                    foreach ($subClients as $subClient) {
+                        $this->transferClientBetweenUsers($subClient, $fromUser, $toUser);
+                    }
+                }
+                
+                $this->transferClientBetweenUsers($client, $fromUser, $toUser);
+            }
+        });
+
+        return redirect()->route('users.manage_clients', $fromUser)
+            ->with('success', 'Clients transférés avec succès.');
+    }
+
+    private function transferClientBetweenUsers(Client $client, User $fromUser, User $toUser)
+    {
+        $client->gestionnaires()->detach($fromUser->id);
+        $client->gestionnaires()->attach($toUser->id);
+        
+        if ($client->gestionnaire_principal_id == $fromUser->id) {
+            $client->gestionnaire_principal_id = $toUser->id;
+            $client->save();
+        }
     }
 }

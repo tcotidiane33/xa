@@ -28,14 +28,16 @@ class ClientController extends Controller
     {
         $users = User::all();
         $conventionCollectives = ConventionCollective::all();
-        return view('clients.create', compact('users', 'conventionCollectives'));
+        $portfolioClients = Client::where('is_portfolio', true)->get();
+        return view('clients.create', compact('users', 'conventionCollectives', 'portfolioClients'));
     }
 
     public function edit(Client $client)
     {
         $users = User::all();
         $conventionCollectives = ConventionCollective::all();
-        return view('clients.edit', compact('client', 'users', 'conventionCollectives'));
+        $portfolioClients = Client::where('is_portfolio', true)->where('id', '!=', $client->id)->get();
+        return view('clients.edit', compact('client', 'users', 'conventionCollectives', 'portfolioClients'));
     }
 
     public function store(StoreClientRequest $request)

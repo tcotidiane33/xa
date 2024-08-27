@@ -160,9 +160,9 @@
                     </a>
                     <ul class="dropdown-menu drp-mnu">
                         <li> <a href="{{ route('profile.settings') }}"><i class="fa fa-cog"></i> Settings</a> </li>
-                        <li> <a href="{{ route('profile.update-account') }}"><i class="fa fa-user"></i> My
-                                Account</a> </li>
-                        {{-- <li> <a href="{{ route('profile.update') }}"><i class="fa fa-user"></i> My Account</a> </li> --}}
+                        {{-- <li> <a href="{{ route('profile.update-account') }}"><i class="fa fa-user"></i> My
+                                Account</a> </li> --}}
+                        <li> <a href="{{ route('profile.update') }}"><i class="fa fa-user"></i> My Account</a> </li>
                         <li> <a href="{{ route('profile.index') }}"><i class="fa fa-suitcase"></i> Profile</a> </li>
                         <li>
                             <a href="#"

@@ -56,9 +56,9 @@ class User extends Authenticatable
      * Get the clients & gestionnaire that owns the Echeancier.
      */
     public function isAdmin()
-{
-    return $this->hasRole('admin'); // ou toute autre logique pour déterminer si l'utilisateur est admin
-}
+    {
+        return $this->hasRole('admin'); // ou toute autre logique pour déterminer si l'utilisateur est admin
+    }
     public function roles()
     {
         return $this->belongsToMany(Role::class);
@@ -100,12 +100,12 @@ class User extends Authenticatable
 
     public function clients()
     {
-        return $this->belongsToMany(Client::class, 'gestionnaire_client');
+        return $this->belongsToMany(Client::class, 'gestionnaire_client', 'user_id', 'client_id');
     }
     public function clientsGeres()
     {
         return $this->belongsToMany(Client::class, 'gestionnaire_client', 'gestionnaire_id', 'client_id')
-                    ->withPivot('is_principal');
+            ->withPivot('is_principal');
     }
     public function gestionnaire()
     {
@@ -115,4 +115,5 @@ class User extends Authenticatable
     {
         return $this->hasMany(Material::class);
     }
+
 }

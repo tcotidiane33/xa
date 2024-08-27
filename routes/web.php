@@ -39,6 +39,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Resource routes
     Route::resource('users', UserController::class);
+    Route::get('/users/{user}/manage-clients', [UserController::class, 'manageClients'])->name('users.manage_clients');
+    Route::post('/users/{user}/attach-client', [UserController::class, 'attachClient'])->name('users.attach_client');
+    Route::delete('/users/{user}/detach-client', [UserController::class, 'detachClient'])->name('users.detach_client');
+    Route::post('/users/{user}/transfer-clients', [UserController::class, 'transferClients'])->name('users.transfer_clients');
     Route::resource('clients', ClientController::class);
     Route::resource('clients.materials', MaterialController::class);
     Route::resource('materials', MaterialController::class);

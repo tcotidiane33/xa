@@ -75,10 +75,11 @@
 
                                 <div class="form-group">
                                     <label for="gestionnaires_secondaires">Gestionnaires Secondaires</label>
-                                    <select name="gestionnaires_secondaires[]" id="gestionnaires_secondaires"
-                                        class="form-control select2-multiple" multiple="multiple">
-                                        @foreach ($gestionnaires as $id => $name)
-                                            <option value="{{ $id }}">{{ $name }}</option>
+                                    <select name="gestionnaires_secondaires[]" id="gestionnaires_secondaires" class="form-control" multiple>
+                                        @foreach($gestionnaires as $id => $name)
+                                            <option value="{{ $id }}" {{ in_array($id, old('gestionnaires_secondaires', [])) ? 'selected' : '' }}>
+                                                {{ $name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -100,7 +101,7 @@
                                 </div>
 
                                 <button type="submit"
-                                    class="btn btn-primary">{{ isset($gestionnaireClient) ? 'Mettre à jour' : 'Créer' }}</button>
+                                    class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">{{ isset($gestionnaireClient) ? 'Mettre à jour' : 'Créer' }}</button>
                             </form>
                         </div>
                     </div>
