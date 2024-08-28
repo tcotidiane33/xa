@@ -84,6 +84,16 @@
 
         <div class="bg-white rounded-lg shadow-md p-4 mb-4">
             <div class="flex justify-between mb-4">
+                <h3 class="text-lg font-bold">Documents rattachées aux clients </h3>
+            </div>
+            <button class="{{ request()->routeIs('materials.index') ? 'active' : '' }}">
+                <a href="{{ route('materials.index') }}">
+                    <i class="fa fa-file"></i> <span>{{ __('Tous les Materials') }}</span>
+                </a>
+            </button>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+            <div class="flex justify-between mb-4">
                 <h3 class="text-lg font-bold">Derniers clients ajoutés</h3>
             </div>
             <ul class="list-group">

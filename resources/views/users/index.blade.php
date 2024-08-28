@@ -31,15 +31,16 @@
                                 @endforeach
                             </td>
                             <td class="py-4 px-6">
-                                <a href="{{ route('users.show', $user) }}" class="text-blue-600 hover:text-blue-900">Voir</a>
-                                <a href="{{ route('users.edit', $user) }}" class="text-blue-600 hover:text-blue-900">Éditer</a>
+                                <a href="{{ route('users.show', $user) }}" class="text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Voir</a>
+                                <a href="{{ route('users.edit', $user) }}" class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Éditer</a>
                                 <form action="{{ route('users.destroy', $user) }}" method="POST"
                                     style="display: inline-block;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">Supprimer</button>
+                                    <button type="submit" class="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Supprimer</button>
                                 </form>
                             </td>
+                            
                         </tr>
                     @endforeach
                 </tbody>

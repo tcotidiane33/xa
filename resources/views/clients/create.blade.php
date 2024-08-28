@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="main-content">
+    <div class="container">
         <div class="breadcrumb">
             <h1>Créer un nouveau client</h1>
         </div>

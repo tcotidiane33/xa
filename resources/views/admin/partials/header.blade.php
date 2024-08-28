@@ -107,6 +107,7 @@
                     </ul>
                 </li>
             </ul>
+            
             <div class="clearfix"> </div>
         </div>
         <!--search-box-->
@@ -135,6 +136,7 @@
 
             </form>
         </div>
+
         <div class="clearfix"> </div>
     </div>
     <div class="header-right mt-2">
@@ -164,6 +166,11 @@
                                 Account</a> </li> --}}
                         <li> <a href="{{ route('profile.update') }}"><i class="fa fa-user"></i> My Account</a> </li>
                         <li> <a href="{{ route('profile.index') }}"><i class="fa fa-suitcase"></i> Profile</a> </li>
+                        <li class="{{ request()->routeIs('admin.index') ? 'active' : '' }}">
+                            <a href="{{ route('admin.index') }}">
+                                <i class="fa fa-cogs"></i> <span>{{ __('Panneau de configuration') }}</span>
+                            </a>
+                        </li>
                         <li>
                             <a href="#"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

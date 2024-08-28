@@ -10,10 +10,10 @@
             </div>
 
         </div>
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">Posts</h1>
+        <div class="flex justify-arround  items-center mb-6">
+            <h1 class="text-3xl font-bold ml-3 text-gray-800">Posts</h1>
             <a href="{{ route('posts.create') }}"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                class="bg-blue-500 ml-3 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Nouveau Post
             </a>
         </div>

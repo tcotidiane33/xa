@@ -28,12 +28,13 @@ class MaterialController extends Controller
 
         $this->logAction('read', 'Viewed materials list');
 
-        return view('materials.index', compact('materials'));
+        return view('materials.index', compact('materials', 'clients'));
     }
 
     public function create()
     {
-        return view('materials.create');
+        $clients = Client::all();
+        return view('materials.create', compact('clients'));
     }
 
     public function store(Request $request)
@@ -58,7 +59,9 @@ class MaterialController extends Controller
     {
         $this->logAction('read', 'Viewed material: ' . $material->title);
 
-        return view('materials.show', compact('material'));
+        $client = $material->client; // Récupérer le client associé au matériel
+
+        return view('materials.show', compact('material', 'client'));
     }
 
     public function edit(Material $material)

@@ -44,12 +44,8 @@
                             <i class="fa fa-users"></i> <span>{{ __('Clients') }}</span>
                         </a>
                     </li>
-                  
-                    <li class="{{ request()->routeIs('materials.index') ? 'active' : '' }}">
-                        <a href="{{ route('materials.index') }}">
-                            <i class="fa fa-file"></i> <span>{{ __('Tous les Materials') }}</span>
-                        </a>
-                    </li>
+
+                    
                     <li class="{{ request()->routeIs('convention-collectives.index') ? 'active' : '' }}">
                         <a href="{{ route('convention-collectives.index') }}">
                             <i class="fa fa-book"></i> <span>{{ __('Conventions Collectives') }}</span>
@@ -80,11 +76,7 @@
                             <i class="fa fa-lock"></i> <span>{{ __('Rôles et permissions') }}</span>
                         </a>
                     </li>
-                    <li class="{{ request()->routeIs('admin.index') ? 'active' : '' }}">
-                        <a href="{{ route('admin.index') }}">
-                            <i class="fa fa-cogs"></i> <span>{{ __('Panneau de configuration') }}</span>
-                        </a>
-                    </li>
+                    
                     <li class="{{ request()->routeIs('tickets.index') ? 'active' : '' }}">
                         <a href="{{ route('tickets.index') }}">
                             <i class="fa fa-ticket"></i> <span>{{ __('Tickets') }}</span>
