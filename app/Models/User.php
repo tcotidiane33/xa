@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\DB;
 use Avihs\PostReply\Traits\HasPost;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
@@ -67,6 +68,23 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profile::class);
     }
+    // Dans le modèle User
+    public function clientsGeres()
+    {
+        return $this->belongsToMany(Client::class, 'gestionnaire_client_pivot', 'gestionnaire_id', 'client_id')
+                    ->withPivot('is_principal')
+                    ->withTimestamps();
+    }
+
+    public function clientsPrincipaux()
+    {
+        return $this->clientsGeres()->wherePivot('is_principal', true);
+    }
+
+    public function clientsSecondaires()
+    {
+        return $this->clientsGeres()->wherePivot('is_principal', false);
+    }
 
     public function gestionnaireClients()
     {
@@ -102,11 +120,7 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Client::class, 'gestionnaire_client', 'user_id', 'client_id');
     }
-    public function clientsGeres()
-    {
-        return $this->belongsToMany(Client::class, 'gestionnaire_client', 'gestionnaire_id', 'client_id')
-            ->withPivot('is_principal');
-    }
+
     public function gestionnaire()
     {
         return $this->hasOne(Gestionnaire::class);
@@ -116,15 +130,31 @@ class User extends Authenticatable
         return $this->hasMany(Material::class);
     }
 
-    // public function clientsAsManager()
-    // {
-    //     return $this->hasMany(Client::class, 'gestionnaire_principal_id');
-    // }
+
     public function clientsAsManager()
-{
-    return $this->belongsToMany(Client::class, 'gestionnaire_client', 'gestionnaire_id', 'client_id')
-                ->withPivot('is_principal')
-                ->withTimestamps();
-}
+    {
+        return $this->belongsToMany(Client::class, 'gestionnaire_client', 'gestionnaire_id', 'client_id')
+            ->withPivot('is_principal')
+            ->withTimestamps();
+    }
+
+
+    // Dans le modèle User
+    public function assignClientsEnMasse(array $clientIds, $isPrincipal = false)
+    {
+        DB::transaction(function () use ($clientIds, $isPrincipal) {
+            foreach ($clientIds as $clientId) {
+                $this->clientsGeres()->attach($clientId, ['is_principal' => $isPrincipal]);
+
+                if ($isPrincipal) {
+                    Client::find($clientId)->gestionnaires()
+                        ->where('id', '<>', $this->id)
+                        ->update(['is_principal' => false]);
+                }
+            }
+        });
+    }
+
+    
 
 }

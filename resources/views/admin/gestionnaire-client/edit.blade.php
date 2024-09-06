@@ -38,77 +38,54 @@
                             </h3>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('admin.gestionnaire-client.update', $gestionnaireClient->id) }}"
-                                method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('admin.gestionnaire-client.update', $gestionnaireClient->id) }}" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                                 @csrf
                                 @method('PUT')
-
-                                <div class="form-group">
-                                    <label for="client_id">Client</label>
-                                    <select name="client_id" id="client_id" class="form-control" required>
-                                        @foreach ($clients as $id => $name)
-                                            <option value="{{ $id }}"
-                                                {{ $gestionnaireClient->client_id == $id ? 'selected' : '' }}>
-                                                {{ $name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="gestionnaire_id">Gestionnaire Principal</label>
-                                    <select name="gestionnaire_id" id="gestionnaire_id" class="form-control" required>
-                                        @foreach ($gestionnaires as $id => $name)
-                                            <option value="{{ $id }}"
-                                                {{ $gestionnaireClient->gestionnaire_id == $id ? 'selected' : '' }}>
-                                                {{ $name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="is_principal">
-                                        <input type="checkbox" name="is_principal" id="is_principal" value="1"
-                                            {{ $gestionnaireClient->is_principal ? 'checked' : '' }}>
-                                        Est Principal ?
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="client_id">
+                                        Client
                                     </label>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="gestionnaires_secondaires">Gestionnaires Secondaires</label>
-                                    <div id="gestionnaires-list">
-                                        @foreach ($gestionnaireClient->gestionnairesSecondaires() as $gestionnaire)
-                                            <div class="gestionnaire-item">
-                                                <input type="hidden" name="gestionnaires_secondaires[]"
-                                                    value="{{ $gestionnaire->id }}">
-                                                <span>{{ $gestionnaire->name }}</span>
-                                                <button type="button"
-                                                    class="btn btn-sm btn-danger remove-gestionnaire">Supprimer</button>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                    <select id="gestionnaire-select" class="form-control">
-                                        <option value="">Sélectionnez un gestionnaire</option>
-                                        @foreach ($gestionnaires as $id => $name)
-                                            <option value="{{ $id }}">{{ $name }}</option>
+                                    <select name="client_id" id="client_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                        @foreach($clients as $id => $name)
+                                            <option value="{{ $id }}" {{ $gestionnaireClient->client_id == $id ? 'selected' : '' }}>{{ $name }}</option>
                                         @endforeach
                                     </select>
-                                    <button type="button" id="add-gestionnaire" class="btn btn-primary mt-2">Ajouter
-                                        Gestionnaire</button>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="notes">Notes</label>
-                                    <textarea name="notes" id="notes" class="form-control" rows="3">{{ $gestionnaireClient->notes }}</textarea>
+                        
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="gestionnaire_principal_id">
+                                        Gestionnaire Principal
+                                    </label>
+                                    <select name="gestionnaire_principal_id" id="gestionnaire_principal_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                        @foreach($gestionnaires as $id => $name)
+                                            <option value="{{ $id }}" {{ $gestionnaireClient->gestionnaire_id == $id ? 'selected' : '' }}>{{ $name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="document">Document</label>
-                                    <input type="file" name="document" id="document" class="form-control-file">
+                        
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="gestionnaires_secondaires">
+                                        Gestionnaires Secondaires
+                                    </label>
+                                    <select name="gestionnaires_secondaires[]" id="gestionnaires_secondaires" multiple class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                        @foreach($gestionnaires as $id => $name)
+                                            <option value="{{ $id }}" {{ in_array($id, $gestionnaireClient->gestionnaires_secondaires ?? []) ? 'selected' : '' }}>{{ $name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-
-                                <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                        
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="notes">
+                                        Notes
+                                    </label>
+                                    <textarea name="notes" id="notes" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ $gestionnaireClient->notes }}</textarea>
+                                </div>
+                        
+                                <div class="flex items-center justify-between">
+                                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                                        Mettre à jour la relation
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     </div>

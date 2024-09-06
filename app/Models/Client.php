@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\Filterable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -17,6 +18,8 @@ class Client extends Model
 
     protected $fillable = [
         'name',
+        'email',
+        'phone',
         'responsable_paie_id',
         'gestionnaire_principal_id',
         'date_debut_prestation',
@@ -50,6 +53,36 @@ class Client extends Model
         'maj_fiche_para' => 'datetime',
     ];
 
+    // Dans le modèle Client
+
+    public function gestionnaires()
+    {
+        return $this->belongsToMany(User::class, 'gestionnaire_client_pivot', 'client_id', 'gestionnaire_id')
+                    ->withPivot('is_principal')
+                    ->withTimestamps();
+    }
+
+    public function gestionnairePrincipal()
+    {
+        return $this->belongsToMany(User::class, 'gestionnaire_client_pivot', 'client_id', 'gestionnaire_id')
+                    ->wherePivot('is_principal', true)
+                    ->withTimestamps()
+                    ->take(1);  // Limite le résultat à un seul enregistrement
+    }
+
+    public function gestionnairesSecondaires()
+    {
+        return $this->belongsToMany(User::class, 'gestionnaire_client_pivot', 'client_id', 'gestionnaire_id')
+                    ->wherePivot('is_principal', false)
+                    ->withTimestamps();
+    }
+
+
+    public function gestionnaireSecondaires()
+    {
+        return $this->gestionnaires()->wherePivot('is_principal', false);
+    }
+
     protected function filterSearch($query, $value)
     {
         return $query->where('name', 'like', "%{$value}%")
@@ -62,18 +95,7 @@ class Client extends Model
         return $query->where('status', $value);
     }
 
-    public function gestionnaires()
-    {
-        return $this->belongsToMany(User::class, 'gestionnaire_client', 'client_id', 'gestionnaire_id')
-            ->withPivot('is_principal');
-    }
-
-
-
-    public function gestionnairesSecondaires()
-    {
-        return $this->gestionnaires()->wherePivot('is_principal', false);
-    }
+    // Dans App\Models\Client
 
 
     public function traitementsPaie(): HasMany
@@ -86,21 +108,29 @@ class Client extends Model
     {
         return $this->hasMany(Material::class);
     }
-    public function transferGestionnaire($oldGestionnaireId, $newGestionnaireId)
-    {
-        $this->gestionnaireClients()->where('gestionnaire_id', $oldGestionnaireId)->update(['gestionnaire_id' => $newGestionnaireId]);
 
-        if ($this->gestionnaire_principal_id == $oldGestionnaireId) {
-            $this->gestionnaire_principal_id = $newGestionnaireId;
-            $this->save();
-        }
-    }
     public function allGestionnaires()
     {
         $principal = $this->gestionnairePrincipal;
         $secondaires = $this->gestionnaireClients()->with('gestionnairesSecondaires')->get()->pluck('gestionnairesSecondaires')->flatten();
 
         return $principal->merge($secondaires)->unique('id');
+    }
+    // Dans le modèle Client
+    public function transferGestionnaire($oldGestionnaireId, $newGestionnaireId, $isPrincipal = false)
+    {
+        DB::transaction(function () use ($oldGestionnaireId, $newGestionnaireId, $isPrincipal) {
+            // Retirer l'ancien gestionnaire
+            $this->gestionnaires()->detach($oldGestionnaireId);
+
+            // Ajouter le nouveau gestionnaire
+            $this->gestionnaires()->attach($newGestionnaireId, ['is_principal' => $isPrincipal]);
+
+            // Mettre à jour le gestionnaire principal si nécessaire
+            if ($isPrincipal) {
+                $this->gestionnaires()->where('id', '<>', $newGestionnaireId)->update(['is_principal' => false]);
+            }
+        });
     }
 
     // Dans le modèle Client
@@ -109,10 +139,6 @@ class Client extends Model
         return $this->belongsTo(User::class, 'responsable_paie_id');
     }
 
-    public function gestionnairePrincipal()
-    {
-        return $this->belongsTo(User::class, 'gestionnaire_principal_id');
-    }
 
     public function conventionCollective()
     {
