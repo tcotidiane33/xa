@@ -19,7 +19,13 @@
 
      <!-- Flowbite CSS -->
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flowbite@1.5.3/dist/flowbite.min.css" />
-
+    <style>
+         body{
+            background: url('assets/mp3.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
      @stack('styles')
 </head>
 <body class="cbp-spmenu-push">
@@ -31,12 +37,12 @@
         <!-- //header-ends --> --}}
 
         <!-- main content start-->
-        <main>
+        <main >
             @yield('content')
         </main>
 
         <!--footer-->
-        {{-- @include('admin.partials.footer') --}}
+        @include('admin.partials.footer')
         <!--//footer-->
     </div>
 

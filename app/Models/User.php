@@ -116,4 +116,15 @@ class User extends Authenticatable
         return $this->hasMany(Material::class);
     }
 
+    // public function clientsAsManager()
+    // {
+    //     return $this->hasMany(Client::class, 'gestionnaire_principal_id');
+    // }
+    public function clientsAsManager()
+{
+    return $this->belongsToMany(Client::class, 'gestionnaire_client', 'gestionnaire_id', 'client_id')
+                ->withPivot('is_principal')
+                ->withTimestamps();
+}
+
 }

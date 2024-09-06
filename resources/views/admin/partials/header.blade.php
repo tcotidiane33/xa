@@ -72,7 +72,9 @@
                                 <a href="{{ route('notifications.index') }}">Voir toutes les notifications</a>
                             </div>
                         </li>
+                        
                     </ul>
+
                 </li>
 
                 <!-- Posts -->
@@ -107,11 +109,11 @@
                     </ul>
                 </li>
             </ul>
-            
+
             <div class="clearfix"> </div>
         </div>
         <!--search-box-->
-        <div class="search-box mt-3 pl-4">
+        {{-- <div class="search-box mt-3 pl-4">
 
             <form class="input max-w-sm mx-auto" id="search-form">
                 <input type="text" id="search-navbar"
@@ -127,23 +129,20 @@
                     </svg>
                     <span class="sr-only">Search</span>
                 </button>
-                {{-- <input class="sb-search-input input__field--madoka" placeholder="Search..." type="search" id="input-31" />
-                <label class="input__label" for="input-31" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    <svg class="graphic" width="100%" height="100%" viewBox="0 0 404 77" preserveAspectRatio="none">
-                        <path d="m0,0l404,0l0,77l-404,0l0,-77z" />
-                    </svg>
-                </label> --}}
+                
 
             </form>
-        </div>
+        </div> --}}
 
-        <div class="clearfix"> </div>
+        <div class="clearfix">
+        </div>
     </div>
     <div class="header-right mt-2">
         <!-- Add header right content here -->
 
         {{-- end search --}}
         <div class="profile_details">
+
             <ul>
                 <li class="dropdown profile_details_drop">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -172,6 +171,25 @@
                             </a>
                         </li>
                         <li>
+                            @auth
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Notifications <span
+                                        class="badge badge-light">{{ auth()->user()->unreadNotifications->count() }}</span>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    @foreach (auth()->user()->notifications as $notification)
+                                        <a class="dropdown-item" href="#">
+                                            {{ $notification->data['creator_name'] }} a créé une relation pour
+                                            {{ $notification->data['client_name'] }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endauth
+                        </li>
+                        <li>
                             <a href="#"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fa fa-sign-out"></i> Logout
@@ -181,6 +199,7 @@
                 </li>
             </ul>
         </div>
+
 
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf

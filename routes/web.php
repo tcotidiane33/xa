@@ -79,7 +79,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'r
     Route::get('/', [App\Http\Controllers\Admin\HomeController::class, 'index'])->name('index');
     Route::resource('gestionnaire-client', GestionnaireClientController::class);
     Route::get('/admin/client/{id}/info', [GestionnaireClientController::class, 'getClientInfo'])->name('admin.client.info');
+    Route::get('/admin/gestionnaire-client', [GestionnaireClientController::class, 'index'])->name('admin.gestionnaire-client.index');
     Route::post('gestionnaire-client/{gestionnaireClient}/transfer', [GestionnaireClientController::class, 'transfer'])->name('gestionnaire-client.transfer');
+    Route::post('gestionnaire-client/transfert-masse', [GestionnaireClientController::class, 'transfertMasse'])->name('gestionnaire-client.transfert-masse');
+    // Route::put('gestionnaire-client/{gestionnaireClient}/transfer', [GestionnaireClientController::class, 'transfer'])
+    //  ->name('admin.gestionnaire-client.transfer');
     // Additional role and permission routes
     Route::resource('roles', RoleController::class)->except(['show']);
     Route::get('/permissions/create', [RoleController::class, 'createPermission'])->name('permissions.create');

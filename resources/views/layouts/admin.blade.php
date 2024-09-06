@@ -17,17 +17,24 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flowbite@1.4.7/dist/flowbite.min.css">
     <!-- side nav css file -->
     <link href="{{ asset('web/css/SidebarNav.min.css') }}" media='all' rel='stylesheet' type='text/css' />
-<!-- Dans la section head -->
-<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
- <style>
-        .main-content{
+    <!-- Dans la section head -->
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .main-content {
             padding: 1rem;
             /* margin-left: 1rem; */
         }
-   
-       
+
+        body {
+            background: url('assets/mp2.svg');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     @stack('styles')
 </head>
 
@@ -43,12 +50,56 @@
         <div id="page-wrapper">
             @yield('content')
         </div>
+        <div id="alert-box" class="alert alert-success position-fixed top-0 end-0 m-4" role="alert"
+            style="display: none;">
+            <h4 class="alert-heading">Alerts</h4>
+            <p id="alert-message"></p>
+        </div>
 
+        {{-- @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif --}}
         <!--footer-->
-        @include('admin.partials.footer')
+        <div class="mt-4 pb-0">
+            @include('admin.partials.footer')
+        </div>
         <!--//footer-->
     </div>
+    <script>
+        function showAlert(message, type) {
+            var alertBox = document.getElementById('alert-box');
+            var alertMessage = document.getElementById('alert-message');
 
+            alertMessage.textContent = message;
+            alertBox.classList.remove('alert-success', 'alert-danger');
+            alertBox.classList.add('alert-' + type);
+            alertBox.style.display = 'block';
+
+            setTimeout(function() {
+                alertBox.style.display = 'none';
+            }, 3000); // masquer après 3 secondes
+        }
+
+        // exemple d'utilisation
+        @if (session('success'))
+            <
+            script >
+                showAlert('{{ session('success') }}', 'success');
+    </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            showAlert('{{ session('error') }}', 'danger');
+        </script>
+    @endif
+    </script>
     <!-- js-->
     <script src="{{ asset('web/js/jquery-1.11.1.min.js') }}"></script>
     <script src="{{ asset('web/js/modernizr.custom.js') }}"></script>
@@ -817,8 +868,8 @@
 
     @stack('scripts')
     <!-- Juste avant la fermeture de la balise body -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </body>
 
 </html>

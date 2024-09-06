@@ -15,6 +15,8 @@ class TransferGestionnaireClientRequest extends FormRequest
     {
         return [
             'new_gestionnaire_id' => 'required|exists:gestionnaires,id|different:gestionnaire_id',
+            // 'new_gestionnaire_id' => 'required|exists:users,id',
+
         ];
     }
 }

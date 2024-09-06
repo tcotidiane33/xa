@@ -46,14 +46,19 @@
                         {{ isset($field['autocomplete']) ? 'autocomplete='.$field['autocomplete'] : '' }}
                     >
             @endswitch
+            
 
             @error($field['name'] ?? '')
                 <span class="text-danger">{{ $message }}</span>
             @enderror
         </div>
     @endforeach
+  
+
+    
 
     <div class="flow-form-group">
         <button type="submit" class="flow-btn text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ $submit_text ?? 'Submit' }}</button>
     </div>
+   
 </form>

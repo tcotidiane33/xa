@@ -18,4 +18,5 @@ class Document extends Model
     {
         return $this->belongsTo(GestionnaireClient::class);
     }
+    
 }

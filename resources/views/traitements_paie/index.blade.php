@@ -4,13 +4,13 @@
 
 @section('content')
     <div class="main-content">
-        <div class="main-page">
+        <div class="container mx-auto px-4 py-8"">
             <div class="row">
                 <br>
                 <br>
             </div>
             <div class="row">
-                <div class="container">
+                <div class="container mx-auto px-4 py-8"">
                     <form action="{{ route('traitements-paie.index') }}" method="GET" class="mb-4">
                         <div class="row">
                             <div class="col-md-3">

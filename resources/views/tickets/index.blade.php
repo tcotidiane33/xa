@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="main-content">
-        <div class="main-page">
+        <div class="container mx-auto px-4 py-8"">
             <div class="row">
                 <br>
                 <br>

@@ -1,6 +1,9 @@
 @extends('layouts.admin')
 
-@section('title', isset($gestionnaireClient) ? 'Modifier la relation Gestionnaire-Client' : 'Créer une relation
+@section('title',
+    isset($gestionnaireClient)
+    ? 'Modifier la relation Gestionnaire-Client'
+    : 'Créer une relation
     Gestionnaire-Client')
     @if (session('success'))
         <div class="alert alert-success">
@@ -35,21 +38,19 @@
                             </h3>
                         </div>
                         <div class="card-body">
-                            <form
-                                action="{{ isset($gestionnaireClient) ? route('admin.gestionnaire-client.update', $gestionnaireClient->id) : route('admin.gestionnaire-client.store') }}"
-                                method="POST">
+                            <form action="{{ route('admin.gestionnaire-client.update', $gestionnaireClient->id) }}"
+                                method="POST" enctype="multipart/form-data">
                                 @csrf
-                                @if (isset($gestionnaireClient))
-                                    @method('PUT')
-                                @endif
+                                @method('PUT')
 
                                 <div class="form-group">
                                     <label for="client_id">Client</label>
                                     <select name="client_id" id="client_id" class="form-control" required>
                                         @foreach ($clients as $id => $name)
                                             <option value="{{ $id }}"
-                                                {{ isset($gestionnaireClient) && $gestionnaireClient->client_id == $id ? 'selected' : '' }}>
-                                                {{ $name }}</option>
+                                                {{ $gestionnaireClient->client_id == $id ? 'selected' : '' }}>
+                                                {{ $name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -59,25 +60,7 @@
                                     <select name="gestionnaire_id" id="gestionnaire_id" class="form-control" required>
                                         @foreach ($gestionnaires as $id => $name)
                                             <option value="{{ $id }}"
-                                                {{ isset($gestionnaireClient) && $gestionnaireClient->gestionnaire_id == $id ? 'selected' : '' }}>
-                                                {{ $name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="is_principal">
-                                        <input type="checkbox" name="is_principal" id="is_principal" value="1"
-                                            {{ isset($gestionnaireClient) && $gestionnaireClient->is_principal ? 'checked' : '' }}>
-                                        Est Principal ?
-                                    </label>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="gestionnaires_secondaires">Gestionnaires Secondaires</label>
-                                    <select name="gestionnaires_secondaires[]" id="gestionnaires_secondaires" class="form-control" multiple>
-                                        @foreach($gestionnaires as $id => $name)
-                                            <option value="{{ $id }}" {{ in_array($id, old('gestionnaires_secondaires', [])) ? 'selected' : '' }}>
+                                                {{ $gestionnaireClient->gestionnaire_id == $id ? 'selected' : '' }}>
                                                 {{ $name }}
                                             </option>
                                         @endforeach
@@ -85,23 +68,47 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="user_id">Responsable Paie</label>
-                                    <select name="user_id" id="user_id" class="form-control" required>
-                                        @foreach ($responsables as $id => $name)
-                                            <option value="{{ $id }}"
-                                                {{ isset($gestionnaireClient) && $gestionnaireClient->user_id == $id ? 'selected' : '' }}>
-                                                {{ $name }}</option>
+                                    <label for="is_principal">
+                                        <input type="checkbox" name="is_principal" id="is_principal" value="1"
+                                            {{ $gestionnaireClient->is_principal ? 'checked' : '' }}>
+                                        Est Principal ?
+                                    </label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="gestionnaires_secondaires">Gestionnaires Secondaires</label>
+                                    <div id="gestionnaires-list">
+                                        @foreach ($gestionnaireClient->gestionnairesSecondaires() as $gestionnaire)
+                                            <div class="gestionnaire-item">
+                                                <input type="hidden" name="gestionnaires_secondaires[]"
+                                                    value="{{ $gestionnaire->id }}">
+                                                <span>{{ $gestionnaire->name }}</span>
+                                                <button type="button"
+                                                    class="btn btn-sm btn-danger remove-gestionnaire">Supprimer</button>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <select id="gestionnaire-select" class="form-control">
+                                        <option value="">Sélectionnez un gestionnaire</option>
+                                        @foreach ($gestionnaires as $id => $name)
+                                            <option value="{{ $id }}">{{ $name }}</option>
                                         @endforeach
                                     </select>
+                                    <button type="button" id="add-gestionnaire" class="btn btn-primary mt-2">Ajouter
+                                        Gestionnaire</button>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="notes">Notes</label>
-                                    <textarea name="notes" id="notes" class="form-control" rows="3">{{ isset($gestionnaireClient) ? $gestionnaireClient->notes : '' }}</textarea>
+                                    <textarea name="notes" id="notes" class="form-control" rows="3">{{ $gestionnaireClient->notes }}</textarea>
                                 </div>
 
-                                <button type="submit"
-                                    class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">{{ isset($gestionnaireClient) ? 'Mettre à jour' : 'Créer' }}</button>
+                                <div class="form-group">
+                                    <label for="document">Document</label>
+                                    <input type="file" name="document" id="document" class="form-control-file">
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Mettre à jour</button>
                             </form>
                         </div>
                     </div>
@@ -112,12 +119,72 @@
 @endsection
 
 @push('scripts')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('.select2-multiple').select2({
-                placeholder: "Sélectionnez les gestionnaires secondaires",
-                allowClear: true,
-                width: '100%'
+            // Initialiser Select2 pour une meilleure expérience utilisateur
+            $('#client_id, #gestionnaire_principal_id, #gestionnaire-select, #superviseur_id').select2();
+
+            // Gérer l'affichage des informations du client
+            $('#client_id').change(function() {
+                var clientId = $(this).val();
+                if (clientId) {
+                    $.ajax({
+                        url: '/admin/client/' + clientId + '/info',
+                        type: 'GET',
+                        success: function(data) {
+                            $('#client-name').text(data.name);
+                            $('#client-email').text(data.email);
+                            $('#client-phone').text(data.phone);
+                            $('#client-info').show();
+                        }
+                    });
+                } else {
+                    $('#client-info').hide();
+                }
+            });
+
+            // Gérer l'ajout de gestionnaires supplémentaires
+            $('#add-gestionnaire').click(function() {
+                var selectElement = $('#gestionnaire-select');
+                var selectedId = selectElement.val();
+                var selectedName = selectElement.find('option:selected').text();
+
+                if (selectedId) {
+                    var existingGestionnaire = $('#gestionnaires-list').find(`[data-id="${selectedId}"]`);
+                    if (existingGestionnaire.length === 0) {
+                        $('#gestionnaires-list').append(`
+                    <div class="gestionnaire-item" data-id="${selectedId}">
+                        <input type="hidden" name="gestionnaires_secondaires[]" value="${selectedId}">
+                        <span>${selectedName}</span>
+                        <button type="button" class="btn btn-sm btn-danger remove-gestionnaire ml-2">Supprimer</button>
+                    </div>
+                `);
+                        selectElement.val(null).trigger('change');
+                    } else {
+                        alert('Ce gestionnaire est déjà ajouté.');
+                    }
+                }
+            });
+
+            // Gérer la suppression de gestionnaires supplémentaires
+            $(document).on('click', '.remove-gestionnaire', function() {
+                $(this).closest('.gestionnaire-item').remove();
+            });
+
+            // Validation du formulaire
+            $('#gestionnaireClientForm').submit(function(e) {
+                var gestionnairesPrincipaux = $('#gestionnaire_principal_id').val();
+                var gestionnairesSecondaires = $('input[name="gestionnaires_secondaires[]"]').map(
+            function() {
+                    return $(this).val();
+                }).get();
+
+                if (gestionnairesPrincipaux && gestionnairesSecondaires.includes(gestionnairesPrincipaux)) {
+                    e.preventDefault();
+                    alert('Le gestionnaire principal ne peut pas être aussi un gestionnaire secondaire.');
+                }
             });
         });
     </script>

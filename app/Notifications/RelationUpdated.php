@@ -8,46 +8,43 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
 
-class RelationUpdated extends Notification
+class RelationUpdated extends Notification implements ShouldQueue
 {
     use Queueable;
 
     private $action;
+    public $details;
     private $detailsMessage;
 
-    public function __construct($action, $detailsMessage)
+    public function __construct($action, $detailsMessage, $details)
     {
         $this->action = $action;
+        $this->details = $details;
         $this->detailsMessage = $detailsMessage;
     }
 
     public function via($notifiable)
     {
-        return ['database', 'log'];
+        return ['database', 'mail'];
     }
 
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('Une action a été effectuée sur une relation Gestionnaire-Client.')
-                    ->line('Action : ' . $this->action)
-                    ->line('Détails : ' . $this->detailsMessage);
+            ->subject('Mise à jour de la relation Gestionnaire-Client')
+            ->line("Une action de {$this->action} a été effectuée.")
+            ->line($this->detailsMessage)
+            ->line('Détails : ')
+            ->line(json_encode($this->details))
+            ->line('Merci de prendre note de ce changement.');
     }
 
     public function toArray($notifiable)
     {
         return [
             'action' => $this->action,
-            'details' => $this->detailsMessage,
-        ];
-    }
-
-    public function toLog($notifiable)
-    {
-        return [
-            'action' => $this->action,
-            'details' => $this->detailsMessage,
-            'notifiable' => $notifiable->id
+            'details' => $this->details,
+            'detailsMessage' => $this->detailsMessage,
         ];
     }
 }

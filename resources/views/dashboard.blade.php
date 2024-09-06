@@ -9,7 +9,7 @@
         </div>
 
         <div class="grid grid-cols-4 gap-4 mb-4">
-            <div class="bg-white rounded-lg shadow-md p-4">
+            <div class="bg-white rounded-lg shadow-md p-2 ml-1">
                 <div class="flex items-center">
                     <i class="fa fa-users text-2xl text-gray-500 mr-2"></i>
                     <div>
@@ -18,7 +18,7 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-4">
+            <div class="bg-white rounded-lg shadow-md p-2 ml-1">
                 <div class="flex items-center">
                     <i class="fa fa-building text-2xl text-gray-500 mr-2"></i>
                     <div>
@@ -27,7 +27,7 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-4">
+            <div class="bg-white rounded-lg shadow-md p-2 ml-1">
                 <div class="flex items-center">
                     <i class="fa fa-calendar text-2xl text-gray-500 mr-2"></i>
                     <div>
@@ -36,7 +36,7 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-4">
+            <div class="bg-white rounded-lg shadow-md p-2 ml-1">
                 <div class="flex items-center">
                     <i class="fa fa-pie-chart text-2xl text-gray-500 mr-2"></i>
                     <div>
@@ -46,6 +46,49 @@
                 </div>
             </div>
         </div>
+        
+        {{-- ============================================================ --}}
+
+        <div class="max-w-sm w-full md:w-1/2 p-4">
+            <div class="bg-white rounded-lg shadow p-4">
+                <h3 class="text-lg font-semibold mb-4">Statut des traitements de paie</h3>
+                <canvas id="traitementsPaieChart"></canvas>
+            </div>
+        </div>
+        <div class="max-w-sm w-full md:w-1/2 p-4">
+            <div class="bg-white rounded-lg shadow p-4">
+                <h3 class="text-lg font-semibold mb-4">Évolution du nombre de clients</h3>
+                <canvas id="clientsEvolutionChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="max-w-sm w-full p-4">
+            <div class="bg-white rounded-lg shadow p-4">
+                <h3 class="text-lg font-semibold mb-4">Périodes de paie par mois</h3>
+                <canvas id="periodespaieChart"></canvas>
+            </div>
+        </div>
+        
+        
+        <div class="max-w-sm w-full md:w-1/2 p-4">
+            <div class="bg-white rounded-lg shadow p-4">
+                <h3 class="text-lg font-semibold mb-4">Évolution du nombre de clients</h3>
+                <div class="mb-4">
+                    <label for="startDate" class="block mb-2">Date de début:</label>
+                    <input type="date" id="startDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                </div>
+                <div class="mb-4">
+                    <label for="endDate" class="block mb-2">Date de fin:</label>
+                    <input type="date" id="endDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                </div>
+                <button id="updateChart" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Mettre à jour</button>
+                <canvas id="clientsEvolutionChart"></canvas>
+            </div>
+        </div>
+
+        {{-- =================================================== --}}
+        
+        
 
         <div class="bg-white rounded-lg shadow-md p-4 mb-4">
             <div class="flex justify-between mb-4">
@@ -107,7 +150,131 @@
 
 @push('scripts')
     <script src="{{ asset('web/js/SimpleChart.js') }}"></script>
-    <script>
-        // Add any dashboard-specific JavaScript here
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var ctx = document.getElementById('traitementsPaieChart').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['En cours', 'Terminés', 'Interrompus'],
+                    datasets: [{
+                        data: [{{ $traitementsPaieEnCours }}, {{ $traitementsPaieTerminer }}, {{ $traitementsPaieInterrompu }}],
+                        backgroundColor: ['#3B82F6', '#10B981', '#EF4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        });
+        </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var ctx = document.getElementById('clientsEvolutionChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Nombre de clients',
+                    data: [65, 59, 80, 81, 56, 55],
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
     </script>
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var ctx = document.getElementById('periodespaieChart').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Nombre de périodes de paie',
+                        data: [12, 19, 3, 5, 2, 3],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+        </script>
+        
+        
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var ctx = document.getElementById('clientsEvolutionChart').getContext('2d');
+            var myChart;
+        
+            function updateChart(startDate, endDate) {
+                // Ici, vous devriez faire une requête AJAX pour obtenir les données filtrées
+                // Pour cet exemple, nous utilisons des données statiques
+                var data = [65, 59, 80, 81, 56, 55];
+                var labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        
+                if (myChart) {
+                    myChart.destroy();
+                }
+        
+                myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Nombre de clients',
+                            data: data,
+                            fill: false,
+                            borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        
+            document.getElementById('updateChart').addEventListener('click', function() {
+                var startDate = document.getElementById('startDate').value;
+                var endDate = document.getElementById('endDate').value;
+                updateChart(startDate, endDate);
+            });
+        
+            // Initial chart render
+            updateChart();
+        });
+        </script>
 @endpush

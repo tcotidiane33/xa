@@ -4,14 +4,17 @@ namespace App\Models;
 
 use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Client extends Model
 {
     use Filterable;
     use HasFactory;
+    use Notifiable;
+
     protected $fillable = [
         'name',
         'responsable_paie_id',
@@ -116,4 +119,15 @@ class Client extends Model
         return $this->belongsTo(ConventionCollective::class);
     }
 
+    // Dans le modèle ConventionCollective
+    public function clients()
+    {
+        return $this->hasMany(Client::class);
+    }
+
+    // Dans le modèle User
+    public function clientsAsManager()
+    {
+        return $this->hasMany(Client::class, 'gestionnaire_principal_id');
+    }
 }

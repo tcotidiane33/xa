@@ -19,10 +19,46 @@ class ClientController extends Controller
 
     public function index()
 {
-    $clients = Client::with(['responsablePaie', 'gestionnairePrincipal', 'conventionCollective']) // Load relationship
+    $clients = Client::with(['responsablePaie', 'gestionnairePrincipal', 'conventionCollective'])
         ->filter(request()->only(['search', 'status']))
         ->paginate(15);
-    return view('clients.index', compact('clients'));
+
+    // Données pour le graphique d'évolution du nombre de clients
+    $clientGrowthData = Client::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->pluck('count');
+    $clientGrowthLabels = Client::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->pluck('month');
+
+    // Données pour le graphique des top 5 conventions collectives
+    $topConventions = ConventionCollective::withCount('clients')
+        ->orderByDesc('clients_count')
+        ->take(5)
+        ->get();
+    $topConventionsData = $topConventions->pluck('clients_count');
+    $topConventionsLabels = $topConventions->pluck('name');
+
+    // Données pour le graphique de répartition des clients par gestionnaire principal
+     $clientsByManager = User::whereHas('clientsAsManager')
+     ->withCount('clientsAsManager')
+     ->orderByDesc('clients_as_manager_count')
+     ->take(10)
+     ->get();
+    $clientsByManagerData = $clientsByManager->pluck('clients_as_manager_count');
+    $clientsByManagerLabels = $clientsByManager->pluck('name');
+
+    return view('clients.index', compact(
+        'clients',
+        'clientGrowthData',
+        'clientGrowthLabels',
+        'topConventionsData',
+        'topConventionsLabels',
+        'clientsByManagerData',
+        'clientsByManagerLabels'
+    ));
 }
     public function create()
     {

@@ -24,6 +24,7 @@ class GestionnaireClient extends Model
         'is_principal' => 'boolean',
         'gestionnaires_secondaires' => 'array',
     ];
+  
 
     public function client()
     {
@@ -47,4 +48,9 @@ class GestionnaireClient extends Model
     {
         return User::whereIn('id', $this->gestionnaires_secondaires ?: [])->get();
     }
+
+    public function documents()
+{
+    return $this->hasMany(Document::class);
+}
 }
