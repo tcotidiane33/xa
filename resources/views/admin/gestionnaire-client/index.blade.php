@@ -21,7 +21,43 @@
 @endpush
 @section('content')
     <div class="main-content">
+        <div class="row">
+            <br>
+            <br>
+        </div>
         <div class="container">
+            <h1>Relations Gestionnaire-Client</h1>
+            <a href="{{ route('admin.gestionnaire-client.create') }}" class="btn btn-primary mb-3">Créer une nouvelle relation</a>
+            
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Gestionnaire</th>
+                        <th>Principal</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($relations as $relation)
+                    <tr>
+                        <td>{{ $relation->client->name }}</td>
+                        <td>{{ $relation->gestionnaire->name }}</td>
+                        <td>{{ $relation->is_principal ? 'Oui' : 'Non' }}</td>
+                        <td>
+                            <a href="{{ route('admin.gestionnaire-client.edit', $relation->id) }}" class="btn btn-sm btn-warning">Éditer</a>
+                            <form action="{{ route('admin.gestionnaire-client.destroy', $relation->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr ?')">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        {{-- <div class="container">
             </br></br></br>
         </div>
         <div class="container mx-auto px-4 py-8">
@@ -29,13 +65,11 @@
 
             @include('admin.partials.alerts')
 
-            
-
             <div class="mb-6 flex justify-between items-center">
                 <a href="{{ route('admin.gestionnaire-client.create') }}" class="btn btn-primary">Ajouter une nouvelle
                     relation</a>
                 <button type="button"
-                    class="text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 me-2 mb-2"
+                    class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
                     data-toggle="modal" data-target="#transfertMasseModal">
                     Transfert en masse
                 </button>
@@ -81,23 +115,30 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $client->responsablePaie->name ?? 'Non assigné' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('admin.gestionnaire-client.show', $client->id) }}"
-                                        class="text-blue-600 hover:text-blue-900 mr-2">Voir</a>
-                                    <a href="{{ route('admin.gestionnaire-client.edit', $client->id) }}"
-                                        class="text-indigo-600 hover:text-indigo-900 mr-2">Éditer</a>
-                                    <button type="button" class="text-blue-600 hover:text-blue-900 mr-2"
-                                        data-toggle="modal" data-target="#transferModal{{ $client->id }}">
-                                        Transférer
-                                    </button>
-                                    <form action="{{ route('admin.gestionnaire-client.destroy', $client->id) }}"
-                                        method="POST" class="inline-block">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900"
-                                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette relation ?')">Supprimer</button>
-                                    </form>
+                                    {{ $client->responsablePaie->name ?? 'Non assigné' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap flex-wrap text-sm font-medium">
+                                    <div class="flex justify-center mb-2">
+                                        <a href="{{ route('admin.gestionnaire-client.show', $client->id) }}"
+                                            class="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-1 py-1 text-center me-2">Voir</a>
+                                        <a href="{{ route('admin.gestionnaire-client.edit', $client->id) }}"
+                                            class="ml-1 text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-1 py-1 text-center me-2">Éditer</a>
+                                    </div>
+                                    <div class="flex justify-center">
+                                        <button type="button"
+                                            class="text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-1 py-1 text-center me-2"
+                                            data-toggle="modal" data-target="#transferModal{{ $client->id }}">
+                                            Transférer
+                                        </button>
+                                        <form action="{{ route('admin.gestionnaire-client.destroy', $client->id) }}"
+                                            method="POST" class="inline-block">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="ml-1 text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-1 py-1 text-center me-2"
+                                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette relation ?')">Supprimer</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -117,9 +158,9 @@
 
             @include('admin.gestionnaire-client.partials.transfer_modals')
             @include('admin.gestionnaire-client.partials.mass_transfer_modal')
-        </div>
+        </div> --}}
     </div>
-    @include('admin.gestionnaire-client.partials.dashboard')
+    {{-- @include('admin.gestionnaire-client.partials.dashboard') --}}
 @endsection
 
 @push('styles')
@@ -148,7 +189,7 @@
 @endpush
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOMContentLoaded event fired');
@@ -236,6 +277,5 @@
                 relationsEvolutionOptions);
             relationsEvolutionChart.render();
         });
-    </script>
-
+    </script> --}}
 @endpush

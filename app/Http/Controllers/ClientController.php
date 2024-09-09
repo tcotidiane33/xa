@@ -60,6 +60,23 @@ class ClientController extends Controller
         'clientsByManagerLabels'
     ));
 }
+public function getInfo(Client $client)
+{
+    \Log::info('getInfo appelé pour le client: ' . $client->id);
+
+    return response()->json([
+        'name' => $client->name,
+        'email' => $client->contact_paie,
+        'phone' => $client->contact_comptabilite,
+        // 'responsable_paie' => $client->responsablePaie ? $client->responsablePaie->name : 'Non assigné',
+        // 'gestionnaire_principal' => $client->gestionnairePrincipal ? $client->gestionnairePrincipal->name : 'Non assigné',
+        // 'date_debut_prestation' => $client->date_debut_prestation ? $client->date_debut_prestation->format('d/m/Y') : 'Non spécifiée',
+        // 'date_estimative_envoi_variables' => $client->date_estimative_envoi_variables ? $client->date_estimative_envoi_variables->format('d/m/Y') : 'Non spécifiée',
+        // 'status' => $client->status ?? 'Non spécifié',
+        // 'nb_bulletins' => $client->nb_bulletins ?? 'Non spécifié',
+        // 'convention_collective' => $client->conventionCollective ? $client->conventionCollective->name : 'Non assignée'
+    ]);
+}
     public function create()
     {
         $users = User::all();

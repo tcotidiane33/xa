@@ -30,7 +30,59 @@
         </div>
         <div class="cbp-spmenu-push">
             <div class="main-content">
-                <div class="panel-body widget-shadow">
+                <div class="container">
+                    <h1>Modifier la relation Gestionnaire-Client</h1>
+                    
+                    <form action="{{ route('admin.gestionnaire-client.update', $gestionnaireClient->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="form-group">
+                            <label for="client_id">Client</label>
+                            <select name="client_id" id="client_id" class="form-control" required>
+                                @foreach($clients as $client)
+                                    <option value="{{ $client->id }}" {{ $gestionnaireClient->client_id == $client->id ? 'selected' : '' }}>
+                                        {{ $client->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="gestionnaire_id">Gestionnaire</label>
+                            <select name="gestionnaire_id" id="gestionnaire_id" class="form-control" required>
+                                @foreach($gestionnaires as $gestionnaire)
+                                    <option value="{{ $gestionnaire->id }}" {{ $gestionnaireClient->gestionnaire_id == $gestionnaire->id ? 'selected' : '' }}>
+                                        {{ $gestionnaire->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="is_principal" name="is_principal" value="1" {{ $gestionnaireClient->is_principal ? 'checked' : '' }}>
+                            <label class="form-check-label" for="is_principal">Gestionnaire Principal</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Mettre à jour la relation</button>
+                    </form>
+                
+                    <hr>
+                
+                    <h2>Transférer à un nouveau gestionnaire</h2>
+                    <form action="{{ route('admin.gestionnaire-client.transfer') }}" method="POST">
+                        
+                        @csrf
+                        <input type="hidden" name="client_id" value="{{ $gestionnaireClient->client_id }}">
+                        <input type="hidden" name="old_gestionnaire_id" value="{{ $gestionnaireClient->gestionnaire_id }}">
+                        <div class="form-group">
+                            <label for="new_gestionnaire_id">Nouveau Gestionnaire</label>
+                            <select name="new_gestionnaire_id" id="new_gestionnaire_id" class="form-control" required>
+                                @foreach($gestionnaires as $gestionnaire)
+                                    <option value="{{ $gestionnaire->id }}">{{ $gestionnaire->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-warning mt-3">Transférer</button>
+                    </form>
+                </div>
+                {{-- <div class="panel-body widget-shadow">
                     <div class="row card">
                         <div class="card-header">
                             <h3 class="card-title">
@@ -89,7 +141,7 @@
                             </form>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>

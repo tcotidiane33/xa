@@ -47,49 +47,7 @@
             </div>
         </div>
         
-        {{-- ============================================================ --}}
-
-        <div class="max-w-sm w-full md:w-1/2 p-4">
-            <div class="bg-white rounded-lg shadow p-4">
-                <h3 class="text-lg font-semibold mb-4">Statut des traitements de paie</h3>
-                <canvas id="traitementsPaieChart"></canvas>
-            </div>
-        </div>
-        <div class="max-w-sm w-full md:w-1/2 p-4">
-            <div class="bg-white rounded-lg shadow p-4">
-                <h3 class="text-lg font-semibold mb-4">Évolution du nombre de clients</h3>
-                <canvas id="clientsEvolutionChart"></canvas>
-            </div>
-        </div>
-        
-        <div class="max-w-sm w-full p-4">
-            <div class="bg-white rounded-lg shadow p-4">
-                <h3 class="text-lg font-semibold mb-4">Périodes de paie par mois</h3>
-                <canvas id="periodespaieChart"></canvas>
-            </div>
-        </div>
-        
-        
-        <div class="max-w-sm w-full md:w-1/2 p-4">
-            <div class="bg-white rounded-lg shadow p-4">
-                <h3 class="text-lg font-semibold mb-4">Évolution du nombre de clients</h3>
-                <div class="mb-4">
-                    <label for="startDate" class="block mb-2">Date de début:</label>
-                    <input type="date" id="startDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                </div>
-                <div class="mb-4">
-                    <label for="endDate" class="block mb-2">Date de fin:</label>
-                    <input type="date" id="endDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                </div>
-                <button id="updateChart" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Mettre à jour</button>
-                <canvas id="clientsEvolutionChart"></canvas>
-            </div>
-        </div>
-
-        {{-- =================================================== --}}
-        
-        
-
+      
         <div class="bg-white rounded-lg shadow-md p-4 mb-4">
             <div class="flex justify-between mb-4">
                 <h3 class="text-lg font-bold">Traitements de paie</h3>
@@ -145,6 +103,50 @@
                 @endforeach
             </ul>
         </div>
+
+          {{-- ============================================================ --}}
+
+          <div class="max-w-sm w-full md:w-1/2 p-4">
+            <div class="bg-white rounded-lg shadow p-4">
+                <h3 class="text-lg font-semibold mb-4">Statut des traitements de paie</h3>
+                <canvas id="traitementsPaieChart"></canvas>
+            </div>
+        </div>
+        <div class="max-w-sm w-full md:w-1/2 p-4">
+            <div class="bg-white rounded-lg shadow p-4">
+                <h3 class="text-lg font-semibold mb-4">Évolution du nombre de clients</h3>
+                <canvas id="clientsEvolutionChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="max-w-sm w-full p-4">
+            <div class="bg-white rounded-lg shadow p-4">
+                <h3 class="text-lg font-semibold mb-4">Périodes de paie par mois</h3>
+                <canvas id="periodespaieChart"></canvas>
+            </div>
+        </div>
+        
+        
+        <div class="max-w-sm w-full md:w-1/2 p-4">
+            <div class="bg-white rounded-lg shadow p-4">
+                <h3 class="text-lg font-semibold mb-4">Évolution du nombre de clients</h3>
+                <div class="mb-4">
+                    <label for="startDate" class="block mb-2">Date de début:</label>
+                    <input type="date" id="startDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                </div>
+                <div class="mb-4">
+                    <label for="endDate" class="block mb-2">Date de fin:</label>
+                    <input type="date" id="endDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                </div>
+                <button id="updateChart" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Mettre à jour</button>
+                <canvas id="clientsEvolutionChart"></canvas>
+            </div>
+        </div>
+
+        {{-- =================================================== --}}
+        
+        
+
     </div>
 @endsection
 

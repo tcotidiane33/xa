@@ -9,20 +9,28 @@ class GestionnaireClient extends Model
 {
     use HasFactory;
 
-    protected $table = 'gestionnaire_client';
+    // protected $table = 'gestionnaire_client';
+    protected $table = 'gestionnaire_client_pivot';
+
+
+    // protected $fillable = [
+    //     'client_id',
+    //     'gestionnaire_id',
+    //     'is_principal',
+    //     'gestionnaires_secondaires',
+    //     'user_id',
+    //     'notes'
+    // ];
 
     protected $fillable = [
         'client_id',
         'gestionnaire_id',
         'is_principal',
-        'gestionnaires_secondaires',
-        'user_id',
-        'notes'
     ];
 
     protected $casts = [
         'is_principal' => 'boolean',
-        'gestionnaires_secondaires' => 'array',
+        // 'gestionnaires_secondaires' => 'array',
     ];
   
 
@@ -37,17 +45,17 @@ class GestionnaireClient extends Model
     }
  
 
-    public function responsablePaie()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-    public function gestionnairesSecondaires()
-    {
-        return User::whereIn('id', $this->gestionnaires_secondaires ?: [])->get();
-    }
+//     public function responsablePaie()
+//     {
+//         return $this->belongsTo(User::class, 'user_id');
+//     }
+//     public function gestionnairesSecondaires()
+//     {
+//         return User::whereIn('id', $this->gestionnaires_secondaires ?: [])->get();
+//     }
 
-    public function documents()
-{
-    return $this->hasMany(Document::class);
-}
+//     public function documents()
+// {
+//     return $this->hasMany(Document::class);
+// }
 }
