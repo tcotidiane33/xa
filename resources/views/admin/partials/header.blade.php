@@ -160,7 +160,7 @@
                         </div>
                     </a>
                     <ul class="dropdown-menu drp-mnu">
-                        <li> <a href="{{ route('profile.settings') }}"><i class="fa fa-cog"></i> Settings</a> </li>
+                        <li> <a href="{{ route('admin.settings.index') }}"><i class="fa fa-cog"></i> Settings</a> </li>
                         {{-- <li> <a href="{{ route('profile.update-account') }}"><i class="fa fa-user"></i> My
                                 Account</a> </li> --}}
                         <li> <a href="{{ route('profile.update') }}"><i class="fa fa-user"></i> My Account</a> </li>
@@ -173,11 +173,7 @@
                         <li>
                             @auth
                             <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Notifications <span
-                                        class="badge badge-light">{{ auth()->user()->unreadNotifications->count() }}</span>
-                                </button>
+                                
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     @foreach (auth()->user()->notifications as $notification)
                                         <a class="dropdown-item" href="#">

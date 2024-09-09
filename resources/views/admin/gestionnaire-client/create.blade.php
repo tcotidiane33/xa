@@ -20,7 +20,9 @@
             </div>
         @endif
         <div class="container">
-            <h1>Créer une nouvelle relation Gestionnaire-Client</h1>
+            <div class="breadcrumb">
+                <h1 class="title1">Créer une nouvelle relation Gestionnaire-Client</h1>
+            </div>
             
             <form action="{{ route('admin.gestionnaire-client.store') }}" method="POST">
                 @csrf
@@ -33,18 +35,41 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="gestionnaire_id">Gestionnaire</label>
+                    <label for="gestionnaire_id">Gestionnaire Principal</label>
                     <select name="gestionnaire_id" id="gestionnaire_id" class="form-control" required>
+                        <option value="">Sélectionnez un gestionnaire</option>
                         @foreach($gestionnaires as $gestionnaire)
                             <option value="{{ $gestionnaire->id }}">{{ $gestionnaire->name }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="is_principal" name="is_principal" value="1">
-                    <label class="form-check-label" for="is_principal">Gestionnaire Principal</label>
+
+                <div class="form-group">
+                    <label for="gestionnaires_secondaires">Gestionnaires Secondaires</label>
+                    <select name="gestionnaires_secondaires[]" id="gestionnaires_secondaires" class="form-control" multiple>
+                        @foreach($gestionnaires as $gestionnaire)
+                            <option value="{{ $gestionnaire->id }}">{{ $gestionnaire->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
-                <button type="submit" class="btn btn-primary mt-3">Créer la relation</button>
+    
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea name="notes" id="notes" class="form-control" rows="3"></textarea>
+                </div>
+    
+                <div class="form-group">
+                    <label for="documents">Documents</label>
+                    <input type="file" name="documents[]" id="documents" class="form-control-file" multiple>
+                    <small class="form-text text-muted">Vous pouvez sélectionner plusieurs fichiers.</small>
+                </div>
+    
+                <div class="form-group">
+                    <label for="variables">Fichiers de variables</label>
+                    <input type="file" name="variables[]" id="variables" class="form-control-file" multiple>
+                    <small class="form-text text-muted">Vous pouvez sélectionner plusieurs fichiers.</small>
+                </div>
+                <button type="submit" class="mt-1 text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Créer la relation</button>
             </form>
         </div>
         {{-- <div class="container">
@@ -138,30 +163,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
-            // Gérer l'affichage des informations du client
-            // $('#client_id').change(function() {
-            //     var clientId = $(this).val();
-            //     if (clientId) {
-            //         $.ajax({
-            //             url: '/admin/client/' + clientId + '/info',
-            //             type: 'GET',
-            //             success: function(data) {
-            //                 $('#client-name').text(data.name);
-            //                 $('#client-email').text(data.email);
-            //                 $('#client-phone').text(data.phone);
-            //                 $('#client-info').show();
-            //             },
-            //             error: function(xhr, status, error) {
-            //                 console.error("Erreur AJAX:", status, error);
-            //                 alert('Erreur lors de la récupération des informations du client: ' +
-            //                     error);
-            //                 $('#client-info').hide();
-            //             }
-            //         });
-            //     } else {
-            //         $('#client-info').hide();
-            //     }
-            // });
+           
 
             // Gérer l'ajout de gestionnaires supplémentaires
             $('#add-gestionnaire').click(function() {

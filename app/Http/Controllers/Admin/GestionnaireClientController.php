@@ -66,22 +66,56 @@ class GestionnaireClientController extends Controller
             ->with('success', 'Relation mise à jour avec succès.');
     }
 
-    public function transfer(Request $request)
+    public function transfer(Request $request, GestionnaireClient $gestionnaireClient)
     {
         $validated = $request->validate([
-            'client_id' => 'required|exists:clients,id',
+            'new_gestionnaire_id' => 'required|exists:users,id',
+        ]);
+
+        DB::transaction(function () use ($gestionnaireClient, $validated) {
+            $gestionnaireClient->update(['gestionnaire_id' => $validated['new_gestionnaire_id']]);
+        });
+
+        return redirect()->route('admin.gestionnaire-client.index')->with('success', 'Transfert effectué avec succès.');
+    }
+
+    public function massTransfer(Request $request)
+    {
+        $validated = $request->validate([
+            'client_ids' => 'required|array',
+            'client_ids.*' => 'exists:clients,id',
             'old_gestionnaire_id' => 'required|exists:users,id',
             'new_gestionnaire_id' => 'required|exists:users,id',
         ]);
 
         DB::transaction(function () use ($validated) {
-            GestionnaireClient::where('client_id', $validated['client_id'])
+            GestionnaireClient::whereIn('client_id', $validated['client_ids'])
                 ->where('gestionnaire_id', $validated['old_gestionnaire_id'])
                 ->update(['gestionnaire_id' => $validated['new_gestionnaire_id']]);
         });
 
-        return redirect()->route('admin.gestionnaire-client.index')
-            ->with('success', 'Transfert effectué avec succès.');
+        return redirect()->route('admin.gestionnaire-client.index')->with('success', 'Transfert en masse effectué avec succès.');
+    }
+
+    public function massAssign(Request $request)
+    {
+        $validated = $request->validate([
+            'client_ids' => 'required|array',
+            'client_ids.*' => 'exists:clients,id',
+            'gestionnaire_id' => 'required|exists:users,id',
+            'is_principal' => 'boolean',
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['client_ids'] as $clientId) {
+                GestionnaireClient::updateOrCreate(
+                    ['client_id' => $clientId, 'gestionnaire_id' => $validated['gestionnaire_id']],
+                    ['is_principal' => $validated['is_principal'] ?? false]
+                );
+            }
+        });
+
+        return redirect()->route('admin.gestionnaire-client.index')->with('success', 'Affectation en masse effectuée avec succès.');
     }
 
     public function destroy(GestionnaireClient $gestionnaireClient)

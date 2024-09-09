@@ -11,6 +11,7 @@ use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\PeriodePaieController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\TraitementPaieController;
 use App\Http\Controllers\ConventionCollectiveController;
 use App\Http\Controllers\Admin\GestionnaireClientController;
@@ -29,7 +30,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
+    // Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
+    
+
     Route::post('/profile/update-settings', [ProfileController::class, 'updateSettings'])->name('profile.update-settings');
     Route::post('/profile/update-account', [ProfileController::class, 'updateAccount'])->name('profile.update-account');
     Route::post('/logout', [ProfileController::class, 'logout'])->name('logout');
@@ -79,12 +82,17 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'r
     Route::get('/', [App\Http\Controllers\Admin\HomeController::class, 'index'])->name('index');
 
     Route::resource('gestionnaire-client', GestionnaireClientController::class);
-Route::get('/admin/client/{client}/info', [ClientController::class, 'getInfo'])->name('admin.client.info');
+    Route::get('/admin/client/{client}/info', [ClientController::class, 'getInfo'])->name('admin.client.info');
 
     Route::get('/admin/gestionnaire-client', [GestionnaireClientController::class, 'index'])->name('admin.gestionnaire-client.index');
     Route::get('/gestionnaire-client/{gestionnaireClient}', [GestionnaireClientController::class, 'show'])->name('admin.gestionnaire-client.show');
-     Route::post('gestionnaire-client/transfer', [GestionnaireClientController::class, 'transfer'])->name('admin.gestionnaire-client.transfer');
 
+    Route::post('gestionnaire-client/transfer/{gestionnaireClient}', [GestionnaireClientController::class, 'transfer'])->name('gestionnaire-client.transfer');
+    Route::post('gestionnaire-client/mass-transfer', [GestionnaireClientController::class, 'massTransfer'])->name('gestionnaire-client.mass-transfer');
+    Route::post('gestionnaire-client/mass-assign', [GestionnaireClientController::class, 'massAssign'])->name('gestionnaire-client.mass-assign');
+
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
     // Additional role and permission routes
     Route::resource('roles', RoleController::class)->except(['show']);

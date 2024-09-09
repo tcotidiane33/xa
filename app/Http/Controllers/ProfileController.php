@@ -109,28 +109,28 @@ class ProfileController extends Controller
         return redirect('/');
     }
 
-    public function settings()
-    {
-        $user = Auth::user();
-        $settings = Setting::where('user_id', $user->id)->first();
-        return view('profile.settings', compact('user', 'settings'));
-    }
+    // public function settings()
+    // {
+    //     $user = Auth::user();
+    //     $settings = Setting::where('user_id', $user->id)->first();
+    //     return view('profile.settings', compact('user', 'settings'));
+    // }
 
-    public function updateSettings(Request $request)
-    {
-        $user = Auth::user();
-        $validated = $request->validate([
-            'theme' => 'required|in:light,dark',
-            'notifications' => 'required|boolean',
-            // Ajoutez d'autres champs de configuration ici
-        ]);
+    // public function updateSettings(Request $request)
+    // {
+    //     $user = Auth::user();
+    //     $validated = $request->validate([
+    //         'theme' => 'required|in:light,dark',
+    //         'notifications' => 'required|boolean',
+    //         // Ajoutez d'autres champs de configuration ici
+    //     ]);
 
-        $settings = Setting::updateOrCreate(
-            ['user_id' => $user->id],
-            $validated
-        );
+    //     $settings = Setting::updateOrCreate(
+    //         ['user_id' => $user->id],
+    //         $validated
+    //     );
 
-        return redirect()->route('profile.settings')->with('success', 'Settings updated successfully');
-    }
+    //     return redirect()->route('profile.settings')->with('success', 'Settings updated successfully');
+    // }
 
 }

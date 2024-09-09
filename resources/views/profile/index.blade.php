@@ -21,7 +21,11 @@
                                         <img src="{{ $profile->avatar ? asset('storage/' . $profile->avatar) : asset('default-avatar.png') }}"
                                             alt="Avatar" class="rounded-circle" width="150">
                                     </div>
-
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Notifications <span
+                                            class="badge badge-light">{{ auth()->user()->unreadNotifications->count() }}</span>
+                                    </button>
                                     <h2>{{ $user->name }}</h2>
                                     <p><strong>Email:</strong> {{ $user->email }}</p>
                                     <p><strong>Phone:</strong> {{ $profile->phone ?? 'Not provided' }}</p>
