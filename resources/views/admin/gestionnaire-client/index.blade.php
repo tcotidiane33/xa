@@ -28,7 +28,7 @@
         <div class="container">
             <h1>Relations Gestionnaire-Client</h1>
             <a href="{{ route('admin.gestionnaire-client.create') }}" class="btn btn-primary mb-3">Créer une nouvelle relation</a>
-            <a href="{{ route('admin.gestionnaire-client.edit') }}" class="btn btn-danger mb-3">Affectations et Tranferts</a>
+            {{-- <a href="{{ route('admin.gestionnaire-client.edit') }}" class="btn btn-danger mb-3">Affectations et Tranferts</a> --}}
             
             <table class="table">
                 <thead>
