@@ -42,7 +42,7 @@
         </main>
 
         <!--footer-->
-        @include('admin.partials.footer')
+        @include('components.partials.admin.footer')
         <!--//footer-->
     </div>
 
