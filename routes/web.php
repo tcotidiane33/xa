@@ -49,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/users/{user}/transfer-clients', [UserController::class, 'transferClients'])->name('users.transfer_clients');
     Route::resource('clients', ClientController::class);
     Route::resource('clients.materials', MaterialController::class);
+    Route::get('/clients/{client}/info', [ClientController::class, 'getInfo'])->name('clients.info');
     Route::resource('materials', MaterialController::class);
 
     // Route::resource('periodes-paie', PeriodePaieController::class);
@@ -82,6 +83,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
     // Ajout de la route validateStep
+    Route::get('/clients/{client}/info', [ClientController::class, 'getInfo'])->name('clients.info');
     Route::post('/clients/validate-step/{step}', [ClientController::class, 'validateStep'])->name('clients.validateStep');
     Route::post('/clients/store-partial', [ClientController::class, 'storePartial'])->name('clients.storePartial');
     Route::put('/clients/{client}/update-partial/{step}', [ClientController::class, 'updatePartial'])->name('clients.updatePartial');
@@ -89,13 +91,12 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Admin routes
-// Admin routes
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:admin']], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('admin.index'); // Tableau de bord admin
     
     // Autres routes pour l'admin
     Route::resource('gestionnaire-client', GestionnaireClientController::class);
-    Route::get('/client/{client}/info', [ClientController::class, 'getInfo'])->name('admin.client.info');
+    // Route::get('/client/{client}/info', [ClientController::class, 'getInfo'])->name('admin.client.info');
     Route::get('/gestionnaire-client', [GestionnaireClientController::class, 'index'])->name('admin.gestionnaire-client.index');
     Route::get('/gestionnaire-client/{gestionnaireClient}', [GestionnaireClientController::class, 'show'])->name('admin.gestionnaire-client.show');
 

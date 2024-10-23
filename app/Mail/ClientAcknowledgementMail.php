@@ -10,8 +10,8 @@ class ClientAcknowledgementMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $manager;  // Le gestionnaire
-    public $client;   // Le client
+    public $manager;
+    public $client;
 
     public function __construct($manager, $client)
     {

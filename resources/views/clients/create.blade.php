@@ -98,6 +98,20 @@
                                     <input type="email" class="form-control" name="dirigeant_email">
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label for="date_estimative_envoi_variables">Date estimative d'envoi des variables</label>
+                                <input type="date" class="form-control" id="date_estimative_envoi_variables" name="date_estimative_envoi_variables">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="nb_bulletins">Nombre de bulletins</label>
+                                <input type="number" class="form-control" id="nb_bulletins" name="nb_bulletins">
+                            </div>
+                            <div class="form-group">
+                                <label for="maj_fiche_para">Date de mise à jour fiche para</label>
+                                <input type="date" class="form-control" id="maj_fiche_para" name="maj_fiche_para">
+                            </div>
+                           
                         </div>
 
                         <!-- Onglet Contacts -->
@@ -141,6 +155,15 @@
                                     <input type="email" class="form-control" name="contact_compta_email">
                                 </div>
                             </div>
+                            <h4>Binômes Supplémentaires</h4>
+                            <div class="form-group">
+                                <label for="contact_paie">Contact Paie</label>
+                                <input type="text" class="form-control" id="contact_paie" name="contact_paie">
+                            </div>
+                            <div class="form-group">
+                                <label for="contact_comptabilite">Contact Comptabilité</label>
+                                <input type="text" class="form-control" id="contact_comptabilite" name="contact_comptabilite">
+                            </div>
                         </div>
 
                         <!-- Onglet Informations Internes -->
@@ -182,6 +205,28 @@
                                         @endforeach
                                     </select>
                                 </div>
+                            </div>
+
+                            <h4>Convention Collective</h4>
+                            {{-- <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label>Convention Collective *</label>
+                                    <select name="convention_collective_id" class="form-control" required>
+                                        <option value="">Sélectionner une convention collective</option>
+                                        @foreach ($conventionCollectives as $convention)
+                                            <option value="{{ $convention->id }}">{{ $convention->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div> --}}
+                             <div class="form-group">
+                                <label for="convention_collective_id">Convention Collective</label>
+                                <select name="convention_collective_id" id="convention_collective_id" class="form-control">
+                                    <option value="">Sélectionner une convention collective</option>
+                                    @foreach($conventionCollectives as $conventionCollective)
+                                        <option value="{{ $conventionCollective->id }}">{{ $conventionCollective->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
 

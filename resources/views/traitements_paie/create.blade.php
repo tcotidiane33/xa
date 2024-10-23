@@ -27,6 +27,9 @@
                         <li class="nav-item">
                             <a class="nav-link" id="fichiers-tab" data-bs-toggle="tab" href="#fichiers">Fichiers</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="supplementaires-tab" data-bs-toggle="tab" href="#supplementaires">Informations Supplémentaires</a>
+                        </li>
                     </ul>
 
                     <div class="tab-content mt-3">
@@ -42,7 +45,8 @@
                                 </select>
                             </div>
                             <div id="client-info" class="mt-3"></div>
-                            <button type="button" class="btn btn-primary next-step">Suivant</button>
+                            <button type="button" id="validate-client" class="btn btn-primary">Valider les informations du client</button>
+                            <button type="button" class="btn btn-primary next-step" disabled>Suivant</button>
                         </div>
 
                         <!-- Onglet Gestionnaire -->
@@ -138,6 +142,66 @@
                             <button type="button" class="btn btn-secondary prev-step">Précédent</button>
                             <button type="submit" class="btn btn-success">Créer</button>
                         </div>
+
+                        <!-- Onglet Informations Supplémentaires -->
+                        <div class="tab-pane fade" id="supplementaires">
+                            <h4>Informations Supplémentaires</h4>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label>Saisie des variables *</label>
+                                    <input type="checkbox" name="saisie_variables" value="1">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Client formé à la saisie en ligne</label>
+                                    <input type="checkbox" name="client_forme_saisie" value="1">
+                                    <input type="date" name="date_formation_saisie" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label>Date de début de prestation *</label>
+                                    <input type="date" name="date_debut_prestation" class="form-control" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Date de fin de prestation</label>
+                                    <input type="date" name="date_fin_prestation" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Date de signature du contrat *</label>
+                                    <input type="date" name="date_signature_contrat" class="form-control" required>
+                                </div>
+                            </div>
+
+                            <h4>Taux & Adhésions</h4>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label>Taux AT *</label>
+                                    <input type="text" name="taux_at" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Adhésion myDRH *</label>
+                                    <input type="checkbox" name="adhesion_mydrh" value="1">
+                                    <input type="date" name="date_adhesion_mydrh" class="form-control">
+                                </div>
+                            </div>
+
+                            <h4>Cabinet & Portefeuille Cabinet</h4>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label>Est-ce un cabinet ?</label>
+                                    <input type="checkbox" name="is_cabinet" value="1">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Portefeuille Cabinet</label>
+                                    <select name="portfolio_cabinet_id" class="form-control">
+                                        <option value="">Sélectionner un portefeuille cabinet</option>
+                                        @foreach ($clients as $client)
+                                            <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
                 <form id="cancelForm" method="POST" action="{{ route('traitements-paie.cancel') }}">
@@ -151,6 +215,9 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
 $(document).ready(function() {
     // Activer l'onglet en fonction de l'ancre dans l'URL
@@ -161,6 +228,8 @@ $(document).ready(function() {
             tab.click();
         }
     }
+    console.log('onglet actif !');
+    
 
     // Mettre à jour l'URL lorsque l'utilisateur change d'onglet
     const tabs = document.querySelectorAll('#traitementTabs a');
@@ -170,67 +239,9 @@ $(document).ready(function() {
         });
     });
 
+    console.log('user change onglet')
+
     // Navigation entre les étapes
-    $('.next-step').click(function() {
-        const $activeTab = $('.tab-pane.active');
-        const $nextTab = $activeTab.next('.tab-pane');
-        if ($nextTab.length) {
-            $nextTab.addClass('show active');
-            $activeTab.removeClass('show active');
-        }
-    });
-
-    $('.prev-step').click(function() {
-        const $activeTab = $('.tab-pane.active');
-        const $prevTab = $activeTab.prev('.tab-pane');
-        if ($prevTab.length) {
-            $prevTab.addClass('show active');
-            $activeTab.removeClass('show active');
-        }
-    });
-
-    // Désactiver les champs suivants tant que les champs précédents ne sont pas renseignés
-    $('#traitementForm').on('change', 'input, select', function() {
-        const $inputs = $('#traitementForm').find('input, select');
-        let allFilled = true;
-        $inputs.each(function() {
-            if ($(this).val() === '' && $(this).prop('required')) {
-                allFilled = false;
-                return false;
-            }
-        });
-        if (allFilled) {
-            $('.next-step').prop('disabled', false);
-        } else {
-            $('.next-step').prop('disabled', true);
-        }
-    });
-
-    $('#traitementForm').trigger('change');
-
-    // Afficher les informations supplémentaires sur le client
-    $('#client_id').change(function() {
-        const clientId = $(this).val();
-        if (clientId) {
-            $.ajax({
-                url: `/clients/${clientId}`,
-                method: 'GET',
-                success: function(data) {
-                    $('#client-info').html(`
-                        <h4>Informations sur le client</h4>
-                        <p><strong>Nom:</strong> ${data.name}</p>
-                        <p><strong>Email:</strong> ${data.email}</p>
-                        <p><strong>Téléphone:</strong> ${data.phone}</p>
-                        <p><strong>Adresse:</strong> ${data.address}</p>
-                    `);
-                }
-            });
-        } else {
-            $('#client-info').html('');
-        }
-    });
-
-    // Validation partielle des étapes
     $('.next-step').click(function() {
         const $activeTab = $('.tab-pane.active');
         const step = $activeTab.attr('id');
@@ -251,14 +262,57 @@ $(document).ready(function() {
                         $activeTab.removeClass('show active');
                     }
                 } else {
-                    alert('Une erreur est survenue');
+                    alert('Une erreur est survenue : ' + response.message);
                 }
             },
-            error: function() {
-                alert('Une erreur est survenue');
+            error: function(xhr, status, error) {
+                alert('Une erreur est survenue : ' + xhr.responseText);
             }
         });
     });
+
+    // Afficher les informations supplémentaires sur le client
+    $('#client_id').change(function() {
+        const clientId = $(this).val();
+        if (clientId) {
+            $.ajax({
+                url: `/clients/${clientId}/info`,
+                method: 'GET',
+                success: function(data) {
+                    $('#client-info').html(`
+                        <h4>Informations sur le client</h4>
+                        <p><strong>Nom:</strong> ${data.name}</p>
+                        <p><strong>Email:</strong> ${data.email}</p>
+                        <p><strong>Téléphone:</strong> ${data.phone}</p>
+                        <p><strong>Saisie des variables:</strong> ${data.saisie_variables ? 'Oui' : 'Non'}</p>
+                        <p><strong>Client formé à la saisie en ligne:</strong> ${data.client_forme_saisie ? 'Oui' : 'Non'}</p>
+                        <p><strong>Date de formation à la saisie:</strong> ${data.date_formation_saisie}</p>
+                        <p><strong>Date de début de prestation:</strong> ${data.date_debut_prestation}</p>
+                        <p><strong>Date de fin de prestation:</strong> ${data.date_fin_prestation}</p>
+                        <p><strong>Date de signature du contrat:</strong> ${data.date_signature_contrat}</p>
+                        <p><strong>Taux AT:</strong> ${data.taux_at}</p>
+                        <p><strong>Adhésion myDRH:</strong> ${data.adhesion_mydrh ? 'Oui' : 'Non'}</p>
+                        <p><strong>Date d'adhésion myDRH:</strong> ${data.date_adhesion_mydrh}</p>
+                        <p><strong>Est-ce un cabinet:</strong> ${data.is_cabinet ? 'Oui' : 'Non'}</p>
+                        <p><strong>Portefeuille Cabinet:</strong> ${data.portfolio_cabinet_id}</p>
+                    `);
+                    $('#validate-client').prop('disabled', false);
+                },
+                error: function() {
+                    alert('Impossible de charger les informations du client.');
+                }
+            });
+        } else {
+            $('#client-info').html('');
+            $('#validate-client').prop('disabled', true);
+        }
+    });
+
+    // Valider les informations du client
+    $('#validate-client').click(function() {
+        $(this).prop('disabled', true);
+        $('.next-step').prop('disabled', false);
+    });
 });
 </script>
-@endpush
+@endpush    

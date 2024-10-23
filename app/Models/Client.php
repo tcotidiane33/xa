@@ -25,7 +25,16 @@ class Client extends Model
         'gestionnaire_telephone_ld', 'binome_telephone_ld', 'binome_id',
         'saisie_variables', 'client_forme_saisie', 'date_formation_saisie',
         'date_fin_prestation', 'date_signature_contrat', 'taux_at',
-        'adhesion_mydrh', 'date_adhesion_mydrh', 'is_cabinet', 'portfolio_cabinet_id'
+        'adhesion_mydrh', 'date_adhesion_mydrh', 'is_cabinet', 'portfolio_cabinet_id',
+        'responsable_paie_id',
+        'gestionnaire_principal_id',
+        'date_debut_prestation',
+        'date_estimative_envoi_variables',
+        'contact_paie',
+        'contact_comptabilite',
+        'nb_bulletins',
+        'maj_fiche_para',
+        'convention_collective_id',
     ];
 
     // Champs de date

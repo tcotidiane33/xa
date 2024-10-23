@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Client;
 use App\Models\PeriodePaie;
@@ -43,25 +44,26 @@ class TraitementPaieController extends Controller
         return view('traitements_paie.create', compact('clients', 'gestionnaires', 'periodesPaie'));
     }
 
+
     public function storePartial(Request $request)
     {
         $step = $request->input('step');
         $validatedData = $request->validate($this->getValidationRules($step));
-
+    
         DB::beginTransaction();
         try {
             $traitementPaie = $request->session()->get('traitement_paie_id') ? TraitementPaie::find($request->session()->get('traitement_paie_id')) : new TraitementPaie;
-
+    
             $traitementPaie->fill($validatedData);
             $traitementPaie->save();
-
+    
             $request->session()->put('traitement_paie_id', $traitementPaie->id);
-
+    
             DB::commit();
             return response()->json(['success' => true, 'nextStep' => $this->getNextStep($step)]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Une erreur est survenue'], 500);
+            return response()->json(['success' => false, 'message' => 'Une erreur est survenue', 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -92,12 +94,13 @@ class TraitementPaieController extends Controller
                 ];
             case 'details':
                 return [
-                    'nbr_bull' => 'required|integer|min:1',
+                    'nbr_bull' => 'required|integer',
                     'reception_variable' => 'nullable|date',
                     'preparation_bp' => 'nullable|date',
                     'validation_bp_client' => 'nullable|date',
                     'preparation_envoie_dsn' => 'nullable|date',
                     'accuses_dsn' => 'nullable|date',
+                    'teledec_urssaf' => 'nullable|date',
                     'notes' => 'nullable|string',
                 ];
             case 'fichiers':
@@ -123,41 +126,45 @@ class TraitementPaieController extends Controller
 
 
     public function store(TraitementPaieRequest $request)
-{
-    $validatedData = $request->validated();
-    
-    // Gérer les uploads de fichiers
-    $fileFields = [
-        'maj_fiche_para_file', 'reception_variables_file', 'preparation_bp_file',
-        'validation_bp_client_file', 'preparation_envoi_dsn_file', 'accuses_dsn_file'
-    ];
+    {
+        $validatedData = $request->validated();
 
-    foreach ($fileFields as $field) {
-        if ($request->hasFile($field)) {
-            $validatedData[$field] = $request->file($field)->store('traitements_paie');
+        // Gérer les uploads de fichiers
+        $fileFields = [
+            'maj_fiche_para_file',
+            'reception_variables_file',
+            'preparation_bp_file',
+            'validation_bp_client_file',
+            'preparation_envoi_dsn_file',
+            'accuses_dsn_file'
+        ];
+
+        foreach ($fileFields as $field) {
+            if ($request->hasFile($field)) {
+                $validatedData[$field] = $request->file($field)->store('traitements_paie');
+            }
         }
-    }
 
-    // Vérifiez que gestionnaire_id est bien présent
-    if (!isset($validatedData['gestionnaire_id'])) {
-        return back()->withInput()->withErrors(['gestionnaire_id' => 'Le gestionnaire est requis.']);
-    }
-    // Vérifiez que client_id est bien présent
-    if (!isset($validatedData['client_id'])) {
-        return back()->withInput()->withErrors(['client_id' => 'Le client est requis.']);
-    }
-    // Vérifiez que periode_paie_id est bien présent
-    if (!isset($validatedData['periode_paie_id'])) {
-        return back()->withInput()->withErrors(['periode_paie_id' => 'La période de paie est requis.']);
-    }
+        // Vérifiez que gestionnaire_id est bien présent
+        if (!isset($validatedData['gestionnaire_id'])) {
+            return back()->withInput()->withErrors(['gestionnaire_id' => 'Le gestionnaire est requis.']);
+        }
+        // Vérifiez que client_id est bien présent
+        if (!isset($validatedData['client_id'])) {
+            return back()->withInput()->withErrors(['client_id' => 'Le client est requis.']);
+        }
+        // Vérifiez que periode_paie_id est bien présent
+        if (!isset($validatedData['periode_paie_id'])) {
+            return back()->withInput()->withErrors(['periode_paie_id' => 'La période de paie est requis.']);
+        }
 
 
-    // La référence sera automatiquement générée grâce au boot method du modèle
-    $traitementPaie = TraitementPaie::create($validatedData);
+        // La référence sera automatiquement générée grâce au boot method du modèle
+        $traitementPaie = TraitementPaie::create($validatedData);
 
-    return redirect()->route('traitements-paie.index')
-        ->with('success', 'Traitement de paie créé avec succès. Référence : ' . $traitementPaie->reference);
-}
+        return redirect()->route('traitements-paie.index')
+            ->with('success', 'Traitement de paie créé avec succès. Référence : ' . $traitementPaie->reference);
+    }
     public function show(TraitementPaie $traitementPaie)
     {
         return view('traitements_paie.show', compact('traitementPaie'));
@@ -189,8 +196,12 @@ class TraitementPaieController extends Controller
     private function handleFileUploads(Request $request, array &$validatedData)
     {
         $fileFields = [
-            'maj_fiche_para_file', 'reception_variables_file', 'preparation_bp_file',
-            'validation_bp_client_file', 'preparation_envoi_dsn_file', 'accuses_dsn_file'
+            'maj_fiche_para_file',
+            'reception_variables_file',
+            'preparation_bp_file',
+            'validation_bp_client_file',
+            'preparation_envoi_dsn_file',
+            'accuses_dsn_file'
         ];
 
         foreach ($fileFields as $field) {

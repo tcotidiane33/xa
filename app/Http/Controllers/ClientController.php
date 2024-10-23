@@ -65,13 +65,23 @@ class ClientController extends Controller
             'clientsByManagerLabels'
         ));
     }
-
     public function getInfo(Client $client)
     {
         return response()->json([
             'name' => $client->name,
             'email' => $client->contact_paie,
             'phone' => $client->contact_comptabilite,
+            'saisie_variables' => $client->saisie_variables,
+            'client_forme_saisie' => $client->client_forme_saisie,
+            'date_formation_saisie' => $client->date_formation_saisie,
+            'date_debut_prestation' => $client->date_debut_prestation,
+            'date_fin_prestation' => $client->date_fin_prestation,
+            'date_signature_contrat' => $client->date_signature_contrat,
+            'taux_at' => $client->taux_at,
+            'adhesion_mydrh' => $client->adhesion_mydrh,
+            'date_adhesion_mydrh' => $client->date_adhesion_mydrh,
+            'is_cabinet' => $client->is_cabinet,
+            'portfolio_cabinet_id' => $client->portfolio_cabinet_id,
         ]);
     }
 
@@ -95,9 +105,27 @@ class ClientController extends Controller
             $client->gestionnairePrincipal()->associate($validatedData['gestionnaire_principal_id']);
             $client->conventionCollective()->associate($validatedData['convention_collective_id']);
             $client->portfolioCabinet()->associate($validatedData['portfolio_cabinet_id']);
-
-
             $client->save();
+
+            // Envoyer les emails
+            $manager = $client->gestionnairePrincipal;
+            $binome = $client->binome;
+            $responsablePaie = $client->responsablePaie;
+
+            $emails = [
+                $client->contact_paie_email,
+                $client->contact_compta_email,
+                $manager->email,
+                $binome->email,
+                $responsablePaie->email,
+            ];
+
+            Mail::to($client->contact_paie_email)
+                ->cc($emails)
+                ->send(new ClientAcknowledgementMail($manager, $client));
+            Mail::to($client->contact_compta_email)
+                ->cc($emails)
+                ->send(new ClientManagerChangeMail($manager));
 
             DB::commit();
             return redirect()->route('clients.index')->with('success', 'Client créé avec succès.');

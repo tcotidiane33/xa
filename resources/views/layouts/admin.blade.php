@@ -74,44 +74,12 @@
     @stack('styles')
     <style>
         body {
-            background: url('assets/mp6.svg') center/cover fixed;
+            /* background: url('assets/mp.svg') center/cover fixed; */
+            background-color: #cbaace3a;
             overflow-x: hidden;
         }
     </style>
-    <style>
-        .chat-list {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .chat-list-item {
-            padding: 12px;
-            border-bottom: 1px solid #e9ecef;
-            transition: background-color 0.3s;
-        }
-
-        .chat-list-item:hover {
-            background-color: #e9ecef;
-        }
-
-        .chat-list-item:last-child {
-            border-bottom: none;
-        }
-
-        .view-chat-btn {
-            background-color: #007bff;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-
-        .view-chat-btn:hover {
-            background-color: #0056b3;
-        }
-    </style>
+  
 </head>
 
 <body>

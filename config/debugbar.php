@@ -257,6 +257,9 @@ return [
         'cache' => [
             'values' => true, // collect cache values
         ],
+        'highlight' => [
+            'sql' => false,
+        ],
     ],
 
     /*

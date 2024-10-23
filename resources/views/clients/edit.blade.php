@@ -38,6 +38,20 @@
                             <input type="email" class="form-control" name="dirigeant_email" value="{{ $client->dirigeant_email }}">
                         </div>
                     </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="date_estimative_envoi_variables">Date estimative d'envoi des variables</label>
+                            <input type="date" class="form-control" id="date_estimative_envoi_variables" name="date_estimative_envoi_variables" value="{{ $client->date_estimative_envoi_variables }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="nb_bulletins">Nombre de bulletins</label>
+                            <input type="number" class="form-control" id="nb_bulletins" name="nb_bulletins" value="{{ $client->nb_bulletins }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="maj_fiche_para">Date de mise à jour fiche para</label>
+                            <input type="date" class="form-control" id="maj_fiche_para" name="maj_fiche_para" value="{{ $client->maj_fiche_para }}">
+                        </div>
+                    </div>
                     <button type="submit" class="btn btn-primary">Enregistrer</button>
                 </form>
             </div>
@@ -206,9 +220,18 @@
                             </select>
                         </div>
                     </div>
+                    {{-- <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label>Téléphone LD</label>
+                            <input type="tel" class="form-control" name="responsable_telephone_ld" value="{{ $client->responsable_telephone_ld }}">
+                        </div>
+                    </div> --}}
                     <button type="submit" class="btn btn-primary">Enregistrer</button>
                 </form>
             </div>
         </div>
+        <div class="row mb-4">
+            <hr>
+         </div>
     </div>
 @endsection

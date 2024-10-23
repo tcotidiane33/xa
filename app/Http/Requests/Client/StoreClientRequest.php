@@ -58,6 +58,19 @@ class StoreClientRequest extends FormRequest
             'date_adhesion_mydrh' => 'nullable|date',
             'is_cabinet' => 'boolean',
             'portfolio_cabinet_id' => 'nullable|exists:clients,id',
+
+            // 'name' => 'required|string|max:255',
+            'responsable_paie_id' => 'nullable|exists:users,id',
+            'gestionnaire_principal_id' => 'nullable|exists:users,id',
+            'date_debut_prestation' => 'nullable|date',
+            'date_estimative_envoi_variables' => 'nullable|date',
+            'contact_paie' => 'nullable|string|max:255',
+            'contact_comptabilite' => 'nullable|string|max:255',
+            'nb_bulletins' => 'nullable|integer',
+            'maj_fiche_para' => 'nullable|date',
+            'convention_collective_id' => 'nullable|exists:convention_collective,id',
+
+            
         ];
     }
 }
