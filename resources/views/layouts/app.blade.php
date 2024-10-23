@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Sibpilot') }}</title>
+    <title>{{ config('app.name', 'XterAlliance') }}</title>
 
     <!-- Site favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="backoffice/vendors/images/apple-touch-icon.png" />

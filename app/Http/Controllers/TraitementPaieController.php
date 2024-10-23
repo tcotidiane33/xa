@@ -38,9 +38,87 @@ class TraitementPaieController extends Controller
     public function create()
     {
         $clients = Client::all();
-        $gestionnaires = User::role('gestionnaire')->get();
+        $gestionnaires = User::all();
         $periodesPaie = PeriodePaie::all();
         return view('traitements_paie.create', compact('clients', 'gestionnaires', 'periodesPaie'));
+    }
+
+    public function storePartial(Request $request)
+    {
+        $step = $request->input('step');
+        $validatedData = $request->validate($this->getValidationRules($step));
+
+        DB::beginTransaction();
+        try {
+            $traitementPaie = $request->session()->get('traitement_paie_id') ? TraitementPaie::find($request->session()->get('traitement_paie_id')) : new TraitementPaie;
+
+            $traitementPaie->fill($validatedData);
+            $traitementPaie->save();
+
+            $request->session()->put('traitement_paie_id', $traitementPaie->id);
+
+            DB::commit();
+            return response()->json(['success' => true, 'nextStep' => $this->getNextStep($step)]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Une erreur est survenue'], 500);
+        }
+    }
+
+    public function cancel(Request $request)
+    {
+        $traitementPaieId = $request->session()->get('traitement_paie_id');
+        if ($traitementPaieId) {
+            TraitementPaie::find($traitementPaieId)->delete();
+            $request->session()->forget('traitement_paie_id');
+        }
+        return redirect()->route('traitements-paie.create')->with('error', 'Opération annulée.');
+    }
+
+    private function getValidationRules($step)
+    {
+        switch ($step) {
+            case 'client':
+                return [
+                    'client_id' => 'required|exists:clients,id',
+                ];
+            case 'gestionnaire':
+                return [
+                    'gestionnaire_id' => 'required|exists:users,id',
+                ];
+            case 'periode':
+                return [
+                    'periode_paie_id' => 'required|exists:periodes_paie,id',
+                ];
+            case 'details':
+                return [
+                    'nbr_bull' => 'required|integer|min:1',
+                    'reception_variable' => 'nullable|date',
+                    'preparation_bp' => 'nullable|date',
+                    'validation_bp_client' => 'nullable|date',
+                    'preparation_envoie_dsn' => 'nullable|date',
+                    'accuses_dsn' => 'nullable|date',
+                    'notes' => 'nullable|string',
+                ];
+            case 'fichiers':
+                return [
+                    'maj_fiche_para_file' => 'nullable|file',
+                    'reception_variables_file' => 'nullable|file',
+                    'preparation_bp_file' => 'nullable|file',
+                    'validation_bp_client_file' => 'nullable|file',
+                    'preparation_envoi_dsn_file' => 'nullable|file',
+                    'accuses_dsn_file' => 'nullable|file',
+                ];
+            default:
+                return [];
+        }
+    }
+
+    private function getNextStep($currentStep)
+    {
+        $steps = ['client', 'gestionnaire', 'periode', 'details', 'fichiers'];
+        $currentIndex = array_search($currentStep, $steps);
+        return $currentIndex !== false && $currentIndex < count($steps) - 1 ? $steps[$currentIndex + 1] : null;
     }
 
 

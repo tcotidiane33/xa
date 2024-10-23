@@ -17,35 +17,35 @@
                         <span class="micon bi bi-house"></span><span class="mtext">Tableau de bord</span>
                     </a>
                 </li>
-        
+
                 <!-- Clients -->
                 <li>
                     <a href="{{ route('clients.index') }}" class="dropdown-toggle no-arrow">
                         <span class="micon bi bi-people-fill"></span><span class="mtext">Clients</span>
                     </a>
                 </li>
-        
+
                 <!-- Utilisateurs -->
                 <li>
                     <a href="{{ route('users.index') }}" class="dropdown-toggle no-arrow">
                         <span class="micon bi bi-person"></span><span class="mtext">Utilisateurs</span>
                     </a>
                 </li>
-        
+
                 <!-- Tickets -->
                 <li>
                     <a href="{{ route('tickets.index') }}" class="dropdown-toggle no-arrow">
                         <span class="micon bi bi-ticket"></span><span class="mtext">Tickets</span>
                     </a>
                 </li>
-        
+
                 <!-- Matériels -->
                 <li>
                     <a href="{{ route('materials.index') }}" class="dropdown-toggle no-arrow">
                         <span class="micon bi bi-box-seam"></span><span class="mtext">Matériels</span>
                     </a>
                 </li>
-        
+
                 <!-- Périodes de Paie -->
                 <li class="dropdown">
                     <a href="javascript:;" class="dropdown-toggle">
@@ -56,7 +56,7 @@
                         <li><a href="{{ route('periodes-paie.create') }}">Créer une Période</a></li>
                     </ul>
                 </li>
-        
+
                 <!-- Traitement des Paies -->
                 <li class="dropdown">
                     <a href="javascript:;" class="dropdown-toggle">
@@ -67,34 +67,45 @@
                         <li><a href="{{ route('traitements-paie.create') }}">Nouveau Traitement</a></li>
                     </ul>
                 </li>
-        
+
                 <!-- Conventions Collectives -->
                 <li>
                     <a href="{{ route('convention-collectives.index') }}" class="dropdown-toggle no-arrow">
-                        <span class="micon bi bi-file-earmark-text"></span><span class="mtext">Conventions Collectives</span>
+                        <span class="micon bi bi-file-earmark-text"></span><span class="mtext">Conventions <br>
+                            Collectives</span>
                     </a>
                 </li>
-        
+
                 <!-- Notifications -->
                 <li>
                     <a href="{{ route('notifications.index') }}" class="dropdown-toggle no-arrow">
                         <span class="micon bi bi-bell"></span><span class="mtext">Notifications</span>
                     </a>
                 </li>
-        
+                <li>
+                    <a href="{{ route('posts.index') }}" class="dropdown-toggle no-arrow">
+                        <span class="micon bi bi-box"></span><span class="mtext">Posts</span>
+                    </a>
+                </li>
+
+                <!-- Admin - Gestionnaire de clients -->
                 <!-- Admin - Gestionnaire de clients -->
                 <li class="dropdown">
                     <a href="javascript:;" class="dropdown-toggle">
                         <span class="micon bi bi-gear"></span><span class="mtext">Admin</span>
                     </a>
                     <ul class="submenu">
-                        <li><a href="{{ route('admin.index') }}">Panneau Admin</a></li>
-                        <li><a href="{{ route('admin.gestionnaire-client.index') }}">Gestionnaires de Clients</a></li>
-                        {{-- <li><a href="{{ route('settings.index') }}">Paramètres</a></li> --}}
+                        <!-- Lien vers le tableau de bord admin -->
+                        <li><a href="{{ route('admin.admin.index') }}">Panneau Admin</a></li>
+                        <li><a href="{{ route('admin.settings.index') }}">Paramétrage</a></li>
+                        <!-- Lien vers le gestionnaire de clients -->
+                        <li><a href="{{ route('admin.admin.gestionnaire-client.index') }}">Gestionnaires de Clients</a></li>
                     </ul>
                 </li>
+
+
             </ul>
         </div>
-        
+
     </div>
 </div>

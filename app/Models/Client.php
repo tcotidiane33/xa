@@ -12,16 +12,28 @@ class Client extends Model
 {
     use Filterable, HasFactory, Notifiable;
 
+    // Champs remplissables
     protected $fillable = [
         'name', 'email', 'phone', 'responsable_paie_id', 'gestionnaire_principal_id',
         'date_debut_prestation', 'contact_paie', 'contact_comptabilite', 'nb_bulletins',
-        'maj_fiche_para', 'convention_collective_id', 'status', 'is_portfolio', 'parent_client_id'
+        'maj_fiche_para', 'convention_collective_id', 'status', 'is_portfolio', 
+        'parent_client_id', 'type_societe', 'ville', 'dirigeant_nom', 
+        'dirigeant_telephone', 'dirigeant_email', 'contact_paie_nom', 
+        'contact_paie_prenom', 'contact_paie_telephone', 'contact_paie_email',
+        'contact_compta_nom', 'contact_compta_prenom', 'contact_compta_telephone', 
+        'contact_compta_email', 'responsable_telephone_ld', 
+        'gestionnaire_telephone_ld', 'binome_telephone_ld', 'binome_id',
+        'saisie_variables', 'client_forme_saisie', 'date_formation_saisie',
+        'date_fin_prestation', 'date_signature_contrat', 'taux_at',
+        'adhesion_mydrh', 'date_adhesion_mydrh', 'is_cabinet', 'portfolio_cabinet_id'
     ];
 
+    // Champs de date
     protected $dates = [
         'date_debut_prestation', 'date_estimative_envoi_variables', 'maj_fiche_para'
     ];
 
+    // Casts pour les champs spécifiques
     protected $casts = [
         'date_debut_prestation' => 'datetime',
         'date_estimative_envoi_variables' => 'datetime',
@@ -29,6 +41,7 @@ class Client extends Model
         'is_portfolio' => 'boolean',
     ];
 
+    // Relations
     public function responsablePaie()
     {
         return $this->belongsTo(User::class, 'responsable_paie_id');
@@ -37,6 +50,11 @@ class Client extends Model
     public function gestionnairePrincipal()
     {
         return $this->belongsTo(User::class, 'gestionnaire_principal_id');
+    }
+
+    public function binome()
+    {
+        return $this->belongsTo(User::class, 'binome_id');
     }
 
     public function conventionCollective()
@@ -68,6 +86,11 @@ class Client extends Model
         return $this->belongsTo(Client::class, 'parent_client_id');
     }
 
+    public function portfolioCabinet()
+    {
+        return $this->belongsTo(Client::class, 'portfolio_cabinet_id');
+    }
+
     public function traitementsPaie()
     {
         return $this->hasMany(TraitementPaie::class);
@@ -83,6 +106,12 @@ class Client extends Model
         return $this->hasMany(Document::class);
     }
 
+    public function histories()
+    {
+        return $this->hasMany(ClientHistory::class);
+    }
+
+    // Méthode pour transférer un gestionnaire
     public function transferGestionnaire($oldGestionnaireId, $newGestionnaireId, $isPrincipal = false)
     {
         DB::transaction(function () use ($oldGestionnaireId, $newGestionnaireId, $isPrincipal) {
@@ -95,6 +124,7 @@ class Client extends Model
         });
     }
 
+    // Méthodes de filtrage
     protected function filterSearch($query, $value)
     {
         return $query->where('name', 'like', "%{$value}%")
@@ -105,5 +135,15 @@ class Client extends Model
     protected function filterStatus($query, $value)
     {
         return $query->where('status', $value);
+    }
+
+    // Méthode pour enregistrer l'historique de la fiche de paramétrage
+    public function saveMajFicheParaHistory()
+    {
+        if ($this->isDirty('maj_fiche_para')) {
+            $this->histories()->create([
+                'maj_fiche_para' => $this->maj_fiche_para,
+            ]);
+        }
     }
 }

@@ -21,14 +21,14 @@
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flowbite@1.5.3/dist/flowbite.min.css" />
     <style>
          body{
-            background: url('assets/mp3.png');
+            background: url('assets/mp3.png') center/cover;
             background-repeat: no-repeat;
             background-size: cover;
         }
     </style>
      @stack('styles')
 </head>
-<body class="cbp-spmenu-push">
+<body >
     <div class="main-content">
         {{-- @include('admin.partials.sidebar')
 

@@ -10,12 +10,12 @@
             </div>
             <div class="row">
 
-                <div class="creadcrumb mb-3">
+                <div class="creadcrumb mb-3 mr-1">
                     <h1 class="title text-2xl">Materials</h1>
                 </div>
 
                 <a href="{{ route('materials.create') }}"
-                    class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Ajouter
+                    class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-3 py-2.5 text-center me-2 mb-2">Ajouter
                     un document</a>
             </div>
 
@@ -67,14 +67,14 @@
                             <td>{{ $material->client->name }}</td>
                             <td>{{ ucfirst($material->type) }}</td>
                             <td>
-                                <a href="{{ route('materials.show', $material) }}" class="btn btn-sm btn-info">View</a>
-                                <a href="{{ route('materials.edit', $material) }}" class="btn btn-sm btn-warning">Edit</a>
-                                <form action="{{ route('materials.destroy', $material) }}" method="POST" class="d-inline">
+                                <a href="{{ route('materials.show', $material) }}" class="text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">View</a>
+                                <a href="{{ route('materials.edit', $material) }}" class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Edit</a>
+                                {{-- <form action="{{ route('materials.destroy', $material) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger"
                                         onclick="return confirm('Are you sure?')">Delete</button>
-                                </form>
+                                </form> --}}
                             </td>
                         </tr>
                     @endforeach

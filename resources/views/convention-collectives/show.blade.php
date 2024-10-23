@@ -18,7 +18,9 @@
                         <h5 class="card-title text-gray-900 dark:text-white text-3xl font-extrabold mb-2">
                             {{ $conventionCollective->name }}</h5>
                         <p class="card-text text-lg font-normal text-gray-500 dark:text-gray-400 mb-4">
-                            {{ $conventionCollective->description }}</p>
+                            N° IDCC: {{ $conventionCollective->idcc }}</p>
+                        {{-- <p class="card-text text-lg font-normal text-gray-500 dark:text-gray-400 mb-4">
+                            {{ $conventionCollective->description }}</p> --}}
                     </div>
                 </div>
 

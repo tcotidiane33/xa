@@ -1,60 +1,56 @@
 @extends('layouts.admin')
 
-@section('title', 'Admin Dashboard')
+@section('title', 'Tableau de Bord Admin')
 
 @section('content')
-<div class="main-page ml-1">
-    <div class="container-fluid">
-        <br><br><br>
-    </div>
-    <div class="col_3">
-        <div class="col-md-3 widget widget1">
-            <div class="r3_counter_box">
-                <i class="pull-left fa fa-dollar icon-rounded"></i>
-                <div class="stats">
-                  <h5><strong>$452</strong></h5>
-                  <span>Total Revenue</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 widget widget1">
-            <div class="r3_counter_box">
-                <i class="pull-left fa fa-laptop user1 icon-rounded"></i>
-                <div class="stats">
-                  <h5><strong>$1019</strong></h5>
-                  <span>Online Revenue</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 widget widget1">
-            <div class="r3_counter_box">
-                <i class="pull-left fa fa-money user2 icon-rounded"></i>
-                <div class="stats">
-                  <h5><strong>$1012</strong></h5>
-                  <span>Expenses</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 widget widget1">
-            <div class="r3_counter_box">
-                <i class="pull-left fa fa-pie-chart dollar1 icon-rounded"></i>
-                <div class="stats">
-                  <h5><strong>$450</strong></h5>
-                  <span>Expenditure</span>
-                </div>
-            </div>
-        </div>
-        <div class="clearfix"> </div>
-    </div>
+<div class="container">
+    <h1>Tableau de Bord</h1>
 
-    <!-- Add more dashboard content here -->
+    <div class="row">
+        <!-- Carte pour les rôles -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Rôles</h5>
+                    <p class="card-text">{{ $totalRoles }}</p>
+                    <a href="{{ route('admin.roles.index') }}" class="btn btn-primary">Gérer les Rôles</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte pour les permissions -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Permissions</h5>
+                    <p class="card-text">{{ $totalPermissions }}</p>
+                    <a href="{{ route('admin.permissions.create') }}" class="btn btn-primary">Gérer les Permissions</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte pour les utilisateurs -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Utilisateurs</h5>
+                    <p class="card-text">{{ $totalUsers }}</p>
+                    <a href="{{ route('users.index') }}" class="btn btn-primary">Gérer les Utilisateurs</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte pour les clients -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Clients</h5>
+                    <p class="card-text">{{ $totalClients }}</p>
+                    <a href="{{ route('clients.index') }}" class="btn btn-primary">Gérer les Clients</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
 @endsection
-
-@push('scripts')
-<script src="{{ asset('web/js/SimpleChart.js') }}"></script>
-<script>
-    // Add any dashboard-specific JavaScript here
-</script>
-@endpush

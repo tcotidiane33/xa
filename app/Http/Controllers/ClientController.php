@@ -6,140 +6,304 @@ use App\Models\User;
 use App\Models\Client;
 use App\Models\Notification;
 use Illuminate\Http\Request;
-// use App\Traits\TracksUserActions;
 use Illuminate\Support\Facades\DB;
 use App\Models\ConventionCollective;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ClientManagerChangeMail;
+use App\Mail\ClientAcknowledgementMail;
 use App\Notifications\NewClientCreated;
 use App\Http\Requests\Client\StoreClientRequest;
 use App\Http\Requests\Client\UpdateClientRequest;
 
 class ClientController extends Controller
 {
-    // use TracksUserActions;
+    public function index(Request $request)
+    {
+        $query = Client::with(['responsablePaie', 'gestionnairePrincipal', 'conventionCollective']);
 
-    public function index()
-{
-    $clients = Client::with(['responsablePaie', 'gestionnairePrincipal', 'conventionCollective'])
-        ->filter(request()->only(['search', 'status']))
-        ->paginate(15);
+        if ($request->has('search')) {
+            $query->where('name', 'like', '%' . $request->input('search') . '%');
+        }
 
-    // Données pour le graphique d'évolution du nombre de clients
-    $clientGrowthData = Client::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
-        ->groupBy('month')
-        ->orderBy('month')
-        ->pluck('count');
-    $clientGrowthLabels = Client::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month')
-        ->groupBy('month')
-        ->orderBy('month')
-        ->pluck('month');
+        if ($request->has('status')) {
+            $query->where('status', $request->input('status'));
+        }
 
-    // Données pour le graphique des top 5 conventions collectives
-    $topConventions = ConventionCollective::withCount('clients')
-        ->orderByDesc('clients_count')
-        ->take(5)
-        ->get();
-    $topConventionsData = $topConventions->pluck('clients_count');
-    $topConventionsLabels = $topConventions->pluck('name');
+        $clients = $query->paginate(15);
 
-    // Données pour le graphique de répartition des clients par gestionnaire principal
-     $clientsByManager = User::whereHas('clientsAsManager')
-     ->withCount('clientsAsManager')
-     ->orderByDesc('clients_as_manager_count')
-     ->take(10)
-     ->get();
-    $clientsByManagerData = $clientsByManager->pluck('clients_as_manager_count');
-    $clientsByManagerLabels = $clientsByManager->pluck('name');
+        $clientGrowthData = Client::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count');
+        $clientGrowthLabels = Client::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('month');
 
-    return view('clients.index', compact(
-        'clients',
-        'clientGrowthData',
-        'clientGrowthLabels',
-        'topConventionsData',
-        'topConventionsLabels',
-        'clientsByManagerData',
-        'clientsByManagerLabels'
-    ));
-}
-public function getInfo(Client $client)
-{
-    \Log::info('getInfo appelé pour le client: ' . $client->id);
+        $topConventions = ConventionCollective::withCount('clients')
+            ->orderByDesc('clients_count')
+            ->take(5)
+            ->get();
+        $topConventionsData = $topConventions->pluck('clients_count');
+        $topConventionsLabels = $topConventions->pluck('name');
 
-    return response()->json([
-        'name' => $client->name,
-        'email' => $client->contact_paie,
-        'phone' => $client->contact_comptabilite,
-        // 'responsable_paie' => $client->responsablePaie ? $client->responsablePaie->name : 'Non assigné',
-        // 'gestionnaire_principal' => $client->gestionnairePrincipal ? $client->gestionnairePrincipal->name : 'Non assigné',
-        // 'date_debut_prestation' => $client->date_debut_prestation ? $client->date_debut_prestation->format('d/m/Y') : 'Non spécifiée',
-        // 'date_estimative_envoi_variables' => $client->date_estimative_envoi_variables ? $client->date_estimative_envoi_variables->format('d/m/Y') : 'Non spécifiée',
-        // 'status' => $client->status ?? 'Non spécifié',
-        // 'nb_bulletins' => $client->nb_bulletins ?? 'Non spécifié',
-        // 'convention_collective' => $client->conventionCollective ? $client->conventionCollective->name : 'Non assignée'
-    ]);
-}
+        $clientsByManager = User::whereHas('clientsAsManager')
+            ->withCount('clientsAsManager')
+            ->orderByDesc('clients_as_manager_count')
+            ->take(10)
+            ->get();
+        $clientsByManagerData = $clientsByManager->pluck('clients_as_manager_count');
+        $clientsByManagerLabels = $clientsByManager->pluck('name');
+
+        return view('clients.index', compact(
+            'clients',
+            'clientGrowthData',
+            'clientGrowthLabels',
+            'topConventionsData',
+            'topConventionsLabels',
+            'clientsByManagerData',
+            'clientsByManagerLabels'
+        ));
+    }
+
+    public function getInfo(Client $client)
+    {
+        return response()->json([
+            'name' => $client->name,
+            'email' => $client->contact_paie,
+            'phone' => $client->contact_comptabilite,
+        ]);
+    }
+
     public function create()
     {
         $users = User::all();
         $conventionCollectives = ConventionCollective::all();
-        $portfolioClients = Client::where('is_portfolio', true)->get();
-        return view('clients.create', compact('users', 'conventionCollectives', 'portfolioClients'));
+        $clients = Client::all(); // Récupérer tous les clients
+        return view('clients.create', compact('users', 'conventionCollectives', 'clients'));
+    }
+    public function store(StoreClientRequest $request)
+    {
+        $validatedData = $request->validated();
+
+        DB::beginTransaction();
+        try {
+            $client = Client::create($validatedData);
+
+            // Ajouter les relations
+            $client->responsablePaie()->associate($validatedData['responsable_paie_id']);
+            $client->gestionnairePrincipal()->associate($validatedData['gestionnaire_principal_id']);
+            $client->conventionCollective()->associate($validatedData['convention_collective_id']);
+            $client->portfolioCabinet()->associate($validatedData['portfolio_cabinet_id']);
+
+
+            $client->save();
+
+            DB::commit();
+            return redirect()->route('clients.index')->with('success', 'Client créé avec succès.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error("Erreur lors de la création du client: " . $e->getMessage());
+            return redirect()->back()->withErrors('Erreur lors de la création du client.');
+        }
     }
 
     public function edit(Client $client)
     {
         $users = User::all();
         $conventionCollectives = ConventionCollective::all();
-        $portfolioClients = Client::where('is_portfolio', true)->where('id', '!=', $client->id)->get();
-        return view('clients.edit', compact('client', 'users', 'conventionCollectives', 'portfolioClients'));
+        $clients = Client::all();
+        return view('clients.edit', compact('client', 'users', 'conventionCollectives', 'clients'));
     }
 
-    public function store(StoreClientRequest $request)
-    {
-        $validatedData = $request->validated();
-        
-        \Log::info('Validated data:', $validatedData);
-    
-        $client = Client::create($validatedData);
-    
-        \Log::info('Created client:', $client->toArray());
-    
-        return redirect()->route('clients.index')->with('success', 'Client créé avec succès.');
-    }
-    
     public function update(UpdateClientRequest $request, Client $client)
     {
         $validatedData = $request->validated();
-        
-        \Log::info('Validated data:', $validatedData);
-    
-        $client->update($validatedData);
-    
-        \Log::info('Updated client:', $client->fresh()->toArray());
-    
-        return redirect()->route('clients.index')->with('success', 'Client mis à jour avec succès.');
+
+        DB::beginTransaction();
+        try {
+            $client->update($validatedData);
+
+            DB::commit();
+            return redirect()->route('clients.index')->with('success', 'Client mis à jour avec succès.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error("Erreur lors de la mise à jour du client: " . $e->getMessage());
+            return redirect()->back()->withErrors('Erreur lors de la mise à jour du client.');
+        }
     }
+
     public function show(Client $client)
     {
-        $this->authorize('view', $client);
-        $client->load(['responsablePaie', 'gestionnairePrincipal']);
+        $client->load(['responsablePaie', 'gestionnairePrincipal', 'conventionCollective', 'portfolioCabinet']);
         return view('clients.show', compact('client'));
     }
 
-
-
     public function destroy(Client $client)
     {
-        $this->authorize('delete', $client);
-    
         DB::transaction(function () use ($client) {
-            // Supprimer les enregistrements associés dans gestionnaire_client
             $client->gestionnaires()->detach();
-    
-            // Supprimer le client
             $client->delete();
         });
-    
-        // $this->logAction('delete_client', "Suppression du client #{$client->id}");
+
         return redirect()->route('clients.index')->with('success', 'Client supprimé avec succès.');
     }
+
+    public function validateStep(Request $request, $step)
+    {
+        $rules = [];
+
+        switch ($step) {
+            case 'societe':
+                $rules = [
+                    'name' => 'required|string|max:255',
+                    'type_societe' => 'nullable|string|max:255',
+                    'ville' => 'nullable|string|max:255',
+                    'dirigeant_nom' => 'nullable|string|max:255',
+                    'dirigeant_telephone' => 'nullable|string|max:20',
+                    'dirigeant_email' => 'nullable|email|max:255',
+                ];
+                break;
+
+            case 'contacts':
+                $rules = [
+                    'contact_paie_nom' => 'nullable|string|max:255',
+                    'contact_paie_prenom' => 'nullable|string|max:255',
+                    'contact_paie_telephone' => 'nullable|string|max:20',
+                    'contact_paie_email' => 'nullable|email|max:255',
+                    'contact_compta_nom' => 'nullable|string|max:255',
+                    'contact_compta_prenom' => 'nullable|string|max:255',
+                    'contact_compta_telephone' => 'nullable|string|max:20',
+                    'contact_compta_email' => 'nullable|email|max:255',
+                ];
+                break;
+
+            case 'interne':
+                $rules = [
+                    'responsable_paie_id' => 'required|exists:users,id',
+                    'responsable_telephone_ld' => 'nullable|string|max:20',
+                    'gestionnaire_principal_id' => 'required|exists:users,id',
+                    'binome_id' => 'required|exists:users,id',
+                ];
+                break;
+
+            case 'supplementaires':
+                $rules = [
+                    'saisie_variables' => 'boolean',
+                    'client_forme_saisie' => 'boolean',
+                    'date_formation_saisie' => 'nullable|date',
+                    'date_fin_prestation' => 'nullable|date',
+                    'date_signature_contrat' => 'nullable|date',
+                    'taux_at' => 'nullable|string|max:255',
+                    'adhesion_mydrh' => 'boolean',
+                    'date_adhesion_mydrh' => 'nullable|date',
+                    'is_cabinet' => 'boolean',
+                    'portfolio_cabinet_id' => 'nullable|exists:clients,id',
+                ];
+                break;
+        }
+
+        $validator = \Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function storePartial(Request $request)
+    {
+        $step = $request->input('step');
+        $validatedData = $request->validate($this->getValidationRules($step));
+
+        DB::beginTransaction();
+        try {
+            $client = $request->session()->get('client_id') ? Client::find($request->session()->get('client_id')) : new Client;
+
+            $client->fill($validatedData);
+            $client->save();
+
+            $request->session()->put('client_id', $client->id);
+
+            DB::commit();
+            return response()->json(['success' => true, 'nextStep' => $this->getNextStep($step)]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Une erreur est survenue'], 500);
+        }
+    }
+
+    public function updatePartial(UpdateClientRequest $request, Client $client, $step)
+    {
+        $validatedData = $request->validated();
+
+        DB::beginTransaction();
+        try {
+            $client->update($validatedData);
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Données mises à jour avec succès.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error("Erreur lors de la mise à jour du client: " . $e->getMessage());
+            return redirect()->back()->withErrors('Erreur lors de la mise à jour du client.');
+        }
+    }
+
+    private function getValidationRules($step)
+    {
+        switch ($step) {
+            case 'societe':
+                return [
+                    'name' => 'required|string|max:255',
+                    'type_societe' => 'nullable|string|max:255',
+                    'ville' => 'nullable|string|max:255',
+                    'dirigeant_nom' => 'nullable|string|max:255',
+                    'dirigeant_telephone' => 'nullable|string|max:20',
+                    'dirigeant_email' => 'nullable|email|max:255',
+                ];
+            case 'contacts':
+                return [
+                    'contact_paie_nom' => 'nullable|string|max:255',
+                    'contact_paie_prenom' => 'nullable|string|max:255',
+                    'contact_paie_telephone' => 'nullable|string|max:20',
+                    'contact_paie_email' => 'nullable|email|max:255',
+                    'contact_compta_nom' => 'nullable|string|max:255',
+                    'contact_compta_prenom' => 'nullable|string|max:255',
+                    'contact_compta_telephone' => 'nullable|string|max:20',
+                    'contact_compta_email' => 'nullable|email|max:255',
+                ];
+            case 'interne':
+                return [
+                    'responsable_paie_id' => 'required|exists:users,id',
+                    'responsable_telephone_ld' => 'nullable|string|max:20',
+                    'gestionnaire_principal_id' => 'required|exists:users,id',
+                    'binome_id' => 'required|exists:users,id',
+                ];
+            case 'supplementaires':
+                return [
+                    'saisie_variables' => 'boolean',
+                    'client_forme_saisie' => 'boolean',
+                    'date_formation_saisie' => 'nullable|date',
+                    'date_fin_prestation' => 'nullable|date',
+                    'date_signature_contrat' => 'nullable|date',
+                    'taux_at' => 'nullable|string|max:255',
+                    'adhesion_mydrh' => 'boolean',
+                    'date_adhesion_mydrh' => 'nullable|date',
+                    'is_cabinet' => 'boolean',
+                    'portfolio_cabinet_id' => 'nullable|exists:clients,id',
+                ];
+            default:
+                return [];
+        }
+    }
+
+    private function getNextStep($currentStep)
+    {
+        $steps = ['societe', 'contacts', 'interne', 'supplementaires'];
+        $currentIndex = array_search($currentStep, $steps);
+        return $currentIndex !== false && $currentIndex < count($steps) - 1 ? $steps[$currentIndex + 1] : null;
+    }
+
 }

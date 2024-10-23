@@ -13,18 +13,20 @@
     <!-- Site favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('/backoffice/vendors/images/apple-touch-icon.png') }}" />
     <link rel="icon" type="image/png" sizes="32x32"
-        href="{{ asset('/backoffice/vendors/images/favicon-32x32.png') }}" />
+        href="{{ asset('/backoffice/vendors/images/logo-icon.png') }}" />
     <link rel="icon" type="image/png" sizes="16x16"
-        href="{{ asset('/backoffice/vendors/images/favicon-16x16.png') }}" />
+        href="{{ asset('/backoffice/vendors/images/logo-icon.png') }}" />
 
     <!-- Mobile Specific Metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="{{ @asset('vendor/larapex-charts/apexcharts.js') }}"></script>
 
-    <!-- ... -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Flowbite -->
     <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
-    <!-- ... -->
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -37,7 +39,6 @@
     <link rel="stylesheet" type="text/css"
         href="{{ asset('backoffice/src/plugins/datatables/css/responsive.bootstrap4.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('backoffice/vendors/styles/style.css') }}" />
-
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"></script>
@@ -70,21 +71,6 @@
         })(window, document, "script", "dataLayer", "GTM-NXZMQSS");
     </script>
     <!-- End Google Tag Manager -->
-    {{-- <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-    <script>
-
-      // Enable pusher logging - don't include this in production
-      Pusher.logToConsole = true;
-
-      var pusher = new Pusher('fa0f7a721b5ce846e356', {
-        cluster: 'eu'
-      });
-
-      var channel = pusher.subscribe('my-channel');
-      channel.bind('my-event', function(data) {
-        alert(JSON.stringify(data));
-      });
-    </script> --}}
     @stack('styles')
     <style>
         body {
@@ -157,27 +143,6 @@
    
     <!-- welcome modal end -->
     <script src="https://cdn.jsdelivr.net/npm/flowbite@1.5.3/dist/flowbite.min.js"></script>
-     <!-- js-->
-     {{-- <script src="{{ asset('backoffice/src/js/jquery-1.11.1.min.js') }}"></script> --}}
-     {{-- <script src="{{ asset('backoffice/src/js/modernizr.custom.js') }}"></script> --}}
- 
-     <!-- Metis Menu -->
-     {{-- <script src="{{ asset('backoffice/src/js/metisMenu.min.js') }}"></script> --}}
-     {{-- <script src="{{ asset('backoffice/src/js/custom.js') }}"></script> --}}
- 
-     <!-- side nav js -->
-     {{-- <script src="{{ asset('backoffice/src/js/SidebarNav.min.js') }}" type='text/javascript'></script> --}}
- 
-     <!-- Bootstrap Core JavaScript -->
-     {{-- <script src="{{ asset('backoffice/src/js/bootstrap.js') }}"></script> --}}
- 
-     {{-- <script src="{{ asset('backoffice/src/js/Chart.bundle.js') }}"></script> --}}
-     {{-- <script src="{{ asset('backoffice/src/js/utils.js') }}"></script> --}}
- 
-    <!--scrolling js-->
-	<script src="{{ asset('backoffice/src/js/jquery.nicescroll.js') }}"></script>
-	<script src="{{ asset('backoffice/src/js/scripts.js') }}"></script>
-	<!--//scrolling js-->
     <!-- js -->
     <script src="{{ asset('backoffice/vendors/scripts/core.js') }}"></script>
     <script src="{{ asset('backoffice/vendors/scripts/script.min.js') }}"></script>
@@ -194,7 +159,6 @@
             style="display: none; visibility: hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
-    {{-- @yield('scripts') --}}
     @stack('scripts')
 
 </body>

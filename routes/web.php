@@ -13,6 +13,7 @@ use App\Http\Controllers\PeriodePaieController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\TraitementPaieController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ConventionCollectiveController;
 use App\Http\Controllers\Admin\GestionnaireClientController;
 
@@ -70,39 +71,45 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/traitements-paie/{traitementPaie}', [TraitementPaieController::class, 'update'])->name('traitements-paie.update');
     Route::delete('/traitements-paie/{traitementPaie}', [TraitementPaieController::class, 'destroy'])->name('traitements-paie.destroy');
 
+    // Route::get('/traitements-paie/create', [TraitementPaieController::class, 'create'])->name('traitements-paie.create');
+    Route::post('/traitements-paie/store', [TraitementPaieController::class, 'store'])->name('traitements-paie.store');
+    Route::post('/traitements-paie/store-partial', [TraitementPaieController::class, 'storePartial'])->name('traitements-paie.storePartial');
+    Route::post('/traitements-paie/cancel', [TraitementPaieController::class, 'cancel'])->name('traitements-paie.cancel');
+
     Route::resource('tickets', TicketController::class);
     Route::resource('convention-collectives', ConventionCollectiveController::class);
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
+    // Ajout de la route validateStep
+    Route::post('/clients/validate-step/{step}', [ClientController::class, 'validateStep'])->name('clients.validateStep');
+    Route::post('/clients/store-partial', [ClientController::class, 'storePartial'])->name('clients.storePartial');
+    Route::put('/clients/{client}/update-partial/{step}', [ClientController::class, 'updatePartial'])->name('clients.updatePartial');
+    Route::get('/clients/{client}/get-partial/{step}', [ClientController::class, 'getPartial'])->name('clients.getPartial');
 });
 
 // Admin routes
+// Admin routes
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:admin']], function () {
-    Route::get('/', [App\Http\Controllers\Admin\HomeController::class, 'index'])->name('index');
-
+    Route::get('/', [DashboardController::class, 'index'])->name('admin.index'); // Tableau de bord admin
+    
+    // Autres routes pour l'admin
     Route::resource('gestionnaire-client', GestionnaireClientController::class);
-    Route::get('/admin/client/{client}/info', [ClientController::class, 'getInfo'])->name('admin.client.info');
-
-    Route::get('/admin/gestionnaire-client', [GestionnaireClientController::class, 'index'])->name('admin.gestionnaire-client.index');
+    Route::get('/client/{client}/info', [ClientController::class, 'getInfo'])->name('admin.client.info');
+    Route::get('/gestionnaire-client', [GestionnaireClientController::class, 'index'])->name('admin.gestionnaire-client.index');
     Route::get('/gestionnaire-client/{gestionnaireClient}', [GestionnaireClientController::class, 'show'])->name('admin.gestionnaire-client.show');
 
-    Route::post('gestionnaire-client/transfer/{gestionnaireClient}', [GestionnaireClientController::class, 'transfer'])->name('gestionnaire-client.transfer');
-    Route::post('gestionnaire-client/mass-transfer', [GestionnaireClientController::class, 'massTransfer'])->name('gestionnaire-client.mass-transfer');
-    Route::post('gestionnaire-client/mass-assign', [GestionnaireClientController::class, 'massAssign'])->name('gestionnaire-client.mass-assign');
-
+    // Paramètres et gestion des rôles et permissions
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
-
-    // Additional role and permission routes
+    
     Route::resource('roles', RoleController::class)->except(['show']);
     Route::get('/permissions/create', [RoleController::class, 'createPermission'])->name('permissions.create');
     Route::post('/permissions', [RoleController::class, 'storePermission'])->name('permissions.store');
-    Route::get('/roles/assign', [RoleController::class, 'assignRole'])->name('roles.assign');
-    // Route::post('/roles/assign', [RoleController::class, 'storeAssignRole'])->name('roles.assign.store');
-    Route::get('assign-roles', [RoleController::class, 'assignRoles'])->name('roles.assign');
-    Route::post('assign-roles', [RoleController::class, 'storeAssignRoles'])->name('roles.assign.store');
-    Route::patch('users/{user}/toggle-status', [RoleController::class, 'toggleUserStatus'])->name('users.toggle-status');
+    Route::get('/roles/assign', [RoleController::class, 'assignRoles'])->name('roles.assign');
+    Route::post('/roles/assign', [RoleController::class, 'storeAssignRoles'])->name('roles.assign.store');
+    Route::patch('/users/{user}/toggle-status', [RoleController::class, 'toggleUserStatus'])->name('users.toggle-status');
 });
+
 
 require __DIR__ . '/auth.php';

@@ -8,7 +8,7 @@ class ConventionCollective extends Model
 {
     protected $table = 'convention_collective';
 
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['idcc', 'name', 'description'];
 
     public function clients()
     {

@@ -21,7 +21,8 @@ class ConventionCollectiveController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required|max:255',
+            'idcc' => 'required|digits:4|unique:convention_collective,idcc',
+            'name' => 'required|max:255|unique:convention_collective,name',
             'description' => 'nullable',
         ]);
     
@@ -43,7 +44,8 @@ class ConventionCollectiveController extends Controller
     public function update(Request $request, ConventionCollective $conventionCollective)
     {
         $validatedData = $request->validate([
-            'name' => 'required|max:255',
+            'idcc' => 'required|digits:4|unique:convention_collective,idcc,' . $conventionCollective->id,
+            'name' => 'required|max:255|unique:convention_collective,name,' . $conventionCollective->id,
             'description' => 'nullable',
         ]);
     

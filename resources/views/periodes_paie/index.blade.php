@@ -74,14 +74,14 @@
                                         class="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Voir</a>
                                     <a href="{{ route('periodes-paie.edit', $periode) }}"
                                         class="text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Modifier</a>
-                                    <form action="{{ route('periodes-paie.destroy', $periode) }}" method="POST"
+                                    {{-- <form action="{{ route('periodes-paie.destroy', $periode) }}" method="POST"
                                         class="inline-block"  style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
                                             class="text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
                                             onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette période de paie ?')">Supprimer</button>
-                                    </form>
+                                    </form> --}}
                                 </td>
                             </tr>
                         @endforeach
