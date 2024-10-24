@@ -44,6 +44,8 @@ class RelationCreated extends Notification implements ShouldQueue
             'client_name' => $this->relation->client->name,
             'gestionnaire_name' => $this->relation->gestionnaire->name,
             'creator_name' => $this->creator->name,
+            'email_sent' => true, // ou false selon l'état de l'envoi de l'e-mail
+
         ];
     }
 }

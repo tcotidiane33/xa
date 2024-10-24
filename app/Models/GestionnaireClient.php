@@ -9,30 +9,15 @@ class GestionnaireClient extends Model
 {
     use HasFactory;
 
-    // protected $table = 'gestionnaire_client';
     protected $table = 'gestionnaire_client_pivot';
 
-
-    // protected $fillable = [
-    //     'client_id',
-    //     'gestionnaire_id',
-    //     'is_principal',
-    //     'gestionnaires_secondaires',
-    //     'user_id',
-    //     'notes'
-    // ];
-
     protected $fillable = [
-        'client_id',
-        'gestionnaire_id',
-        'is_principal',
+        'client_id', 'gestionnaire_id', 'is_principal', 'gestionnaires_secondaires'
     ];
 
     protected $casts = [
-        'is_principal' => 'boolean',
-        // 'gestionnaires_secondaires' => 'array',
+        'gestionnaires_secondaires' => 'array',
     ];
-  
 
     public function client()
     {
@@ -43,19 +28,19 @@ class GestionnaireClient extends Model
     {
         return $this->belongsTo(User::class, 'gestionnaire_id');
     }
- 
 
-//     public function responsablePaie()
-//     {
-//         return $this->belongsTo(User::class, 'user_id');
-//     }
-//     public function gestionnairesSecondaires()
-//     {
-//         return User::whereIn('id', $this->gestionnaires_secondaires ?: [])->get();
-//     }
+    public function getGestionnairesSecondairesAttribute($value)
+    {
+        return $value ? json_decode($value, true) : [];
+    }
 
-//     public function documents()
-// {
-//     return $this->hasMany(Document::class);
-// }
+    public function setGestionnairesSecondairesAttribute($value)
+    {
+        $this->attributes['gestionnaires_secondaires'] = json_encode($value);
+    }
+
+    public function gestionnairesSecondaires()
+    {
+        return User::whereIn('id', $this->gestionnaires_secondaires)->get();
+    }
 }

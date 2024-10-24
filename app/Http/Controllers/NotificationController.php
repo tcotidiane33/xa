@@ -8,6 +8,15 @@ class NotificationController extends Controller
 {
     public function index()
     {
-        return view('notifications.index');
+        $notifications = auth()->user()->notifications;
+        return view('notifications.index', compact('notifications'));
+    }
+
+    public function markAsRead($id)
+    {
+        $notification = auth()->user()->notifications()->findOrFail($id);
+        $notification->markAsRead();
+
+        return redirect()->route('notifications.index')->with('success', 'Notification marquée comme lue.');
     }
 }

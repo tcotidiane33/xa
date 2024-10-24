@@ -45,6 +45,8 @@ class RelationUpdated extends Notification implements ShouldQueue
             'action' => $this->action,
             'details' => $this->details,
             'detailsMessage' => $this->detailsMessage,
+            'creator_name' => $this->details['creator_name'],
+            'email_sent' => true, // ou false selon l'état de l'envoi de l'e-mail
         ];
     }
 }

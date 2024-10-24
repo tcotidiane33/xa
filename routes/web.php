@@ -80,7 +80,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('tickets', TicketController::class);
     Route::resource('convention-collectives', ConventionCollectiveController::class);
 
+    // Notification routes
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::patch('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 
     // Ajout de la route validateStep
     Route::get('/clients/{client}/info', [ClientController::class, 'getInfo'])->name('clients.info');
@@ -96,7 +98,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'r
     
     // Autres routes pour l'admin
     Route::resource('gestionnaire-client', GestionnaireClientController::class);
-    // Route::get('/client/{client}/info', [ClientController::class, 'getInfo'])->name('admin.client.info');
+    Route::post('gestionnaire-client/transfer', [GestionnaireClientController::class, 'transfer'])->name('gestionnaire-client.transfer');
+    Route::post('gestionnaire-client/attach', [GestionnaireClientController::class, 'attach'])->name('gestionnaire-client.attach');
     Route::get('/gestionnaire-client', [GestionnaireClientController::class, 'index'])->name('admin.gestionnaire-client.index');
     Route::get('/gestionnaire-client/{gestionnaireClient}', [GestionnaireClientController::class, 'show'])->name('admin.gestionnaire-client.show');
 
