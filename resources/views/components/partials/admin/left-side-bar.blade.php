@@ -99,7 +99,7 @@
                         <li><a href="{{ route('admin.admin.index') }}">Panneau Admin</a></li>
                         <li><a href="{{ route('admin.settings.index') }}">Paramétrage</a></li>
                         <!-- Lien vers le gestionnaire de clients -->
-                        <li><a href="{{ route('admin.admin.gestionnaire-client.index') }}">Gestionnaires de Clients</a></li>
+                        <li><a href="{{ route('admin.clients.index') }}">Gestion de Relations</a></li>
                     </ul>
                 </li>
 

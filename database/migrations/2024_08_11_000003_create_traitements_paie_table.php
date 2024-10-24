@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('reference')->unique();
 
             // Assurez-vous que la table users utilise 'id' de type unsignedBigInteger
-            $table->foreignId('gestionnaire_id')->constrained('users');
+            // $table->foreignId('gestionnaire_id')->constrained('users');
 
             // Le champ client_id doit référencer la table clients (par défaut Laravel infère 'clients')
             $table->foreignId('client_id')->constrained('clients');

@@ -24,15 +24,15 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        Schema::create('gestionnaires', function (Blueprint $table) {
-            $table->id();
-            $table->string('GID')->unique();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('responsable_id')->nullable()->constrained('users');
-            $table->foreignId('superviseur_id')->nullable()->constrained('users');
-            $table->text('notes')->nullable();
-            $table->timestamps();
-        });
+        // Schema::create('gestionnaires', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string('GID')->unique();
+        //     $table->foreignId('user_id')->constrained();
+        //     $table->foreignId('responsable_id')->nullable()->constrained('users');
+        //     $table->foreignId('superviseur_id')->nullable()->constrained('users');
+        //     $table->text('notes')->nullable();
+        //     $table->timestamps();
+        // });
 
  
     }

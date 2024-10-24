@@ -17,6 +17,10 @@ class UpdateClientRequest extends FormRequest
             'name' => 'sometimes|required|string|max:255',
             'responsable_paie_id' => 'nullable|exists:users,id',
             'gestionnaire_principal_id' => 'nullable|exists:users,id',
+
+            'gestionnaires_secondaires' => 'nullable|array',
+            'gestionnaires_secondaires.*' => 'exists:users,id',
+            
             'date_debut_prestation' => 'nullable|date',
             'date_estimative_envoi_variables' => 'nullable|date',
             'date_rappel_mail' => 'nullable|date',

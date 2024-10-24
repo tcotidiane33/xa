@@ -11,22 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $oldRelations = DB::table('gestionnaire_client')->get();
+        // $oldRelations = DB::table('gestionnaire_client')->get();
 
-        foreach ($oldRelations as $relation) {
-            DB::table('gestionnaire_client_pivot')
-                ->updateOrInsert(
-                    [
-                        'client_id' => $relation->client_id,
-                        'gestionnaire_id' => $relation->gestionnaire_id,
-                    ],
-                    [
-                        'is_principal' => true,
-                        'created_at' => $relation->created_at,
-                        'updated_at' => $relation->updated_at,
-                    ]
-                );
-        }
+        // foreach ($oldRelations as $relation) {
+        //     DB::table('gestionnaire_client_pivot')
+        //         ->updateOrInsert(
+        //             [
+        //                 'client_id' => $relation->client_id,
+        //                 'gestionnaire_id' => $relation->gestionnaire_id,
+        //             ],
+        //             [
+        //                 'is_principal' => true,
+        //                 'created_at' => $relation->created_at,
+        //                 'updated_at' => $relation->updated_at,
+        //             ]
+        //         );
+        // }
     }
 
     public function down(): void

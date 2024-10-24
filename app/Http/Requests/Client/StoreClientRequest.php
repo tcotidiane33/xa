@@ -32,6 +32,8 @@ class StoreClientRequest extends FormRequest
             // Champs internes
             'responsable_paie_id' => 'nullable|exists:users,id',
             'gestionnaire_principal_id' => 'nullable|exists:users,id',
+            'gestionnaires_secondaires' => 'nullable|array',
+            'gestionnaires_secondaires.*' => 'exists:users,id',
             'binome_id' => 'nullable|exists:users,id',
 
             // Champs supplémentaires
@@ -62,6 +64,7 @@ class StoreClientRequest extends FormRequest
             // 'name' => 'required|string|max:255',
             'responsable_paie_id' => 'nullable|exists:users,id',
             'gestionnaire_principal_id' => 'nullable|exists:users,id',
+
             'date_debut_prestation' => 'nullable|date',
             'date_estimative_envoi_variables' => 'nullable|date',
             'contact_paie' => 'nullable|string|max:255',
@@ -70,7 +73,7 @@ class StoreClientRequest extends FormRequest
             'maj_fiche_para' => 'nullable|date',
             'convention_collective_id' => 'nullable|exists:convention_collective,id',
 
-            
+
         ];
     }
 }

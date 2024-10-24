@@ -30,6 +30,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="{{ @asset('vendor/larapex-charts/apexcharts.js') }}"></script>
 
+
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2973766580778258"
@@ -61,31 +62,25 @@
         })(window, document, "script", "dataLayer", "GTM-NXZMQSS");
     </script>
     <!-- End Google Tag Manager -->
+    @stack('styles')
 </head>
 
 <body>
-    {{-- @include('frontend.components.partials.pre-loader') --}}
+    @include('components.partials.admin.pre-loader')
 
-    {{-- <div class="header"> --}}
-        {{-- @include('frontend.components.partials.search-bar') --}}
-        {{-- @include('frontend.components.partials.header') --}}
+    <div class="mobile-menu-overlay"></div>
 
-    {{-- </div> --}}
-
-    {{-- // customeize App setting --}}
-    {{-- @include('frontend.components.partials.right-sidebar') --}}
-    {{-- // left side bar  --}}
-    {{-- @include('frontend.components.partials.left-side-bar') --}}
-
-    {{-- <div class="mobile-menu-overlay"></div> --}}
-
-
-
-    <div class="app">
-        <main>
-            @yield('content')
-        </main>
-    </div>
+    <main>
+            @if (session('error'))
+                <div class="alert alert-danger mt-6">
+                    {{ session('error') }}
+                </div>
+            @endif
+            <div class="main-container">
+                @yield('content')
+            </div>
+    </main>
+   
     <!-- welcome modal end -->
     <!-- js -->
     <script src="backoffice/vendors/scripts/core.js"></script>
@@ -98,12 +93,15 @@
     <script src="backoffice/src/plugins/datatables/js/dataTables.responsive.min.js"></script>
     <script src="backoffice/src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
     <script src="backoffice/vendors/scripts/dashboard3.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0"
             style="display: none; visibility: hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
-    @yield('scripts')
+    @stack('scripts')
 </body>
 
 </html>

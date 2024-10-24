@@ -10,23 +10,23 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('gestionnaire_client', function (Blueprint $table) {
-            $table->dropColumn('gestionnaires_secondaires');
-            $table->dropColumn('is_principal');
-        });
+        // Schema::table('gestionnaire_client', function (Blueprint $table) {
+        //     $table->dropColumn('gestionnaires_secondaires');
+        //     $table->dropColumn('is_principal');
+        // });
 
-        Schema::create('gestionnaire_client_pivot', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('client_id');
-            $table->unsignedBigInteger('gestionnaire_id');
-            $table->boolean('is_principal')->default(false);
-            $table->timestamps();
+        // Schema::create('gestionnaire_client_pivot', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->unsignedBigInteger('client_id');
+        //     $table->unsignedBigInteger('gestionnaire_id');
+        //     $table->boolean('is_principal')->default(false);
+        //     $table->timestamps();
 
-            $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
-            $table->foreign('gestionnaire_id')->references('id')->on('users')->onDelete('cascade');
+        //     $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+        //     $table->foreign('gestionnaire_id')->references('id')->on('users')->onDelete('cascade');
 
-            $table->unique(['client_id', 'gestionnaire_id']);
-        });
+        //     $table->unique(['client_id', 'gestionnaire_id']);
+        // });
     }
 
     /**

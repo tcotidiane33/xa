@@ -3,11 +3,8 @@
 @section('title', 'Gestion des Rôles')
 
 @section('content')
-    <div class="main-content">
+    <div class="container">
         <div class="main-wrapper">
-            <div class="row">
-                </br></br>
-            </div>
 
             <div class="row">
                 <div class="breadcrumb">
@@ -63,45 +60,48 @@
                     </div>
                 </div>
             </div>
+            <div class="grid gap-6 mb-6 md:grid-cols-2">
 
-            <div class="row">
-                <div class="form-grids row widget-shadow" data-example-id="basic-forms">
-                    <div class="form-title">
-                        <h4>Permissions :</h4>
-                    </div>
-                    <div class="form-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <a href="{{ route('admin.permissions.create') }}" class="btn btn-success mb-3">
-                                    Créer une nouvelle permission
-                                </a>
+                    <div class="row">
+                        <div class="form-grids row widget-shadow" data-example-id="basic-forms">
+                            <div class="form-title">
+                                <h4>Permissions :</h4>
+                            </div>
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <a href="{{ route('admin.permissions.create') }}" class="btn btn-success mb-3">
+                                            Créer une nouvelle permission
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Nom</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($permissions as $permission)
+                                                <tr>
+                                                    <td>{{ $permission->name }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Nom</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($permissions as $permission)
-                                        <tr>
-                                            <td>{{ $permission->name }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="{{ route('admin.roles.assign') }}" class="btn btn-info">
+                                Assigner des rôles aux utilisateurs
+                            </a>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-12">
-                    <a href="{{ route('admin.roles.assign') }}" class="btn btn-info">
-                        Assigner des rôles aux utilisateurs
-                    </a>
                 </div>
             </div>
 

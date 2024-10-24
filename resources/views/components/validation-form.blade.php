@@ -1,64 +1,59 @@
-<form method="{{ $method ?? 'POST' }}" action="{{ $action }}" class="flow-form max-w-sm mx-auto">
+<form method="{{ $method ?? 'POST' }}" action="{{ $action }}" class="space-y-6">
     @csrf
-    @if(isset($method) && in_array($method, ['PUT', 'PATCH', 'DELETE']))
+    @if (isset($method) && in_array($method, ['PUT', 'PATCH', 'DELETE']))
         @method($method)
     @endif
 
-    @foreach($fields as $field)
-        <div class="flow-form-group">
-            @if(isset($field['label']))
-            <div class="mb-5">
-                <label for="{{ $field['name'] ?? '' }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ $field['label'] }}</label>
+    @foreach ($fields as $field)
+        <div>
+            @if (isset($field['label']) && $field['type'] !== 'checkbox')
+                <label for="{{ $field['name'] ?? '' }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    {{ $field['label'] }}
+                </label>
             @endif
 
             @switch($field['type'] ?? 'text')
                 @case('hidden')
-                    <input type="hidden" class="flow-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="{{ $field['name'] ?? '' }}" value="{{ $field['value'] ?? '' }}">
-                    @break
+                    <input type="hidden" name="{{ $field['name'] ?? '' }}" value="{{ $field['value'] ?? '' }}">
+                @break
 
                 @case('select')
-                    <select name="{{ $field['name'] ?? '' }}" id="{{ $field['name'] ?? '' }}" class="flow-select form-control" {{ isset($field['required']) && $field['required'] ? 'required' : '' }}>
-                        @foreach($field['options'] ?? [] as $value => $label)
-                            <option value="{{ $value }}" {{ (isset($field['value']) && $field['value'] == $value) ? 'selected' : '' }}>{{ $label }}</option>
+                    <select name="{{ $field['name'] ?? '' }}" id="{{ $field['name'] ?? '' }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        {{ isset($field['required']) && $field['required'] ? 'required' : '' }}>
+                        @foreach ($field['options'] ?? [] as $value => $label)
+                            <option value="{{ $value }}" {{ isset($field['value']) && $field['value'] == $value ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
                         @endforeach
                     </select>
-                    @break
+                @break
 
                 @case('checkbox')
-                    <div class="flow-checkbox">
-                        <label>
-                            <input type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" name="{{ $field['name'] ?? '' }}" {{ isset($field['checked']) && $field['checked'] ? 'checked' : '' }}>
-                            {{ $field['label'] ?? '' }}
+                    <div class="flex items-center">
+                        <input type="checkbox" name="{{ $field['name'] ?? '' }}" id="{{ $field['name'] ?? '' }}" class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:bg-gray-700 dark:border-gray-600" {{ isset($field['checked']) && $field['checked'] ? 'checked' : '' }}>
+                        <label for="{{ $field['name'] ?? '' }}" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                            {{ $field['label'] }}
                         </label>
                     </div>
-                    @break
+                @break
+
+                @case('textarea')
+                    <textarea name="{{ $field['name'] ?? '' }}" id="{{ $field['name'] ?? '' }}" class="block w-full p-2.5 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        placeholder="{{ $field['placeholder'] ?? '' }}" {{ isset($field['required']) && $field['required'] ? 'required' : '' }} rows="{{ $field['rows'] ?? 4 }}">{{ $field['value'] ?? old($field['name'] ?? '') }}</textarea>
+                @break
 
                 @default
-                    <input
-                        type="{{ $field['type'] ?? 'text' }}"
-                        name="{{ $field['name'] ?? '' }}"
-                        id="{{ $field['name'] ?? '' }}"
-                        value="{{ $field['value'] ?? old($field['name'] ?? '') }}"
-                        class="flow-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="{{ $field['placeholder'] ?? '' }}"
-                        {{ isset($field['required']) && $field['required'] ? 'required' : '' }}
-                        {{ isset($field['autofocus']) && $field['autofocus'] ? 'autofocus' : '' }}
-                        {{ isset($field['autocomplete']) ? 'autocomplete='.$field['autocomplete'] : '' }}
-                    >
+                    <input type="{{ $field['type'] ?? 'text' }}" name="{{ $field['name'] ?? '' }}" id="{{ $field['name'] ?? '' }}" value="{{ $field['value'] ?? old($field['name'] ?? '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        placeholder="{{ $field['placeholder'] ?? '' }}" {{ isset($field['required']) && $field['required'] ? 'required' : '' }} {{ isset($field['autofocus']) && $field['autofocus'] ? 'autofocus' : '' }} {{ isset($field['autocomplete']) ? 'autocomplete=' . $field['autocomplete'] : '' }}>
             @endswitch
-            
 
             @error($field['name'] ?? '')
-                <span class="text-danger">{{ $message }}</span>
+                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
             @enderror
         </div>
     @endforeach
-  
 
-    
-
-    <div class="flow-form-group">
-        <button type="submit" class="flow-btn text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ $submit_text ?? 'Submit' }}</button>
-    </div>
-   
+    <button type="submit" class="{{ $submit_class ?? 'text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2' }}">
+        {{ $submit_text ?? 'Submit' }}
+    </button>
 </form>

@@ -69,12 +69,29 @@ class User extends Authenticatable
         return $this->hasOne(Profile::class);
     }
     // Dans le modèle User
-    public function clientsGeres()
+    // public function clientsGeres()
+    // {
+    //     return $this->belongsToMany(Client::class, 'gestionnaire_client_pivot', 'gestionnaire_id', 'client_id')
+    //                 ->withPivot('is_principal')
+    //                 ->withTimestamps();
+    // }
+    public function clientsResponsable()
     {
-        return $this->belongsToMany(Client::class, 'gestionnaire_client_pivot', 'gestionnaire_id', 'client_id')
-                    ->withPivot('is_principal')
-                    ->withTimestamps();
+        return $this->hasMany(Client::class, 'responsable_paie_id');
     }
+
+    public function clientsGestionnairePrincipal()
+    {
+        return $this->hasMany(Client::class, 'gestionnaire_principal_id');
+    }
+
+    
+    // public function clientsGestionnaireSecondaire()
+    // {
+    //     return $this->belongsToMany(Client::class, 'gestionnaire_client', 'gestionnaire_id', 'client_id')
+    //                 ->withPivot('is_principal')
+    //                 ->withTimestamps();
+    // }
 
     public function clientsPrincipaux()
     {
@@ -121,10 +138,6 @@ class User extends Authenticatable
         return $this->belongsToMany(Client::class, 'gestionnaire_client', 'user_id', 'client_id');
     }
 
-    public function gestionnaire()
-    {
-        return $this->hasOne(Gestionnaire::class);
-    }
     public function materials()
     {
         return $this->hasMany(Material::class);
@@ -138,22 +151,27 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    public function clientsGestionnaireSecondaire()
+    {
+        return $this->belongsToMany(Client::class, 'client_gestionnaire_secondaire', 'gestionnaire_id', 'client_id');
+    }
 
-    // Dans le modèle User
     public function assignClientsEnMasse(array $clientIds, $isPrincipal = false)
     {
         DB::transaction(function () use ($clientIds, $isPrincipal) {
             foreach ($clientIds as $clientId) {
-                $this->clientsGeres()->attach($clientId, ['is_principal' => $isPrincipal]);
+                $this->clientsGestionnaireSecondaire()->attach($clientId, ['is_principal' => $isPrincipal]);
 
                 if ($isPrincipal) {
-                    Client::find($clientId)->gestionnaires()
+                    Client::find($clientId)->gestionnairesSecondaires()
                         ->where('id', '<>', $this->id)
                         ->update(['is_principal' => false]);
                 }
             }
         });
     }
+
+    // Dans le modèle User
 
     
 

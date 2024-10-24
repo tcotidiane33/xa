@@ -198,7 +198,8 @@
             // Graphique de répartition des clients par gestionnaire principal
             var clientsByManagerOptions = {
                 series: [{
-                    data: [{{ $clientsByManagerData }}]
+                    // data: [{{ $clientsByManagerData }}]
+                    data: [{{ $topConventionsData }}]
                 }],
                 chart: {
                     type: 'bar',

@@ -12,25 +12,25 @@ return new class extends Migration
     public function up()
     {
         // Assurez-vous que la table 'gestionnaires' existe
-        if (!Schema::hasTable('gestionnaires')) {
-            Schema::create('gestionnaires', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('user_id')->constrained();
-                $table->string('GID')->unique();
-                $table->timestamps();
-            });
-        }
+        // if (!Schema::hasTable('gestionnaires')) {
+        //     Schema::create('gestionnaires', function (Blueprint $table) {
+        //         $table->id();
+        //         $table->foreignId('user_id')->constrained();
+        //         $table->string('GID')->unique();
+        //         $table->timestamps();
+        //     });
+        // }
 
-        Schema::create('gestionnaire_client', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('client_id')->constrained();
-            $table->foreignId('gestionnaire_id')->constrained('users'); // Notez que cela fait référence à 'users', pas à 'gestionnaires'
-            $table->boolean('is_principal')->default(false);
-            $table->json('gestionnaires_secondaires')->nullable();
-            $table->foreignId('user_id')->constrained(); // Pour le responsable paie
-            $table->text('notes')->nullable();
-            $table->timestamps();
-        });
+        // Schema::create('gestionnaire_client', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->foreignId('client_id')->constrained();
+        //     $table->foreignId('gestionnaire_id')->constrained('users'); // Notez que cela fait référence à 'users', pas à 'gestionnaires'
+        //     $table->boolean('is_principal')->default(false);
+        //     $table->json('gestionnaires_secondaires')->nullable();
+        //     $table->foreignId('user_id')->constrained(); // Pour le responsable paie
+        //     $table->text('notes')->nullable();
+        //     $table->timestamps();
+        // });
     }
 
     /**

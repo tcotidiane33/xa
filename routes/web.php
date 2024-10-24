@@ -15,7 +15,7 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\TraitementPaieController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ConventionCollectiveController;
-use App\Http\Controllers\Admin\GestionnaireClientController;
+use App\Http\Controllers\Admin\RelationController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -47,9 +47,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/users/{user}/attach-client', [UserController::class, 'attachClient'])->name('users.attach_client');
     Route::delete('/users/{user}/detach-client', [UserController::class, 'detachClient'])->name('users.detach_client');
     Route::post('/users/{user}/transfer-clients', [UserController::class, 'transferClients'])->name('users.transfer_clients');
+    
     Route::resource('clients', ClientController::class);
     Route::resource('clients.materials', MaterialController::class);
     Route::get('/clients/{client}/info', [ClientController::class, 'getInfo'])->name('clients.info');
+    
     Route::resource('materials', MaterialController::class);
 
     // Route::resource('periodes-paie', PeriodePaieController::class);
@@ -97,11 +99,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'r
     Route::get('/', [DashboardController::class, 'index'])->name('admin.index'); // Tableau de bord admin
     
     // Autres routes pour l'admin
-    Route::resource('gestionnaire-client', GestionnaireClientController::class);
-    Route::post('gestionnaire-client/transfer', [GestionnaireClientController::class, 'transfer'])->name('gestionnaire-client.transfer');
-    Route::post('gestionnaire-client/attach', [GestionnaireClientController::class, 'attach'])->name('gestionnaire-client.attach');
-    Route::get('/gestionnaire-client', [GestionnaireClientController::class, 'index'])->name('admin.gestionnaire-client.index');
-    Route::get('/gestionnaire-client/{gestionnaireClient}', [GestionnaireClientController::class, 'show'])->name('admin.gestionnaire-client.show');
+    Route::resource('users', UserController::class);
+    
+    Route::get('/clients', [RelationController::class, 'index'])->name('clients.index');
+    Route::post('/clients/{client}/transfer', [RelationController::class, 'transfer'])->name('clients.transfer');
 
     // Paramètres et gestion des rôles et permissions
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');

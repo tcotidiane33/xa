@@ -4,9 +4,7 @@
 
 @section('content')
 <div class="main-content">
-    <div class="container">
-        <br><br><br>
-    </div>
+    
     <div class="cbp-spmenu-push">
         <div class="main-content">
             <div id="page-wrapper">

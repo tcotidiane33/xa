@@ -30,6 +30,8 @@ class ClientController extends Controller
         }
 
         $clients = $query->paginate(15);
+        // $clients = Client::with(['responsablePaie', 'gestionnairePrincipal', 'gestionnairesSecondaires'])->get();
+
 
         $clientGrowthData = Client::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
             ->groupBy('month')
@@ -47,13 +49,13 @@ class ClientController extends Controller
         $topConventionsData = $topConventions->pluck('clients_count');
         $topConventionsLabels = $topConventions->pluck('name');
 
-        $clientsByManager = User::whereHas('clientsAsManager')
-            ->withCount('clientsAsManager')
-            ->orderByDesc('clients_as_manager_count')
-            ->take(10)
-            ->get();
-        $clientsByManagerData = $clientsByManager->pluck('clients_as_manager_count');
-        $clientsByManagerLabels = $clientsByManager->pluck('name');
+        // $clientsByManager = User::whereHas('clientsAsManager')
+        //     ->withCount('clientsAsManager')
+        //     ->orderByDesc('clients_as_manager_count')
+        //     ->take(10)
+        //     ->get();
+        // $clientsByManagerData = $clientsByManager->pluck('clients_as_manager_count');
+        // $clientsByManagerLabels = $clientsByManager->pluck('name');
 
         return view('clients.index', compact(
             'clients',
@@ -61,8 +63,8 @@ class ClientController extends Controller
             'clientGrowthLabels',
             'topConventionsData',
             'topConventionsLabels',
-            'clientsByManagerData',
-            'clientsByManagerLabels'
+            // 'clientsByManagerData',
+            // 'clientsByManagerLabels'
         ));
     }
     public function getInfo(Client $client)
@@ -103,6 +105,7 @@ class ClientController extends Controller
             // Ajouter les relations
             $client->responsablePaie()->associate($validatedData['responsable_paie_id']);
             $client->gestionnairePrincipal()->associate($validatedData['gestionnaire_principal_id']);
+            $client->gestionnairesSecondaires()->associate($validatedData['gestionnaires_secondaires']);
             $client->conventionCollective()->associate($validatedData['convention_collective_id']);
             $client->portfolioCabinet()->associate($validatedData['portfolio_cabinet_id']);
             $client->save();
@@ -144,20 +147,41 @@ class ClientController extends Controller
         return view('clients.edit', compact('client', 'users', 'conventionCollectives', 'clients'));
     }
 
-    public function update(UpdateClientRequest $request, Client $client)
+    public function update(UpdateClientRequest $request, $id)
     {
-        $validatedData = $request->validated();
+        $validated = $request->validated();
+
+        $client = Client::findOrFail($id);
+        $client->update($validated);
+
+        if (isset($validated['gestionnaires_secondaires'])) {
+            $client->gestionnaires_secondaires = $validated['gestionnaires_secondaires'];
+            $client->save();
+        }
+
+        return redirect()->route('admin.clients.index')->with('success', 'Client mis à jour avec succès.');
+    }
+
+    public function transfer(Request $request)
+    {
+        $validated = $request->validate([
+            'client_ids' => 'required|array',
+            'client_ids.*' => 'exists:clients,id',
+            'new_gestionnaire_id' => 'required|exists:users,id',
+        ]);
 
         DB::beginTransaction();
         try {
-            $client->update($validatedData);
+            foreach ($validated['client_ids'] as $clientId) {
+                $client = Client::findOrFail($clientId);
+                $client->transferGestionnaire($client->gestionnaire_principal_id, $validated['new_gestionnaire_id'], true);
+            }
 
             DB::commit();
-            return redirect()->route('clients.index')->with('success', 'Client mis à jour avec succès.');
+            return redirect()->route('admin.clients.index')->with('success', 'Clients transférés avec succès.');
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error("Erreur lors de la mise à jour du client: " . $e->getMessage());
-            return redirect()->back()->withErrors('Erreur lors de la mise à jour du client.');
+            return redirect()->back()->with('error', 'Une erreur est survenue : ' . $e->getMessage());
         }
     }
 
