@@ -2,7 +2,7 @@
     <div class="dashboard-setting user-notification">
         <div class="dropdown">
             <!-- Icones des uploads, downloads, et chats -->
-            <a href="{{ route('dashboard') }}" class="dropdown-toggle no-arrow">
+            <a href="{{ route('admin.files.index') }}" class="dropdown-toggle no-arrow">
                 <span class="micon bi bi-upload"></span>
                 <span class="micon bi bi-download"></span>
             </a>

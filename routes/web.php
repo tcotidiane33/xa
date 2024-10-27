@@ -16,6 +16,7 @@ use App\Http\Controllers\TraitementPaieController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ConventionCollectiveController;
 use App\Http\Controllers\Admin\RelationController;
+use App\Http\Controllers\Admin\FileController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -32,7 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     // Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
-    
+
 
     Route::post('/profile/update-settings', [ProfileController::class, 'updateSettings'])->name('profile.update-settings');
     Route::post('/profile/update-account', [ProfileController::class, 'updateAccount'])->name('profile.update-account');
@@ -47,11 +48,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/users/{user}/attach-client', [UserController::class, 'attachClient'])->name('users.attach_client');
     Route::delete('/users/{user}/detach-client', [UserController::class, 'detachClient'])->name('users.detach_client');
     Route::post('/users/{user}/transfer-clients', [UserController::class, 'transferClients'])->name('users.transfer_clients');
-    
+
     Route::resource('clients', ClientController::class);
     Route::resource('clients.materials', MaterialController::class);
     Route::get('/clients/{client}/info', [ClientController::class, 'getInfo'])->name('clients.info');
-    
+
     Route::resource('materials', MaterialController::class);
 
     // Route::resource('periodes-paie', PeriodePaieController::class);
@@ -73,6 +74,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/traitements-paie/{traitementPaie}/edit', [TraitementPaieController::class, 'edit'])->name('traitements-paie.edit');
     Route::put('/traitements-paie/{traitementPaie}', [TraitementPaieController::class, 'update'])->name('traitements-paie.update');
     Route::delete('/traitements-paie/{traitementPaie}', [TraitementPaieController::class, 'destroy'])->name('traitements-paie.destroy');
+    
+    Route::get('/traitements-paie/historique', [TraitementPaieController::class, 'historique'])->name('traitements-paie.historique');
 
     // Route::get('/traitements-paie/create', [TraitementPaieController::class, 'create'])->name('traitements-paie.create');
     Route::post('/traitements-paie/store', [TraitementPaieController::class, 'store'])->name('traitements-paie.store');
@@ -82,9 +85,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('tickets', TicketController::class);
     Route::resource('convention-collectives', ConventionCollectiveController::class);
 
-    // Notification routes
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::patch('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+     // Notification routes
+     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+     Route::patch('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 
     // Ajout de la route validateStep
     Route::get('/clients/{client}/info', [ClientController::class, 'getInfo'])->name('clients.info');
@@ -92,22 +95,31 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/clients/store-partial', [ClientController::class, 'storePartial'])->name('clients.storePartial');
     Route::put('/clients/{client}/update-partial/{step}', [ClientController::class, 'updatePartial'])->name('clients.updatePartial');
     Route::get('/clients/{client}/get-partial/{step}', [ClientController::class, 'getPartial'])->name('clients.getPartial');
+
 });
 
 // Admin routes
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:admin']], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('admin.index'); // Tableau de bord admin
-    
+
     // Autres routes pour l'admin
     Route::resource('users', UserController::class);
-    
-    Route::get('/clients', [RelationController::class, 'index'])->name('clients.index');
-    Route::post('/clients/{client}/transfer', [RelationController::class, 'transfer'])->name('clients.transfer');
 
+    //Upload Import Export
+    Route::get('/files', [FileController::class, 'index'])->name('files.index');
+    Route::get('/download-template', [FileController::class, 'downloadTemplate'])->name('files.downloadTemplate');
+    Route::post('/upload-excel', [FileController::class, 'uploadExcel'])->name('files.uploadExcel');
+    // Clients relations
+    Route::get('/clients', [RelationController::class, 'index'])->name('clients.index');
+    Route::post('/clients/transfer', [RelationController::class, 'transfer'])->name('clients.transfer');
+    Route::get('/admin/clients/filter', [RelationController::class, 'filter'])->name('clients.filter');
     // Paramètres et gestion des rôles et permissions
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
-    
+
+    //période paie
+    Route::post('/periodes-paie/{periodePaie}/valider', [PeriodePaieController::class, 'valider'])->name('periodes-paie.valider');
+
     Route::resource('roles', RoleController::class)->except(['show']);
     Route::get('/permissions/create', [RoleController::class, 'createPermission'])->name('permissions.create');
     Route::post('/permissions', [RoleController::class, 'storePermission'])->name('permissions.store');

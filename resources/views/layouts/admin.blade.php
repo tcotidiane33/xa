@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Sibpilot') }}</title>
+    <title>{{ config('app.name', 'ExternAlliance') }}</title>
 
     <!-- Site favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('/backoffice/vendors/images/apple-touch-icon.png') }}" />
@@ -79,7 +79,7 @@
             overflow-x: hidden;
         }
     </style>
-  
+
 </head>
 
 <body>
@@ -108,7 +108,7 @@
                 @yield('content')
             </div>
     </main>
-   
+
     <!-- welcome modal end -->
     <script src="https://cdn.jsdelivr.net/npm/flowbite@1.5.3/dist/flowbite.min.js"></script>
     <!-- js -->

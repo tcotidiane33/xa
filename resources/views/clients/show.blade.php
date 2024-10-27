@@ -115,4 +115,48 @@
         </div>
     </div>
 </div>
+<div class="main-content">
+    <div class="main-page mb-5">
+        <div class="breadcrumb">
+            <h1>Détails du client</h1>
+        </div>
+        <div class="panel-body widget-shadow">
+            <h4>{{ $client->name }}</h4>
+            <table class="table">
+                <!-- Autres champs -->
+                <tr>
+                    <th>Date de mise à jour fiche para</th>
+                    <td>{{ $client->maj_fiche_para ? \Carbon\Carbon::parse($client->maj_fiche_para)->format('d/m/Y') : 'Non définie' }}</td>
+                </tr>
+                <!-- Autres champs -->
+            </table>
+            <div class="mt-4 mb-5">
+                <a href="{{ route('clients.edit', $client) }}"
+                    class="text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Modifier</a>
+            </div>
+            <div class="row mb-4">
+               <hr>
+            </div>
+            <h4>Historique des mises à jour de la fiche de paramétrage</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date de mise à jour</th>
+                        <th>Ancienne valeur</th>
+                        <th>Nouvelle valeur</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($client->histories as $history)
+                        <tr>
+                            <td>{{ \Carbon\Carbon::parse($history->created_at)->format('d/m/Y H:i') }}</td>
+                            <td>{{ $history->maj_fiche_para }}</td>
+                            <td>{{ $history->maj_fiche_para }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 @endsection

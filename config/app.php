@@ -184,6 +184,7 @@ return [
         /*
         * Package Service Providers...
         */
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
         /*
         * Application Service Providers...
@@ -216,6 +217,8 @@ return [
         // 'Admin' => Encore\Admin\Facades\Admin::class,
         // 'Form' => Encore\Admin\Form::class,
         // 'Notify' => Notify\Laravel\Facades\Notify::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+
 
     ])->toArray(),
 

@@ -21,4 +21,9 @@ Cordialement,
 **{{ $managerName }}**  
 Gestionnaire de paie
 
+details : 
+Nous vous informons que votre gestionnaire {{ $managerName }} ({{ $managerEmail }}) a pris en charge le client {{ $clientName }}.
+
+
+{{ config('app.name') }}
 @endcomponent

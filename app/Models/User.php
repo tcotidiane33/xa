@@ -75,6 +75,16 @@ class User extends Authenticatable
     //                 ->withPivot('is_principal')
     //                 ->withTimestamps();
     // }
+
+    public function clientsAsGestionnaire()
+    {
+        return $this->hasMany(Client::class, 'gestionnaire_principal_id');
+    }
+
+    public function clientsAsResponsable()
+    {
+        return $this->hasMany(Client::class, 'responsable_paie_id');
+    }
     public function clientsResponsable()
     {
         return $this->hasMany(Client::class, 'responsable_paie_id');
@@ -85,13 +95,7 @@ class User extends Authenticatable
         return $this->hasMany(Client::class, 'gestionnaire_principal_id');
     }
 
-    
-    // public function clientsGestionnaireSecondaire()
-    // {
-    //     return $this->belongsToMany(Client::class, 'gestionnaire_client', 'gestionnaire_id', 'client_id')
-    //                 ->withPivot('is_principal')
-    //                 ->withTimestamps();
-    // }
+
 
     public function clientsPrincipaux()
     {

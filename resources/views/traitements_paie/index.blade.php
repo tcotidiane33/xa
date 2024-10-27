@@ -5,11 +5,9 @@
 @section('content')
     <div class="main-content">
         <div class="container mx-auto px-4 py-8"">
+          
             <div class="row">
-                <br>
-                <br>
-            </div>
-            <div class="row">
+                <a href="{{ route('traitements-paie.historique') }}" class="btn btn-secondary mb-3">Voir l'historique</a>
                 <div class="container mx-auto px-4 py-8"">
                     <form action="{{ route('traitements-paie.index') }}" method="GET" class="mb-4">
                         <div class="row">

@@ -46,8 +46,8 @@
                 </div>
             </div>
         </div>
-        
-      
+
+
         <div class="bg-white rounded-lg shadow-md p-4 mb-4">
             <div class="flex justify-between mb-4">
                 <h3 class="text-lg font-bold">Traitements de paie</h3>
@@ -94,19 +94,44 @@
             </button>
         </div>
         <div class="bg-white rounded-lg shadow-md p-4 mb-4">
-            <div class="flex justify-between mb-4">
+            {{-- <div class="flex justify-between mb-4">
                 <h3 class="text-lg font-bold">Derniers clients ajoutés</h3>
             </div>
             <ul class="list-group">
                 @foreach ($latestClients as $client)
                     <li class="list-group-item bg-[#3b5998] hover:bg-[#3b5998]/90 text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center">{{ $client->name }}</li>
                 @endforeach
-            </ul>
+            </ul> --}}
+            <div class="container">
+                <h1>Clients récents</h1>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>Date de création</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($recentClients as $client)
+                            <tr>
+                                <td>{{ $client->name }}</td>
+                                <td> <span
+                                        class="bg-indigo-100 text-indigo-800 text-xxl font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-indigo-400 border border-indigo-400">
+                                        {{ $client->email }}</span></td>
+                                <td> <span
+                                        class="bg-green-100 text-green-800 text-xxl font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400">
+                                        {{ $client->created_at->format('d/m/Y H:i') }}</span></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-          {{-- ============================================================ --}}
+        {{-- ============================================================ --}}
 
-          <div class="max-w-sm w-full md:w-1/2 p-4">
+        <div class="max-w-sm w-full md:w-1/2 p-4">
             <div class="bg-white rounded-lg shadow p-4">
                 <h3 class="text-lg font-semibold mb-4">Statut des traitements de paie</h3>
                 <canvas id="traitementsPaieChart"></canvas>
@@ -118,34 +143,38 @@
                 <canvas id="clientsEvolutionChart"></canvas>
             </div>
         </div>
-        
+
         <div class="max-w-sm w-full p-4">
             <div class="bg-white rounded-lg shadow p-4">
                 <h3 class="text-lg font-semibold mb-4">Périodes de paie par mois</h3>
                 <canvas id="periodespaieChart"></canvas>
             </div>
         </div>
-        
-        
+
+
         <div class="max-w-sm w-full md:w-1/2 p-4">
             <div class="bg-white rounded-lg shadow p-4">
                 <h3 class="text-lg font-semibold mb-4">Évolution du nombre de clients</h3>
                 <div class="mb-4">
                     <label for="startDate" class="block mb-2">Date de début:</label>
-                    <input type="date" id="startDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    <input type="date" id="startDate"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                 </div>
                 <div class="mb-4">
                     <label for="endDate" class="block mb-2">Date de fin:</label>
-                    <input type="date" id="endDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    <input type="date" id="endDate"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                 </div>
-                <button id="updateChart" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Mettre à jour</button>
+                <button id="updateChart"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Mettre
+                    à jour</button>
                 <canvas id="clientsEvolutionChart"></canvas>
             </div>
         </div>
 
         {{-- =================================================== --}}
-        
-        
+
+
 
     </div>
 @endsection
@@ -153,7 +182,7 @@
 @push('scripts')
     <script src="{{ asset('web/js/SimpleChart.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             var ctx = document.getElementById('traitementsPaieChart').getContext('2d');
             var myChart = new Chart(ctx, {
@@ -161,7 +190,9 @@
                 data: {
                     labels: ['En cours', 'Terminés', 'Interrompus'],
                     datasets: [{
-                        data: [{{ $traitementsPaieEnCours }}, {{ $traitementsPaieTerminer }}, {{ $traitementsPaieInterrompu }}],
+                        data: [{{ $traitementsPaieEnCours }}, {{ $traitementsPaieTerminer }},
+                            {{ $traitementsPaieInterrompu }}
+                        ],
                         backgroundColor: ['#3B82F6', '#10B981', '#EF4444']
                     }]
                 },
@@ -175,35 +206,35 @@
                 }
             });
         });
-        </script>
+    </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var ctx = document.getElementById('clientsEvolutionChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Nombre de clients',
-                    data: [65, 59, 80, 81, 56, 55],
-                    fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var ctx = document.getElementById('clientsEvolutionChart').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Nombre de clients',
+                        data: [65, 59, 80, 81, 56, 55],
+                        fill: false,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
+            });
         });
-    });
     </script>
-     <script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             var ctx = document.getElementById('periodespaieChart').getContext('2d');
             var myChart = new Chart(ctx, {
@@ -228,24 +259,24 @@
                 }
             });
         });
-        </script>
-        
-        
-        <script>
+    </script>
+
+
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             var ctx = document.getElementById('clientsEvolutionChart').getContext('2d');
             var myChart;
-        
+
             function updateChart(startDate, endDate) {
                 // Ici, vous devriez faire une requête AJAX pour obtenir les données filtrées
                 // Pour cet exemple, nous utilisons des données statiques
                 var data = [65, 59, 80, 81, 56, 55];
                 var labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-        
+
                 if (myChart) {
                     myChart.destroy();
                 }
-        
+
                 myChart = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -268,15 +299,15 @@
                     }
                 });
             }
-        
+
             document.getElementById('updateChart').addEventListener('click', function() {
                 var startDate = document.getElementById('startDate').value;
                 var endDate = document.getElementById('endDate').value;
                 updateChart(startDate, endDate);
             });
-        
+
             // Initial chart render
             updateChart();
         });
-        </script>
+    </script>
 @endpush

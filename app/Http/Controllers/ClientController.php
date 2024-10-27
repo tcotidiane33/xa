@@ -6,10 +6,12 @@ use App\Models\User;
 use App\Models\Client;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use App\Models\ClientHistory;
 use Illuminate\Support\Facades\DB;
 use App\Models\ConventionCollective;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ClientManagerChangeMail;
+use App\Notifications\RelationUpdated;
 use App\Mail\ClientAcknowledgementMail;
 use App\Notifications\NewClientCreated;
 use App\Http\Requests\Client\StoreClientRequest;
@@ -17,6 +19,7 @@ use App\Http\Requests\Client\UpdateClientRequest;
 
 class ClientController extends Controller
 {
+   
     public function index(Request $request)
     {
         $query = Client::with(['responsablePaie', 'gestionnairePrincipal', 'conventionCollective']);
@@ -30,8 +33,6 @@ class ClientController extends Controller
         }
 
         $clients = $query->paginate(15);
-        // $clients = Client::with(['responsablePaie', 'gestionnairePrincipal', 'gestionnairesSecondaires'])->get();
-
 
         $clientGrowthData = Client::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
             ->groupBy('month')
@@ -49,13 +50,13 @@ class ClientController extends Controller
         $topConventionsData = $topConventions->pluck('clients_count');
         $topConventionsLabels = $topConventions->pluck('name');
 
-        // $clientsByManager = User::whereHas('clientsAsManager')
-        //     ->withCount('clientsAsManager')
-        //     ->orderByDesc('clients_as_manager_count')
-        //     ->take(10)
-        //     ->get();
-        // $clientsByManagerData = $clientsByManager->pluck('clients_as_manager_count');
-        // $clientsByManagerLabels = $clientsByManager->pluck('name');
+        $clientsByManager = User::whereHas('clientsGestionnairePrincipal')
+            ->withCount('clientsGestionnairePrincipal')
+            ->orderByDesc('clients_gestionnaire_principal_count')
+            ->take(10)
+            ->get();
+        $clientsByManagerData = $clientsByManager->pluck('clients_gestionnaire_principal_count')->toArray();
+        $clientsByManagerLabels = $clientsByManager->pluck('name')->toArray();
 
         return view('clients.index', compact(
             'clients',
@@ -63,8 +64,8 @@ class ClientController extends Controller
             'clientGrowthLabels',
             'topConventionsData',
             'topConventionsLabels',
-            // 'clientsByManagerData',
-            // 'clientsByManagerLabels'
+            'clientsByManagerData',
+            'clientsByManagerLabels'
         ));
     }
     public function getInfo(Client $client)
@@ -95,49 +96,49 @@ class ClientController extends Controller
         return view('clients.create', compact('users', 'conventionCollectives', 'clients'));
     }
     public function store(StoreClientRequest $request)
-    {
-        $validatedData = $request->validated();
+{
+    $validatedData = $request->validated();
 
-        DB::beginTransaction();
-        try {
-            $client = Client::create($validatedData);
+    DB::beginTransaction();
+    try {
+        $client = Client::create($validatedData);
 
-            // Ajouter les relations
-            $client->responsablePaie()->associate($validatedData['responsable_paie_id']);
-            $client->gestionnairePrincipal()->associate($validatedData['gestionnaire_principal_id']);
-            $client->gestionnairesSecondaires()->associate($validatedData['gestionnaires_secondaires']);
-            $client->conventionCollective()->associate($validatedData['convention_collective_id']);
-            $client->portfolioCabinet()->associate($validatedData['portfolio_cabinet_id']);
-            $client->save();
+        // Ajouter les relations
+        $client->responsablePaie()->associate($validatedData['responsable_paie_id']);
+        $client->gestionnairePrincipal()->associate($validatedData['gestionnaire_principal_id']);
+        $client->conventionCollective()->associate($validatedData['convention_collective_id']);
+        $client->portfolioCabinet()->associate($validatedData['portfolio_cabinet_id']);
+        $client->save();
 
-            // Envoyer les emails
-            $manager = $client->gestionnairePrincipal;
-            $binome = $client->binome;
-            $responsablePaie = $client->responsablePaie;
+        // Envoyer les emails
+        $manager = $client->gestionnairePrincipal;
+        $binome = $client->binome;
+        $responsablePaie = $client->responsablePaie;
 
-            $emails = [
-                $client->contact_paie_email,
-                $client->contact_compta_email,
-                $manager->email,
-                $binome->email,
-                $responsablePaie->email,
-            ];
+        $emails = [
+            $client->contact_paie_email,
+            $client->contact_compta_email,
+            $manager->email,
+            $binome->email,
+            $responsablePaie->email,
+        ];
 
-            Mail::to($client->contact_paie_email)
-                ->cc($emails)
-                ->send(new ClientAcknowledgementMail($manager, $client));
-            Mail::to($client->contact_compta_email)
-                ->cc($emails)
-                ->send(new ClientManagerChangeMail($manager));
+        Mail::to($client->contact_paie_email)
+            ->cc($emails)
+            ->send(new ClientAcknowledgementMail($manager, $client));
+        Mail::to($client->contact_compta_email)
+            ->cc($emails)
+            ->send(new ClientManagerChangeMail($manager));
 
-            DB::commit();
-            return redirect()->route('clients.index')->with('success', 'Client créé avec succès.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            \Log::error("Erreur lors de la création du client: " . $e->getMessage());
-            return redirect()->back()->withErrors('Erreur lors de la création du client.');
-        }
+        DB::commit();
+        return redirect()->route('clients.index')->with('success', 'Client créé avec succès.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error("Erreur lors de la création du client: " . $e->getMessage());
+        return redirect()->back()->withErrors('Erreur lors de la création du client.');
     }
+}
+
 
     public function edit(Client $client)
     {
@@ -150,15 +151,35 @@ class ClientController extends Controller
     public function update(UpdateClientRequest $request, $id)
     {
         $validated = $request->validated();
-
+    
         $client = Client::findOrFail($id);
         $client->update($validated);
-
+    
+        if (isset($validated['maj_fiche_para'])) {
+            ClientHistory::create([
+                'client_id' => $client->id,
+                'maj_fiche_para' => $validated['maj_fiche_para'],
+            ]);
+        }
+    
         if (isset($validated['gestionnaires_secondaires'])) {
             $client->gestionnaires_secondaires = $validated['gestionnaires_secondaires'];
             $client->save();
         }
-
+    
+        // Envoyer les emails
+        $emails = [
+            $client->contact_paie_email,
+            $client->contact_compta_email,
+        ];
+    
+        Mail::to($client->contact_paie_email)
+            ->cc($emails)
+            ->send(new ClientAcknowledgementMail($client->gestionnairePrincipal, $client));
+        Mail::to($client->contact_compta_email)
+            ->cc($emails)
+            ->send(new ClientManagerChangeMail($client->gestionnairePrincipal));
+    
         return redirect()->route('admin.clients.index')->with('success', 'Client mis à jour avec succès.');
     }
 
@@ -356,6 +377,21 @@ class ClientController extends Controller
         $steps = ['societe', 'contacts', 'interne', 'supplementaires'];
         $currentIndex = array_search($currentStep, $steps);
         return $currentIndex !== false && $currentIndex < count($steps) - 1 ? $steps[$currentIndex + 1] : null;
+    }
+
+    public function updateRelation(Request $request, $userId)
+    {
+        // Récupérer l'utilisateur spécifique
+        $user = User::findOrFail($userId);
+
+        // Définir les détails de la notification
+        $action = 'Voir les détails';
+        $details = 'La relation a été mise à jour.';
+
+        // Envoyer la notification
+        $user->notify(new RelationUpdated($action, $details));
+
+        return redirect()->back()->with('success', 'Notification envoyée avec succès.');
     }
 
 }

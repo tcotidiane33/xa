@@ -21,4 +21,13 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', compact('totalRoles', 'totalPermissions', 'totalUsers', 'totalClients'));
     }
+
+    public function recentClients()
+    {
+        // Récupérer les 10 clients les plus récents
+        $recentClients = Client::latest()->take(10)->get();
+
+        // Retourner la vue avec les clients récents
+        return view('admin.dashboard', compact('recentClients'));
+    }
 }

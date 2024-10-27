@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Client;
 use App\Models\PeriodePaie;
-use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\PeriodePaieHistory;
+use Illuminate\Support\Facades\Auth;
+use App\Notifications\RelationUpdated;
 use App\Http\Requests\PeriodePaie\StorePeriodePaieRequest;
 use App\Http\Requests\PeriodePaie\UpdatePeriodePaieRequest;
 
@@ -20,6 +23,12 @@ class PeriodePaieController extends Controller
             $query->where('client_id', $request->client_id);
         }
 
+        // Filtre par gestionnaire
+        if ($request->has('gestionnaire_id') && $request->gestionnaire_id) {
+            $query->whereHas('client.gestionnairePrincipal', function ($q) use ($request) {
+                $q->where('id', $request->gestionnaire_id);
+            });
+        }
         // Filtre par date de début
         if ($request->has('date_debut')) {
             $query->where('debut', '>=', $request->date_debut);
@@ -37,8 +46,10 @@ class PeriodePaieController extends Controller
 
         $periodesPaie = $query->paginate(15);
         $clients = Client::all();
+        $gestionnaires = User::role('gestionnaire')->get();
 
-        return view('periodes_paie.index', compact('periodesPaie', 'clients'));
+
+        return view('periodes_paie.index', compact('periodesPaie', 'clients', 'gestionnaires'));
     }
 
     public function create()
@@ -50,43 +61,100 @@ class PeriodePaieController extends Controller
 
     public function store(StorePeriodePaieRequest $request)
     {
-        $periodePaie = PeriodePaie::create($request->validated());
+        $validated = $request->validated();
+        $client = Client::findOrFail($validated['client_id']);
+        $reference = strtoupper(now()->format('M')) . '_' . strtoupper($client->name);
+
+        $periodePaie = PeriodePaie::create(array_merge($validated, ['reference' => $reference]));
+
+        PeriodePaieHistory::create([
+            'periode_paie_id' => $periodePaie->id,
+            'user_id' => Auth::id(),
+            'action' => 'created',
+            'details' => 'Période de paie créée',
+        ]);
+
         return redirect()->route('periodes-paie.index')->with('success', 'Période de paie créée avec succès.');
     }
 
     public function show(PeriodePaie $periodePaie)
     {
-        $periodePaie->load('client', 'traitementsPaie.gestionnaire');
+        $periodePaie->load('client', 'histories.user');
         return view('periodes_paie.show', compact('periodePaie'));
     }
 
     public function edit(PeriodePaie $periodePaie)
     {
+        if ($periodePaie->validee && !Auth::user()->hasRole(['admin', 'responsable'])) {
+            return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de modifier une période validée.');
+        }
+
         $clients = Client::all();
-        $gestionnaires = User::role('gestionnaire')->get();
-        return view('periodes_paie.edit', compact('periodePaie', 'clients', 'gestionnaires'));
+        return view('periodes_paie.edit', compact('periodePaie', 'clients'));
+    }
+
+
+
+    public function destroy(PeriodePaie $periodePaie)
+    {
+        try {
+            $periodePaie->delete();
+            return redirect()->route('periodes-paie.index')->with('success', 'Période de paie supprimée avec succès.');
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la suppression de la période de paie : ' . $e->getMessage());
+            return redirect()->route('periodes-paie.index')->with('error', 'Impossible de supprimer cette période de paie. ' . $e->getMessage());
+        }
     }
 
     public function update(UpdatePeriodePaieRequest $request, PeriodePaie $periodePaie)
-{
-    $periodePaie->update($request->validated());
-    return redirect()->route('periodes-paie.index')->with('success', 'Période de paie mise à jour avec succès.');
-}
+    {
+        if ($periodePaie->validee && !Auth::user()->hasRole(['admin', 'responsable'])) {
+            return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de modifier une période validée.');
+        }
 
-public function destroy(PeriodePaie $periodePaie)
-{
-    try {
-        $periodePaie->delete();
-        return redirect()->route('periodes-paie.index')->with('success', 'Période de paie supprimée avec succès.');
-    } catch (\Exception $e) {
-        \Log::error('Erreur lors de la suppression de la période de paie : ' . $e->getMessage());
-        return redirect()->route('periodes-paie.index')->with('error', 'Impossible de supprimer cette période de paie. ' . $e->getMessage());
+        $validated = $request->validated();
+        $periodePaie->update($validated);
+
+        PeriodePaieHistory::create([
+            'periode_paie_id' => $periodePaie->id,
+            'user_id' => Auth::id(),
+            'action' => 'updated',
+            'details' => 'Période de paie mise à jour',
+        ]);
+
+        return redirect()->route('periodes-paie.index')->with('success', 'Période de paie mise à jour avec succès.');
     }
-}
 
     public function valider(PeriodePaie $periodePaie)
     {
-        $periodePaie->update(['validee' => true]);
-        return redirect()->route('periodes-paie.show', $periodePaie)->with('success', 'Période de paie validée avec succès.');
+        if ($periodePaie->canBeValidated()) {
+            $periodePaie->update(['validee' => true]);
+
+            PeriodePaieHistory::create([
+                'periode_paie_id' => $periodePaie->id,
+                'user_id' => Auth::id(),
+                'action' => 'validated',
+                'details' => 'Période de paie validée',
+            ]);
+
+            return redirect()->route('periodes-paie.index')->with('success', 'Période de paie validée avec succès.');
+        } else {
+            return redirect()->route('periodes-paie.index')->with('error', 'Tous les traitements de paie doivent être complets avant de valider la période.');
+        }
+    }
+
+    public function updateRelation(Request $request, $userId)
+    {
+        // Récupérer l'utilisateur spécifique
+        $user = User::findOrFail($userId);
+
+        // Définir les détails de la notification
+        $action = 'Voir les détails';
+        $details = 'La relation a été mise à jour.';
+
+        // Envoyer la notification
+        $user->notify(new RelationUpdated($action, $details));
+
+        return redirect()->back()->with('success', 'Notification envoyée avec succès.');
     }
 }

@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Client;
 use App\Models\PeriodePaie;
 use Illuminate\Http\Request;
 use App\Models\TraitementPaie;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Notifications\RelationUpdated;
 use App\Http\Requests\TraitementPaie\TraitementPaieRequest;
 
 class TraitementPaieController extends Controller
@@ -209,5 +211,32 @@ class TraitementPaieController extends Controller
                 $validatedData[$field] = $request->file($field)->store('traitements_paie');
             }
         }
+    }
+
+
+    public function updateRelation(Request $request, $userId)
+    {
+        // Récupérer l'utilisateur spécifique
+        $user = User::findOrFail($userId);
+
+        // Définir les détails de la notification
+        $action = 'Voir les détails';
+        $details = 'La relation a été mise à jour.';
+
+        // Envoyer la notification
+        $user->notify(new RelationUpdated($action, $details));
+
+        return redirect()->back()->with('success', 'Notification envoyée avec succès.');
+    }
+
+    public function historique()
+    {
+        $date = Carbon::now()->subMonth();
+        $traitements = TraitementPaie::where('created_at', '<', $date)
+            ->with(['client', 'gestionnaire', 'periodePaie'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        return view('traitements_paie.historique', compact('traitements'));
     }
 }

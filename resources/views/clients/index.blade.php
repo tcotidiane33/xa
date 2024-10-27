@@ -48,6 +48,17 @@
                             'Responsable Paie',
                             'Gestionnaire Principal',
                             'Convention Collective',
+
+                            'saisie_variables',
+                            'client_forme_saisie',
+                            'date_formation_saisie',
+                            'date_debut_prestation',
+                            'date_fin_prestation',
+                            'date_signature_contrat',
+                            'taux_at',
+                            'adhesion_mydrh',
+                            'date_adhesion_mydrh',
+
                             'Est-ce un cabinet ?',
                             'Portefeuille Cabinet',
                             'Actions',
@@ -64,7 +75,36 @@
                                 'convention' => $client->conventionCollective
                                     ? $client->conventionCollective->name
                                     : 'Non assignée',
-                                'is_cabinet' => $client->is_cabinet ? 'Oui' : 'Non',
+                                'saisie_variables' => $client->saisie_variables 
+                                    ? $client->saisie_variables 
+                                    : 'vide',
+                                'client_forme_saisie' => $client->client_forme_saisie 
+                                    ? $client->client_forme_saisie 
+                                    : 'vide',
+                                'date_formation_saisie' => $client->date_formation_saisie 
+                                    ? $client->date_formation_saisie 
+                                    : 'vide',
+                                'date_debut_prestation' => $client->date_debut_prestation 
+                                    ? $client->date_debut_prestation 
+                                    : 'vide',
+                                'date_fin_prestation' => $client->date_fin_prestation 
+                                    ? $client->date_fin_prestation 
+                                    : 'vide',
+                                'date_signature_contrat' => $client->date_signature_contrat 
+                                    ? $client->date_signature_contrat 
+                                    : 'vide',
+                                'taux_at' => $client->taux_at 
+                                    ? $client->taux_at 
+                                    : 'vide',
+                                'adhesion_mydrh' => $client->adhesion_mydrh 
+                                    ? $client->adhesion_mydrh
+                                    : 'vide',
+                                'date_adhesion_mydrh' => $client->date_adhesion_mydrh 
+                                    ? $client->date_adhesion_mydrh
+                                    : 'vide',
+                                'is_cabinet' => $client->is_cabinet 
+                                    ? 'Oui' 
+                                    : 'Non',
                                 'portfolio_cabinet' => $client->portfolioCabinet
                                     ? $client->portfolioCabinet->name
                                     : 'Aucun',
@@ -150,14 +190,14 @@
             var clientGrowthOptions = {
                 series: [{
                     name: 'Nombre de clients',
-                    data: [{{ $clientGrowthData }}]
+                    data: @json($clientGrowthData)
                 }],
                 chart: {
                     height: 350,
                     type: 'line',
                 },
                 xaxis: {
-                    categories: [{{ $clientGrowthLabels }}]
+                    categories: @json($clientGrowthLabels)
                 },
                 yaxis: {
                     title: {
@@ -172,7 +212,7 @@
             // Graphique des top 5 conventions collectives
             var topConventionsOptions = {
                 series: [{
-                    data: [{{ $topConventionsData }}]
+                    data: @json($topConventionsData)
                 }],
                 chart: {
                     type: 'bar',
@@ -188,7 +228,7 @@
                     enabled: false
                 },
                 xaxis: {
-                    categories: [{{ $topConventionsLabels }}],
+                    categories: @json($topConventionsLabels)
                 }
             };
             var topConventionsChart = new ApexCharts(document.querySelector("#topConventionsChart"),
@@ -198,8 +238,7 @@
             // Graphique de répartition des clients par gestionnaire principal
             var clientsByManagerOptions = {
                 series: [{
-                    // data: [{{ $clientsByManagerData }}]
-                    data: [{{ $topConventionsData }}]
+                    data: @json($clientsByManagerData)
                 }],
                 chart: {
                     type: 'bar',
@@ -215,7 +254,7 @@
                     enabled: false
                 },
                 xaxis: {
-                    categories: [{{ $clientsByManagerLabels }}],
+                    categories: @json($clientsByManagerLabels)
                 }
             };
             var clientsByManagerChart = new ApexCharts(document.querySelector("#clientsByManagerChart"),

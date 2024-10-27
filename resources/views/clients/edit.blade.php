@@ -153,6 +153,17 @@
                             </select>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <label>Convention Collective *</label>
+                            <select name="convention_collective_id" class="form-control" required>
+                                <option value="">Sélectionner une convention collective</option>
+                                @foreach ($conventionCollectives as $convention)
+                                    <option value="{{ $convention->id }}">{{ $convention->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                     <button type="submit" class="btn btn-primary">Enregistrer</button>
                 </form>
             </div>

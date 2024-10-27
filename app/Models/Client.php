@@ -47,6 +47,11 @@ class Client extends Model
         return $this->belongsTo(User::class, 'gestionnaire_principal_id');
     }
 
+    public function periodesPaie()
+    {
+        return $this->hasMany(PeriodePaie::class);
+    }
+
     // Relation avec le responsable de la paie
     public function responsablePaie()
     {
@@ -98,12 +103,6 @@ class Client extends Model
         return $this->hasMany(ClientHistory::class);
     }
 
-    // Relation avec les gestionnaires secondaires
-    public function gestionnairesSecondaires()
-    {
-        return $this->belongsToMany(User::class, 'client_gestionnaire_secondaire', 'client_id', 'gestionnaire_id');
-    }
-
     // Methods
     public function transferGestionnaire($oldGestionnaireId, $newGestionnaireId, $isPrincipal = false)
     {
@@ -141,5 +140,14 @@ class Client extends Model
                 'maj_fiche_para' => $this->maj_fiche_para,
             ]);
         }
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($client) {
+            $client->saveMajFicheParaHistory();
+        });
     }
 }

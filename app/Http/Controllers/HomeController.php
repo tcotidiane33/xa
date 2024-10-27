@@ -36,7 +36,10 @@ class HomeController extends Controller
         $recentTraitements = TraitementPaie::with('client')->latest()->take(5)->get();
         $recentTickets = Ticket::with('createur')->latest()->take(5)->get();
 
-        return view('dashboard', compact(
+    // Récupérer les 10 clients les plus récents
+    $recentClients = Client::latest()->take(10)->get();
+    
+ return view('dashboard', compact(
             'totalUsers',
             'totalClients',
             'totalPeriodesPaie',
@@ -46,7 +49,11 @@ class HomeController extends Controller
             'traitementsPaieInterrompu',
             'latestClients',
             'recentTraitements',
-            'recentTickets'
+            'recentTickets',
+            'recentClients'
         ));
     }
+
+
+
 }
