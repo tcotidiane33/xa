@@ -17,40 +17,51 @@ class PeriodePaieController extends Controller
     public function index(Request $request)
     {
         $query = PeriodePaie::query();
-
+    
         // Filtre par client
-        if ($request->has('client_id')) {
+        if ($request->has('client_id') && $request->client_id) {
             $query->where('client_id', $request->client_id);
         }
-
+    
         // Filtre par gestionnaire
         if ($request->has('gestionnaire_id') && $request->gestionnaire_id) {
             $query->whereHas('client.gestionnairePrincipal', function ($q) use ($request) {
                 $q->where('id', $request->gestionnaire_id);
             });
         }
+    
         // Filtre par date de début
-        if ($request->has('date_debut')) {
+        if ($request->has('date_debut') && !empty($request->date_debut)) {
             $query->where('debut', '>=', $request->date_debut);
         }
-
+    
         // Filtre par date de fin
-        if ($request->has('date_fin')) {
+        if ($request->has('date_fin') && !empty($request->date_fin)) {
             $query->where('fin', '<=', $request->date_fin);
         }
-
+    
         // Filtre par statut (validée ou non)
-        if ($request->has('validee')) {
+        if ($request->has('validee') && $request->validee !== '') {
             $query->where('validee', $request->validee);
         }
-
+    
+        // Filtre par mois courant
+        if (!$request->has('date_debut') && !$request->has('date_fin')) {
+            $query->whereMonth('debut', now()->month);
+        }
+    
         $periodesPaie = $query->paginate(15);
         $clients = Client::all();
         $gestionnaires = User::role('gestionnaire')->get();
-
-
+    
+        // Déchiffrement des données pour chaque période de paie
+        foreach ($periodesPaie as $periode) {
+            $periode->decrypted_data = $periode->decryptedData;
+        }
+    
         return view('periodes_paie.index', compact('periodesPaie', 'clients', 'gestionnaires'));
     }
+
 
     public function create()
     {
@@ -79,9 +90,12 @@ class PeriodePaieController extends Controller
 
     public function show(PeriodePaie $periodePaie)
     {
-        $periodePaie->load('client', 'histories.user');
-        return view('periodes_paie.show', compact('periodePaie'));
-    }
+        // $periodePaie->load('client', 'histories.user');
+        // Déchiffrer les données de la période de paie
+    $periodePaie->decrypted_data = $periodePaie->decryptedData;
+
+    return view('periodes_paie.show', compact('periodePaie'));
+}
 
     public function edit(PeriodePaie $periodePaie)
     {
@@ -156,5 +170,49 @@ class PeriodePaieController extends Controller
         $user->notify(new RelationUpdated($action, $details));
 
         return redirect()->back()->with('success', 'Notification envoyée avec succès.');
+    }
+
+    public function encryptOldPeriods()
+    {
+        $periodes = PeriodePaie::where('validee', 1)->get();
+
+        foreach ($periodes as $periode) {
+            if ($periode->shouldBeEncrypted()) {
+                $periode->encrypted_data = $periode->encryptedData;
+                $periode->save();
+            }
+        }
+
+        return redirect()->route('periodes-paie.index')->with('success', 'Périodes de paie chiffrées avec succès.');
+    }
+
+    public function updateField(Request $request)
+    {
+        $request->validate([
+            'periode_id' => 'required|exists:periodes_paie,id',
+            'field' => 'required|string',
+            'value' => 'nullable|string',
+            'date_value' => 'nullable|date',
+        ]);
+
+        $periodePaie = PeriodePaie::findOrFail($request->periode_id);
+        $field = $request->field;
+        $value = $request->value;
+
+        // Utiliser la valeur de date si le champ sélectionné est une date
+        if (in_array($field, ['reception_variables', 'preparation_bp', 'validation_bp_client', 'preparation_envoie_dsn', 'accuses_dsn'])) {
+            $value = $request->date_value;
+        }
+
+        $periodePaie->update([$field => $value]);
+
+        PeriodePaieHistory::create([
+            'periode_paie_id' => $periodePaie->id,
+            'user_id' => Auth::id(),
+            'action' => 'updated',
+            'details' => "Champ $field mis à jour",
+        ]);
+
+        return redirect()->route('periodes-paie.index')->with('success', 'Champ mis à jour avec succès.');
     }
 }

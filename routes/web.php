@@ -64,7 +64,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/periodes-paie/{periodePaie}/edit', [PeriodePaieController::class, 'edit'])->name('periodes-paie.edit');
     Route::put('/periodes-paie/{periodePaie}', [PeriodePaieController::class, 'update'])->name('periodes-paie.update');
     Route::delete('/periodes-paie/{periodePaie}', [PeriodePaieController::class, 'destroy'])->name('periodes-paie.destroy');
-
+    Route::patch('periodes-paie/update-field', [PeriodePaieController::class, 'updateField'])->name('periodes-paie.updateField');
 
     // Route::resource('traitements-paie', TraitementPaieController::class);
     Route::get('/traitements-paie', [TraitementPaieController::class, 'index'])->name('traitements-paie.index');

@@ -104,3 +104,80 @@
     </div>
 
 @endsection
+
+{{-- 
+@extends('layouts.admin')
+
+@section('content')
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Détails de la période de paie</h1>
+
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="reference">
+                Référence
+            </label>
+            <p class="text-gray-700">{{ $periodePaie->reference }}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="debut">
+                Date de début
+            </label>
+            <p class="text-gray-700">{{ $periodePaie->debut->format('d/m/Y') }}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="fin">
+                Date de fin
+            </label>
+            <p class="text-gray-700">{{ $periodePaie->fin->format('d/m/Y') }}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="client">
+                Client
+            </label>
+            <p class="text-gray-700">{{ $periodePaie->client->name }}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="reception_variables">
+                Réception variables
+            </label>
+            <p class="text-gray-700">{{ $periodePaie->decrypted_data['reception_variables'] }}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="preparation_bp">
+                Préparation BP
+            </label>
+            <p class="text-gray-700">{{ $periodePaie->decrypted_data['preparation_bp'] }}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="validation_bp_client">
+                Validation BP client
+            </label>
+            <p class="text-gray-700">{{ $periodePaie->decrypted_data['validation_bp_client'] }}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="preparation_envoie_dsn">
+                Préparation et envoie DSN
+            </label>
+            <p class="text-gray-700">{{ $periodePaie->decrypted_data['preparation_envoie_dsn'] }}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="accuses_dsn">
+                Accusés DSN
+            </label>
+            <p class="text-gray-700">{{ $periodePaie->decrypted_data['accuses_dsn'] }}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="notes">
+                Notes
+            </label>
+            <p class="text-gray-700">{{ $periodePaie->decrypted_data['notes'] }}</p>
+        </div>
+        <div class="flex items-center justify-between">
+            <a href="{{ route('periodes-paie.index') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Retour
+            </a>
+        </div>
+    </div>
+</div>
+@endsection --}}

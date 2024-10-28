@@ -218,19 +218,20 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    {{-- <div class="mb-4">
+                                    <div class="mb-4">
                                         <label class="block text-gray-700 text-sm font-bold mb-2" for="gestionnaires_secondaires">
                                             Binôme
                                         </label>
-                                        <select name="gestionnaires_secondaires[]" id="gestionnaires_secondaires" class="form-control" multiple>
-                                            @foreach($users as $user)
-                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                            @endforeach
-                                        </select>
+                            <select name="binome_id" class="form-control" required>
+                                <option value="">Sélectionner un binôme</option>
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}" {{ $client->binome_id == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
+                                @endforeach
+                            </select>
                                         @error('gestionnaires_secondaires')
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
-                                    </div> --}}
+                                    </div>
                                 </div>
                             </div>
 
