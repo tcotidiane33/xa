@@ -45,6 +45,15 @@
         <div class="breadcrumb">
             <h1>Créer un nouveau client</h1>
         </div>
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <div class="main-page">
             <div class="form-container">
                 <!-- Onglets -->
@@ -88,6 +97,9 @@
                                 <div class="col-md-4">
                                     <label>Nom du dirigeant</label>
                                     <input type="text" class="form-control" name="dirigeant_nom">
+                                    @error('name')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
                                 </div>
                                 <div class="col-md-4">
                                     <label>Téléphone</label>
@@ -100,18 +112,24 @@
                             </div>
                             <div class="form-group">
                                 <label for="date_estimative_envoi_variables">Date estimative d'envoi des variables</label>
-                                <input type="date" class="form-control" id="date_estimative_envoi_variables" name="date_estimative_envoi_variables">
+                                <input type="date" name="date_estimative_envoi_variables"
+                                    id="date_estimative_envoi_variables" class="form-control"
+                                    value="{{ old('date_estimative_envoi_variables') }}">
+                                    @error('date_estimative_envoi_variables')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
                             </div>
-                            
+
                             <div class="form-group">
                                 <label for="nb_bulletins">Nombre de bulletins</label>
-                                <input type="number" class="form-control" id="nb_bulletins" name="nb_bulletins">
+                                <input type="number" name="nb_bulletins" id="nb_bulletins" class="form-control"
+                                    value="{{ old('nb_bulletins') }}">
+                                    @error('nb_bulletins')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
                             </div>
-                            <div class="form-group">
-                                <label for="maj_fiche_para">Date de mise à jour fiche para</label>
-                                <input type="date" class="form-control" id="maj_fiche_para" name="maj_fiche_para">
-                            </div>
-                           
+
+
                         </div>
 
                         <!-- Onglet Contacts -->
@@ -155,7 +173,7 @@
                                     <input type="email" class="form-control" name="contact_compta_email">
                                 </div>
                             </div>
-                            <h4>Binômes Supplémentaires</h4>
+                            {{-- <h4>Binômes Supplémentaires</h4>
                             <div class="form-group">
                                 <label for="contact_paie">Contact Paie</label>
                                 <input type="text" class="form-control" id="contact_paie" name="contact_paie">
@@ -163,7 +181,7 @@
                             <div class="form-group">
                                 <label for="contact_comptabilite">Contact Comptabilité</label>
                                 <input type="text" class="form-control" id="contact_comptabilite" name="contact_comptabilite">
-                            </div>
+                            </div> --}}
                         </div>
 
                         <!-- Onglet Informations Internes -->
@@ -182,6 +200,9 @@
                                 <div class="col-md-4">
                                     <label>Téléphone LD</label>
                                     <input type="tel" class="form-control" name="responsable_telephone_ld">
+                                    @error('tel')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
                                 </div>
                             </div>
 
@@ -197,13 +218,19 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label>Binôme *</label>
-                                    <select name="binome_id" class="form-control" required>
-                                        <option value="">Sélectionner un binôme</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @endforeach
-                                    </select>
+                                    {{-- <div class="mb-4">
+                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="gestionnaires_secondaires">
+                                            Binôme
+                                        </label>
+                                        <select name="gestionnaires_secondaires[]" id="gestionnaires_secondaires" class="form-control" multiple>
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('gestionnaires_secondaires')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div> --}}
                                 </div>
                             </div>
 
@@ -219,15 +246,26 @@
                                     </select>
                                 </div>
                             </div> --}}
-                             <div class="form-group">
+                            <div class="form-group">
                                 <label for="convention_collective_id">Convention Collective</label>
-                                <select name="convention_collective_id" id="convention_collective_id" class="form-control">
+                                <select name="convention_collective_id" id="convention_collective_id"
+                                    class="form-control">
                                     <option value="">Sélectionner une convention collective</option>
-                                    @foreach($conventionCollectives as $conventionCollective)
-                                        <option value="{{ $conventionCollective->id }}">{{ $conventionCollective->name }}</option>
+                                    @foreach ($conventionCollectives as $conventionCollective)
+                                        <option value="{{ $conventionCollective->id }}">{{ $conventionCollective->name }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label for="maj_fiche_para">Date de mise à jour fiche para</label>
+                                <input type="date" name="maj_fiche_para" id="maj_fiche_para" class="form-control"
+                                    value="{{ old('maj_fiche_para') }}">
+                                    @error('maj_fiche_para')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                         </div>
 
                         <!-- Onglet Informations Supplémentaires -->
@@ -245,18 +283,34 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label>Date de début de prestation *</label>
-                                    <input type="date" name="date_debut_prestation" class="form-control" required>
+
+                                <div class="col-md-2 form-group">
+                                    <label for="date_debut_prestation">Date de début de prestation</label>
+                                    <input type="date" name="date_debut_prestation" id="date_debut_prestation"
+                                        class="form-control" value="{{ old('date_debut_prestation') }}">
+                                        @error('date_debut_prestation')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
-                                <div class="col-md-4">
-                                    <label>Date de fin de prestation</label>
-                                    <input type="date" name="date_fin_prestation" class="form-control">
+
+                                <div class="col-md-2 form-group">
+                                    <label for="date_fin_prestation">Date de fin de prestation</label>
+                                    <input type="date" name="date_fin_prestation" id="date_fin_prestation"
+                                        class="form-control" value="{{ old('date_fin_prestation') }}">
+                                        @error('date_fin_prestation')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
-                                <div class="col-md-6">
-                                    <label>Date de signature du contrat *</label>
-                                    <input type="date" name="date_signature_contrat" class="form-control" required>
+
+                                <div class="col-md-3 form-group">
+                                    <label for="date_signature_contrat">Date de signature du contrat</label>
+                                    <input type="date" name="date_signature_contrat" id="date_signature_contrat"
+                                        class="form-control" value="{{ old('date_signature_contrat') }}">
+                                        @error('date_signature_contrat')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
                                 </div>
+
                             </div>
 
                             <h4>Taux & Adhésions</h4>
@@ -397,7 +451,7 @@
                                 // Activer et afficher le prochain onglet
                                 currentStepIndex++;
                                 $(`#clientTabs a[href="#${response.nextStep}"]`).removeClass(
-                                'disabled');
+                                    'disabled');
                                 $(`#clientTabs a[href="#${response.nextStep}"]`).tab('show');
                                 updateButtons();
                             } else {

@@ -1,6 +1,6 @@
 {{-- components/basic-table.blade.php --}}
 <div class="container mx-auto p-4 pt-6 md:p-6">
-    <h4 class="text-lg font-bold mb-4">{{ $title ?? 'Basic Table' }}</h4>
+    {{-- <h4 class="text-lg font-bold mb-4">{{ $title ?? 'Basic Table' }}</h4> --}}
     <div class="overflow-x-auto">
         <table class="table w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

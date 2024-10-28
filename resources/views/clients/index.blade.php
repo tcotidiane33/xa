@@ -1,20 +1,13 @@
 @extends('layouts.admin')
 
+@section('title', 'Liste des Clients')
+
 @section('content')
-    <div class="main-content ">
-
-        <div class="page-wrapper mb-5">
-            <div class="container mx-auto mb-3 ">
-                <h2 class="text-2xl font-bold mb-6">{{ __('Tableau de bord des clients') }}</h2>
-
-                <!-- Formulaire de filtre -->
-                <form method="GET" action="{{ route('clients.index') }}" class="mb-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div>
-                            <label for="search" class="block text-sm font-medium text-gray-700">Recherche</label>
-                            <input type="text" name="search" id="search" value="{{ request('search') }}"
-                                class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                        </div>
+    <div class="main-content">
+        <div class="container mx-auto px-4 py-8">
+            <div class="row">
+                <form action="{{ route('clients.index') }}" method="GET" class="mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label for="status" class="block text-sm font-medium text-gray-700">Statut</label>
                             <select name="status" id="status"
@@ -33,7 +26,7 @@
                 </form>
 
                 <!-- Liste des clients -->
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-6 overflow-x-auto shadow-md sm:rounded-lg">
                     <h2 class="text-xl font-bold mb-4">{{ __('Liste des clients') }}</h2>
                     <div class="mb-4">
                         <a href="{{ route('clients.create') }}"
@@ -42,118 +35,133 @@
                         </a>
                     </div>
 
-                    @include('components.basic-table', [
-                        'headers' => [
-                            'Nom',
-                            'Responsable Paie',
-                            'Gestionnaire Principal',
-                            'Convention Collective',
+                    <table id="clientsTable" class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th scope="col"
+                                    class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nom</th>
+                                <th scope="col"
+                                    class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Responsable Paie</th>
+                                <th scope="col"
+                                    class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Gestionnaire Principal</th>
+                                <th scope="col"
+                                    class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Convention Collective</th>
+                                <th scope="col"
+                                    class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Saisie Variables</th>
+                                <th scope="col"
+                                    class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Client Forme Saisie</th>
+                                <th scope="col"
+                                    class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Date Formation Saisie</th>
+                                <th scope="col"
+                                    class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Date Début Prestation</th>
+                                <th scope="col"
+                                    class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach ($clients as $client)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $client->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $client->responsablePaie->name ?? 'N/A' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {{ $client->gestionnairePrincipal->name ?? 'N/A' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {{ $client->conventionCollective->name ?? 'N/A' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $client->saisie_variables }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $client->client_forme_saisie }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $client->date_formation_saisie }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $client->date_debut_prestation }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="{{ route('clients.show', $client->id) }}"
+                                            class="text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Voir</a>
+                                        <a href="{{ route('clients.edit', $client->id) }}"
+                                            class="text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Modifier</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
 
-                            'saisie_variables',
-                            'client_forme_saisie',
-                            'date_formation_saisie',
-                            'date_debut_prestation',
-                            'date_fin_prestation',
-                            'date_signature_contrat',
-                            'taux_at',
-                            'adhesion_mydrh',
-                            'date_adhesion_mydrh',
-
-                            'Est-ce un cabinet ?',
-                            'Portefeuille Cabinet',
-                            'Actions',
-                        ],
-                        'rows' => $clients->map(function ($client) {
-                            return [
-                                'name' => $client->name,
-                                'responsable' => $client->responsablePaie
-                                    ? $client->responsablePaie->name
-                                    : 'Non assigné',
-                                'gestionnaire' => $client->gestionnairePrincipal
-                                    ? $client->gestionnairePrincipal->name
-                                    : 'Non assigné',
-                                'convention' => $client->conventionCollective
-                                    ? $client->conventionCollective->name
-                                    : 'Non assignée',
-                                'saisie_variables' => $client->saisie_variables 
-                                    ? $client->saisie_variables 
-                                    : 'vide',
-                                'client_forme_saisie' => $client->client_forme_saisie 
-                                    ? $client->client_forme_saisie 
-                                    : 'vide',
-                                'date_formation_saisie' => $client->date_formation_saisie 
-                                    ? $client->date_formation_saisie 
-                                    : 'vide',
-                                'date_debut_prestation' => $client->date_debut_prestation 
-                                    ? $client->date_debut_prestation 
-                                    : 'vide',
-                                'date_fin_prestation' => $client->date_fin_prestation 
-                                    ? $client->date_fin_prestation 
-                                    : 'vide',
-                                'date_signature_contrat' => $client->date_signature_contrat 
-                                    ? $client->date_signature_contrat 
-                                    : 'vide',
-                                'taux_at' => $client->taux_at 
-                                    ? $client->taux_at 
-                                    : 'vide',
-                                'adhesion_mydrh' => $client->adhesion_mydrh 
-                                    ? $client->adhesion_mydrh
-                                    : 'vide',
-                                'date_adhesion_mydrh' => $client->date_adhesion_mydrh 
-                                    ? $client->date_adhesion_mydrh
-                                    : 'vide',
-                                'is_cabinet' => $client->is_cabinet 
-                                    ? 'Oui' 
-                                    : 'Non',
-                                'portfolio_cabinet' => $client->portfolioCabinet
-                                    ? $client->portfolioCabinet->name
-                                    : 'Aucun',
-                                'actions' =>
-                                    '
-                                                        <a href="' .
-                                    route('clients.show', $client) .
-                                    '" class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-3 py-2 text-center me-2 mb-2">Voir</a>
-                                                       <hr> <a href="' .
-                                    route('clients.edit', $client) .
-                                    '" class="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-2.5 py-2 text-center me-2 mb-2">Modifier</a>
-                                                    ',
-                            ];
-                        }),
-                        'rawColumns' => ['actions'],
-                    ])
+                    <!-- Pagination -->
                     <div class="mt-4">
                         {{ $clients->links() }}
                     </div>
                 </div>
             </div>
-            <div class="container mt-3">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <h3 class="text-lg font-semibold mb-4">Répartition des clients par statut</h3>
-                        <div id="clientStatusChart"></div>
-                    </div>
-
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <h3 class="text-lg font-semibold mb-4">Évolution du nombre de clients</h3>
-                        <div id="clientGrowthChart"></div>
-                    </div>
-
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <h3 class="text-lg font-semibold mb-4">Top 5 des conventions collectives</h3>
-                        <div id="topConventionsChart"></div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow p-6 mb-8">
-                    <h3 class="text-lg font-semibold mb-4">Répartition des clients par gestionnaire principal</h3>
-                    <div id="clientsByManagerChart"></div>
-                </div>
-            </div>
         </div>
     </div>
+    <hr>
+    <div class="container mt-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">Répartition des clients par statut</h3>
+                <div id="clientStatusChart"></div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">Évolution du nombre de clients</h3>
+                <div id="clientGrowthChart"></div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">Top 5 des conventions collectives</h3>
+                <div id="topConventionsChart"></div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h3 class="text-lg font-semibold mb-4">Répartition des clients par gestionnaire principal</h3>
+            <div id="clientsByManagerChart"></div>
+        </div>
+    </div>
+    
 @endsection
 
 @push('scripts')
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#clientsTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "language": {
+                    "lengthMenu": "Afficher _MENU_ enregistrements par page",
+                    "zeroRecords": "Aucun enregistrement trouvé",
+                    "info": "Affichage de la page _PAGE_ sur _PAGES_",
+                    "infoEmpty": "Aucun enregistrement disponible",
+                    "infoFiltered": "(filtré à partir de _MAX_ enregistrements au total)",
+                    "search": "Rechercher:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                }
+            });
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

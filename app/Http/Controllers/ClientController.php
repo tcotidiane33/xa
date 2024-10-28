@@ -19,7 +19,7 @@ use App\Http\Requests\Client\UpdateClientRequest;
 
 class ClientController extends Controller
 {
-   
+
     public function index(Request $request)
     {
         $query = Client::with(['responsablePaie', 'gestionnairePrincipal', 'conventionCollective']);
@@ -68,6 +68,125 @@ class ClientController extends Controller
             'clientsByManagerLabels'
         ));
     }
+
+    public function create()
+    {
+        $users = User::all();
+        $conventionCollectives = ConventionCollective::all();
+        $clients = Client::all();
+        return view('clients.create', compact('users', 'conventionCollectives', 'clients'));
+    }
+
+    public function store(StoreClientRequest $request)
+    {
+        $validatedData = $request->validated();
+
+        DB::beginTransaction();
+        try {
+            $client = Client::create($validatedData);
+
+            // Ajouter les relations
+            if (isset($validatedData['responsable_paie_id'])) {
+                $client->responsablePaie()->associate($validatedData['responsable_paie_id']);
+            }
+            if (isset($validatedData['gestionnaire_principal_id'])) {
+                $client->gestionnairePrincipal()->associate($validatedData['gestionnaire_principal_id']);
+            }
+            if (isset($validatedData['convention_collective_id'])) {
+                $client->conventionCollective()->associate($validatedData['convention_collective_id']);
+            }
+            if (isset($validatedData['portfolio_cabinet_id'])) {
+                $client->portfolioCabinet()->associate($validatedData['portfolio_cabinet_id']);
+            }
+            $client->save();
+
+            // Envoyer les emails
+            $manager = $client->gestionnairePrincipal;
+            $binome = $client->binome;
+            $responsablePaie = $client->responsablePaie;
+
+            $emails = [
+                $client->contact_paie_email,
+                $client->contact_compta_email,
+                $manager->email,
+                $binome->email,
+                $responsablePaie->email,
+            ];
+
+            Mail::to($client->contact_paie_email)
+                ->cc($emails)
+                ->send(new ClientAcknowledgementMail($manager, $client));
+            Mail::to($client->contact_compta_email)
+                ->cc($emails)
+                ->send(new ClientManagerChangeMail($manager));
+
+            DB::commit();
+            return redirect()->route('clients.index')->with('success', 'Client créé avec succès.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error("Erreur lors de la création du client: " . $e->getMessage());
+            return redirect()->back()->withErrors('Erreur lors de la création du client.');
+        }
+    }
+
+    public function update(UpdateClientRequest $request, $id)
+    {
+        $validated = $request->validated();
+
+        $client = Client::findOrFail($id);
+        $client->update($validated);
+
+        if (isset($validated['maj_fiche_para'])) {
+            ClientHistory::create([
+                'client_id' => $client->id,
+                'maj_fiche_para' => $validated['maj_fiche_para'],
+            ]);
+        }
+
+        if (isset($validated['gestionnaires_secondaires'])) {
+            $client->gestionnaires_secondaires = $validated['gestionnaires_secondaires'];
+            $client->save();
+        }
+
+        // Envoyer les emails
+        $emails = [
+            $client->contact_paie_email,
+            $client->contact_compta_email,
+        ];
+
+        Mail::to($client->contact_paie_email)
+            ->cc($emails)
+            ->send(new ClientAcknowledgementMail($client->gestionnairePrincipal, $client));
+        Mail::to($client->contact_compta_email)
+            ->cc($emails)
+            ->send(new ClientManagerChangeMail($client->gestionnairePrincipal));
+
+        return redirect()->route('clients.index')->with('success', 'Client mis à jour avec succès.');
+    }
+    public function edit(Client $client)
+    {
+        $users = User::all();
+        $conventionCollectives = ConventionCollective::all();
+        $clients = Client::all();
+        return view('clients.edit', compact('client', 'users', 'conventionCollectives', 'clients'));
+    }
+
+    public function show(Client $client)
+    {
+        $client->load(['responsablePaie', 'gestionnairePrincipal', 'conventionCollective', 'portfolioCabinet']);
+        return view('clients.show', compact('client'));
+    }
+
+    public function destroy(Client $client)
+    {
+        DB::transaction(function () use ($client) {
+            $client->gestionnaires()->detach();
+            $client->delete();
+        });
+
+        return redirect()->route('clients.index')->with('success', 'Client supprimé avec succès.');
+    }
+
     public function getInfo(Client $client)
     {
         return response()->json([
@@ -87,102 +206,6 @@ class ClientController extends Controller
             'portfolio_cabinet_id' => $client->portfolio_cabinet_id,
         ]);
     }
-
-    public function create()
-    {
-        $users = User::all();
-        $conventionCollectives = ConventionCollective::all();
-        $clients = Client::all(); // Récupérer tous les clients
-        return view('clients.create', compact('users', 'conventionCollectives', 'clients'));
-    }
-    public function store(StoreClientRequest $request)
-{
-    $validatedData = $request->validated();
-
-    DB::beginTransaction();
-    try {
-        $client = Client::create($validatedData);
-
-        // Ajouter les relations
-        $client->responsablePaie()->associate($validatedData['responsable_paie_id']);
-        $client->gestionnairePrincipal()->associate($validatedData['gestionnaire_principal_id']);
-        $client->conventionCollective()->associate($validatedData['convention_collective_id']);
-        $client->portfolioCabinet()->associate($validatedData['portfolio_cabinet_id']);
-        $client->save();
-
-        // Envoyer les emails
-        $manager = $client->gestionnairePrincipal;
-        $binome = $client->binome;
-        $responsablePaie = $client->responsablePaie;
-
-        $emails = [
-            $client->contact_paie_email,
-            $client->contact_compta_email,
-            $manager->email,
-            $binome->email,
-            $responsablePaie->email,
-        ];
-
-        Mail::to($client->contact_paie_email)
-            ->cc($emails)
-            ->send(new ClientAcknowledgementMail($manager, $client));
-        Mail::to($client->contact_compta_email)
-            ->cc($emails)
-            ->send(new ClientManagerChangeMail($manager));
-
-        DB::commit();
-        return redirect()->route('clients.index')->with('success', 'Client créé avec succès.');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        \Log::error("Erreur lors de la création du client: " . $e->getMessage());
-        return redirect()->back()->withErrors('Erreur lors de la création du client.');
-    }
-}
-
-
-    public function edit(Client $client)
-    {
-        $users = User::all();
-        $conventionCollectives = ConventionCollective::all();
-        $clients = Client::all();
-        return view('clients.edit', compact('client', 'users', 'conventionCollectives', 'clients'));
-    }
-
-    public function update(UpdateClientRequest $request, $id)
-    {
-        $validated = $request->validated();
-    
-        $client = Client::findOrFail($id);
-        $client->update($validated);
-    
-        if (isset($validated['maj_fiche_para'])) {
-            ClientHistory::create([
-                'client_id' => $client->id,
-                'maj_fiche_para' => $validated['maj_fiche_para'],
-            ]);
-        }
-    
-        if (isset($validated['gestionnaires_secondaires'])) {
-            $client->gestionnaires_secondaires = $validated['gestionnaires_secondaires'];
-            $client->save();
-        }
-    
-        // Envoyer les emails
-        $emails = [
-            $client->contact_paie_email,
-            $client->contact_compta_email,
-        ];
-    
-        Mail::to($client->contact_paie_email)
-            ->cc($emails)
-            ->send(new ClientAcknowledgementMail($client->gestionnairePrincipal, $client));
-        Mail::to($client->contact_compta_email)
-            ->cc($emails)
-            ->send(new ClientManagerChangeMail($client->gestionnairePrincipal));
-    
-        return redirect()->route('admin.clients.index')->with('success', 'Client mis à jour avec succès.');
-    }
-
     public function transfer(Request $request)
     {
         $validated = $request->validate([
@@ -204,22 +227,6 @@ class ClientController extends Controller
             DB::rollBack();
             return redirect()->back()->with('error', 'Une erreur est survenue : ' . $e->getMessage());
         }
-    }
-
-    public function show(Client $client)
-    {
-        $client->load(['responsablePaie', 'gestionnairePrincipal', 'conventionCollective', 'portfolioCabinet']);
-        return view('clients.show', compact('client'));
-    }
-
-    public function destroy(Client $client)
-    {
-        DB::transaction(function () use ($client) {
-            $client->gestionnaires()->detach();
-            $client->delete();
-        });
-
-        return redirect()->route('clients.index')->with('success', 'Client supprimé avec succès.');
     }
 
     public function validateStep(Request $request, $step)

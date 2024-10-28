@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Traits\Filterable;
@@ -24,7 +23,8 @@ class Client extends Model
         'gestionnaire_telephone_ld', 'binome_telephone_ld', 'binome_id',
         'saisie_variables', 'client_forme_saisie', 'date_formation_saisie',
         'date_fin_prestation', 'date_signature_contrat', 'taux_at',
-        'adhesion_mydrh', 'date_adhesion_mydrh', 'is_cabinet', 'portfolio_cabinet_id'
+        'adhesion_mydrh', 'date_adhesion_mydrh', 'is_cabinet', 'portfolio_cabinet_id',
+        'date_estimative_envoi_variables', 'date_rappel_mail'
     ];
 
     protected $dates = [
@@ -41,18 +41,11 @@ class Client extends Model
 
     // Relations
 
-    // Relation avec le gestionnaire principal
     public function gestionnairePrincipal()
     {
         return $this->belongsTo(User::class, 'gestionnaire_principal_id');
     }
 
-    public function periodesPaie()
-    {
-        return $this->hasMany(PeriodePaie::class);
-    }
-
-    // Relation avec le responsable de la paie
     public function responsablePaie()
     {
         return $this->belongsTo(User::class, 'responsable_paie_id');

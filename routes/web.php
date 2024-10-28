@@ -74,8 +74,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/traitements-paie/{traitementPaie}/edit', [TraitementPaieController::class, 'edit'])->name('traitements-paie.edit');
     Route::put('/traitements-paie/{traitementPaie}', [TraitementPaieController::class, 'update'])->name('traitements-paie.update');
     Route::delete('/traitements-paie/{traitementPaie}', [TraitementPaieController::class, 'destroy'])->name('traitements-paie.destroy');
-    
-    Route::get('/traitements-paie/historique', [TraitementPaieController::class, 'historique'])->name('traitements-paie.historique');
+
+    Route::get('/historique', [TraitementPaieController::class, 'historique'])->name('traitements-paie.historique');
 
     // Route::get('/traitements-paie/create', [TraitementPaieController::class, 'create'])->name('traitements-paie.create');
     Route::post('/traitements-paie/store', [TraitementPaieController::class, 'store'])->name('traitements-paie.store');

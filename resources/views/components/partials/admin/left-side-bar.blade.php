@@ -60,11 +60,12 @@
                 <!-- Traitement des Paies -->
                 <li class="dropdown">
                     <a href="javascript:;" class="dropdown-toggle">
-                        <span class="micon bi bi-cash"></span><span class="mtext">Traitements de Paie</span>
+                        <span class="micon bi bi-cash"></span><span class="mtext">Traitements Paie</span>
                     </a>
                     <ul class="submenu">
                         <li><a href="{{ route('traitements-paie.index') }}">Tous les Traitements</a></li>
                         <li><a href="{{ route('traitements-paie.create') }}">Nouveau Traitement</a></li>
+                        <li><a href="{{ route('traitements-paie.historique') }}">Historiques</a></li>
                     </ul>
                 </li>
 
