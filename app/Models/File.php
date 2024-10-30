@@ -5,15 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Notification extends Model
+class File extends Model
 {
     use HasFactory;
-
     protected $fillable = [
-        'type', 'notifiable', 'data', 'read_at', 'notifiable_type'
+        'traitement_paie_id',
+        'type',
+        'path',
     ];
-    public function notifiable()
+
+    public function traitementPaie()
     {
-        return $this->morphTo();
+        return $this->belongsTo(TraitementPaie::class);
     }
 }

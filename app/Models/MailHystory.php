@@ -5,15 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Notification extends Model
+class MailHystory extends Model
 {
     use HasFactory;
-
     protected $fillable = [
-        'type', 'notifiable', 'data', 'read_at', 'notifiable_type'
+        'mail_id',
+        'statut',
     ];
-    public function notifiable()
+
+    public function mail()
     {
-        return $this->morphTo();
+        return $this->belongsTo(Mail::class);
     }
 }

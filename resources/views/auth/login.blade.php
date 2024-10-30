@@ -6,8 +6,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            background-color: #f3f4f6;
+            /* min-height: 100vh; */
+            page-break-after: auto;
+            padding: 1rem;
+            border-radius: 15px;
+            background-color: #f3f4f685;
             /* Background color equivalent to bg-gray-100 */
         }
 
@@ -91,14 +94,14 @@
                                 ',
                     'submit_text' => __('Connexion'),
                     'submit_class' =>
-                        'text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2',
+                        ' from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2',
                     'after_submit' =>
                         '
                                     <p class="text-sm font-light text-gray-500 dark:text-gray-400">
                                         Vous n\'avez pas encore de compte ? 
                                         <a href="' .
                         route('register') .
-                        '"text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                        '" from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
                                             Inscrivez-vous
                                         </a>
                                     </p>

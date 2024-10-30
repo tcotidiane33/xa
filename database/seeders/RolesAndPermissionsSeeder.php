@@ -14,52 +14,30 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run()
     {
-        // Créer les rôles
-        $admin = Role::create(['name' => 'admin']);
-        $gestionnaire = Role::create(['name' => 'gestionnaire']);
-        $responsable = Role::create(['name' => 'responsable']);
-        $superviseur = Role::create(['name' => 'superviseur']);
+        // Reset cached roles and permissions
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Créer les permissions
-        $viewClient = Permission::create(['name' => 'view clients']);
-        $createClient = Permission::create(['name' => 'create clients']);
-        $editClient = Permission::create(['name' => 'edit clients']);
-        $deleteClient = Permission::create(['name' => 'delete clients']);
+        // Create permissions if they do not exist
+        $permissions = ['manage forms', 'manage fields', 'manage actions'];
 
-        // Créer les permissions
-        $viewGestionnaire = Permission::create(['name' => 'view gestionnaires']);
-        $createGestionnaire = Permission::create(['name' => 'create gestionnaires']);
-        $editGestionnaire = Permission::create(['name' => 'edit gestionnaires']);
-        $deleteGestionnaire = Permission::create(['name' => 'delete gestionnaires']);
-        
-        // Créer les permissions
-        $viewResponsable = Permission::create(['name' => 'view responsables']);
-        $createResponsable = Permission::create(['name' => 'create responsables']);
-        $editResponsable = Permission::create(['name' => 'edit responsables']);
-        $deleteResponsable = Permission::create(['name' => 'delete responsables']);
-        
-        // Créer les permissions
-        $viewSuperviseur = Permission::create(['name' => 'view superviseurs']);
-        $createSuperviseur = Permission::create(['name' => 'create superviseurs']);
-        $editSuperviseur = Permission::create(['name' => 'edit superviseurs']);
-        $deleteSuperviseur = Permission::create(['name' => 'delete superviseurs']);
-        
-        // Créer les permissions
-        $viewTraitementPaie = Permission::create(['name' => 'view traitements-paie']);
-        $createTraitementPaie = Permission::create(['name' => 'create traitements-paie']);
-        $editTraitementPaie = Permission::create(['name' => 'edit traitements-paie']);
-        $deleteTraitementPaie = Permission::create(['name' => 'delete traitements-paie']);
+        foreach ($permissions as $permission) {
+            if (!Permission::where('name', $permission)->exists()) {
+                Permission::create(['name' => $permission]);
+            }
+        }
 
-        // Créer les permissions
-        $viewPeriodePaie = Permission::create(['name' => 'view periodes-paie']);
-        $createPeriodePaie = Permission::create(['name' => 'create periodes-paie']);
-        $editPeriodePaie = Permission::create(['name' => 'edit periodes-paie']);
-        $deletePeriodePaie = Permission::create(['name' => 'delete periodes-paie']);
+        // Create roles and assign created permissions
 
-        // Attribuer les permissions aux rôles
-        $admin->givePermissionTo(Permission::all());
-        $gestionnaire->givePermissionTo([$viewClient, $createClient, $editClient]);
-        $responsable->givePermissionTo([$viewClient, $editClient, $viewPeriodePaie, $createTraitementPaie, $viewTraitementPaie, $editPeriodePaie, $editTraitementPaie, $createPeriodePaie]);
-        $superviseur->givePermissionTo([$viewClient, $viewPeriodePaie, $viewTraitementPaie, $viewResponsable, $viewGestionnaire]);
+        // Admin (N)
+        $admin = Role::firstOrCreate(['name' => 'Admin']);
+        $admin->givePermissionTo($permissions);
+
+        // Responsable (N-1)
+        $responsable = Role::firstOrCreate(['name' => 'Responsable']);
+        $responsable->givePermissionTo(['manage forms', 'manage fields']);
+
+        // Gestionnaire (N-2)
+        $gestionnaire = Role::firstOrCreate(['name' => 'Gestionnaire']);
+        $gestionnaire->givePermissionTo(['manage forms']);
     }
 }

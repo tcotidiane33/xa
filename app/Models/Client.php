@@ -1,10 +1,12 @@
 <?php
+
 namespace App\Models;
 
 use App\Traits\Filterable;
 use Illuminate\Support\Facades\DB;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,11 +28,13 @@ class Client extends Model implements AuditableContract
         'saisie_variables', 'client_forme_saisie', 'date_formation_saisie',
         'date_fin_prestation', 'date_signature_contrat', 'taux_at',
         'adhesion_mydrh', 'date_adhesion_mydrh', 'is_cabinet', 'portfolio_cabinet_id',
-        'date_estimative_envoi_variables', 'date_rappel_mail'
+        'date_estimative_envoi_variables', 'date_rappel_mail', 'reference'
     ];
 
     protected $dates = [
-        'date_debut_prestation', 'date_estimative_envoi_variables', 'maj_fiche_para','saisie_variables', 'date_signature_contrat', 'date_formation_saisie', 'date_adhesion_mydrh', 'date_rappel_mail'
+        'date_debut_prestation', 'date_estimative_envoi_variables', 'maj_fiche_para',
+        'saisie_variables', 'date_signature_contrat', 'date_formation_saisie',
+        'date_adhesion_mydrh', 'date_rappel_mail'
     ];
 
     protected $casts = [
@@ -49,12 +53,46 @@ class Client extends Model implements AuditableContract
         'gestionnaires_secondaires' => 'array',
     ];
 
+    public function scopeFilterBySearch($query, $search)
+{
+    return $query->where('name', 'like', '%' . $search . '%');
+}
+
+public function scopeFilterByStatus($query, $status)
+{
+    return $query->where('status', $status);
+}
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($traitementPaie) {
+            $traitementPaie->reference = 'TP-' . Str::upper(Str::random(8));
+        });
+    }
+
+    public function gestionnaire()
+    {
+        return $this->belongsTo(User::class, 'gestionnaire_id');
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
+
+    public function periodePaie()
+    {
+        return $this->belongsTo(PeriodePaie::class);
+    }
+
     // Relations
 
     public function gestionnairePrincipal()
     {
         return $this->belongsTo(User::class, 'gestionnaire_principal_id');
     }
+
     public function gestionnairesSecondaires()
     {
         return $this->belongsToMany(User::class, 'client_gestionnaire_secondaire', 'client_id', 'gestionnaire_id');
@@ -128,6 +166,7 @@ class Client extends Model implements AuditableContract
         $this->binome_id = $userId;
         $this->save();
     }
+
     public function transferGestionnaire($oldGestionnaireId, $newGestionnaireId, $isPrincipal = false)
     {
         DB::transaction(function () use ($oldGestionnaireId, $newGestionnaireId, $isPrincipal) {
@@ -166,12 +205,5 @@ class Client extends Model implements AuditableContract
         }
     }
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($client) {
-            $client->saveMajFicheParaHistory();
-        });
-    }
+    
 }

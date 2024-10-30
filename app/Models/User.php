@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
 use Avihs\PostReply\Traits\HasPost;
@@ -62,15 +61,16 @@ class User extends Authenticatable implements AuditableContract
     {
         return $this->hasRole('admin'); // ou toute autre logique pour déterminer si l'utilisateur est admin
     }
+
     public function roles()
     {
         return $this->belongsToMany(Role::class);
     }
+
     public function profile()
     {
         return $this->hasOne(Profile::class);
     }
-  
 
     public function clientsAsGestionnaire()
     {
@@ -81,10 +81,12 @@ class User extends Authenticatable implements AuditableContract
     {
         return $this->hasMany(Client::class, 'responsable_paie_id');
     }
+
     public function clientsAsBinome()
     {
         return $this->hasMany(Client::class, 'binome_id');
     }
+
     public function clientsResponsable()
     {
         return $this->hasMany(Client::class, 'responsable_paie_id');
@@ -140,7 +142,6 @@ class User extends Authenticatable implements AuditableContract
         return $this->hasMany(Material::class);
     }
 
-
     public function clientsAsManager()
     {
         return $this->belongsToMany(Client::class, 'gestionnaire_client', 'gestionnaire_id', 'client_id')
@@ -162,9 +163,4 @@ class User extends Authenticatable implements AuditableContract
             }
         });
     }
-
-    // Dans le modèle User
-
-    
-
 }

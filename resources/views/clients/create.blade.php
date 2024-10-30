@@ -2,6 +2,7 @@
 
 @push('styles')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/default.min.css">
     <style>
         .form-container {
             padding: 20px;
@@ -76,6 +77,8 @@
 
                 <form id="clientForm">
                     @csrf
+                    <input type="hidden" name="client_id" value="{{ $client->id ?? '' }}">
+
                     <div class="tab-content mt-3">
                         <!-- Onglet Société -->
                         <div class="tab-pane fade show active" id="societe">
@@ -83,14 +86,23 @@
                                 <div class="col-md-4">
                                     <label for="name">Nom Société *</label>
                                     <input type="text" class="form-control" name="name" required>
+                                    @error('name')
+                                        <div class="error-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-4">
                                     <label for="type_societe">Type</label>
                                     <input type="text" class="form-control" name="type_societe">
+                                    @error('type_societe')
+                                        <div class="error-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-4">
                                     <label for="ville">Ville</label>
                                     <input type="text" class="form-control" name="ville">
+                                    @error('ville')
+                                        <div class="error-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -104,29 +116,38 @@
                                 <div class="col-md-4">
                                     <label>Téléphone</label>
                                     <input type="tel" class="form-control" name="dirigeant_telephone">
+                                    @error('dirigeant_telephone')
+                                        <div class="error-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-4">
                                     <label>Email</label>
                                     <input type="email" class="form-control" name="dirigeant_email">
+                                    @error('dirigeant_email')
+                                        <div class="error-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="date_estimative_envoi_variables">Date estimative d'envoi des variables</label>
-                                <input type="date" name="date_estimative_envoi_variables"
-                                    id="date_estimative_envoi_variables" class="form-control"
-                                    value="{{ old('date_estimative_envoi_variables') }}">
-                                @error('date_estimative_envoi_variables')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
+                            <div class="form-group flex gap-6">
+                                <div class="col-md-2">
 
-                            <div class="form-group">
-                                <label for="nb_bulletins">Nombre de bulletins</label>
-                                <input type="number" name="nb_bulletins" id="nb_bulletins" class="form-control"
-                                    value="{{ old('nb_bulletins') }}">
-                                @error('nb_bulletins')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
+                                    <label for="date_estimative_envoi_variables">Date estimative d'envoi des
+                                        variables</label>
+                                    <input type="date" name="date_estimative_envoi_variables"
+                                        id="date_estimative_envoi_variables" class="form-control"
+                                        value="{{ old('date_estimative_envoi_variables') }}">
+                                    @error('date_estimative_envoi_variables')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="nb_bulletins">Nombre de bulletins</label>
+                                    <input type="number" name="nb_bulletins" id="nb_bulletins" class="form-control"
+                                        value="{{ old('nb_bulletins') }}">
+                                    @error('nb_bulletins')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
 
 
@@ -139,18 +160,30 @@
                                 <div class="col-md-3">
                                     <label>Nom</label>
                                     <input type="text" class="form-control" name="contact_paie_nom">
+                                    @error('contact_paie_nom')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-3">
                                     <label>Prénom</label>
                                     <input type="text" class="form-control" name="contact_paie_prenom">
+                                    @error('contact_paie_prenom')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-3">
                                     <label>Téléphone</label>
                                     <input type="tel" class="form-control" name="contact_paie_telephone">
+                                    @error('contact_paie_telephone')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md3">
                                     <label>Email</label>
                                     <input type="email" class="form-control" name="contact_paie_email">
+                                    @error('contact_paie_email')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -159,18 +192,30 @@
                                 <div class="col-md-3">
                                     <label>Nom</label>
                                     <input type="text" class="form-control" name="contact_compta_nom">
+                                    @error('contact_compta_nom')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-3">
                                     <label>Prénom</label>
                                     <input type="text" class="form-control" name="contact_compta_prenom">
+                                    @error('contact_compta_prenom')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-3">
                                     <label>Téléphone</label>
                                     <input type="tel" class="form-control" name="contact_compta_telephone">
+                                    @error('contact_compta_telephone')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-3">
                                     <label>Email</label>
                                     <input type="email" class="form-control" name="contact_compta_email">
+                                    @error('contact_compta_email')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             {{-- <h4>Binômes Supplémentaires</h4>
@@ -219,13 +264,15 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="gestionnaires_secondaires">
+                                        <label class="block text-gray-700 text-sm font-bold mb-2"
+                                            for="gestionnaires_secondaires">
                                             Binôme
                                         </label>
                                         <select name="binome_id" class="form-control" required>
                                             <option value="">Sélectionner un binôme</option>
                                             @foreach ($users as $user)
-                                                <option value="{{ $user->id }}" {{ isset($client) && $client->binome_id == $user->id ? 'selected' : '' }}>
+                                                <option value="{{ $user->id }}"
+                                                    {{ isset($client) && $client->binome_id == $user->id ? 'selected' : '' }}>
                                                     {{ $user->name }}
                                                 </option>
                                             @endforeach
@@ -234,6 +281,16 @@
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="gestionnaire_telephone_ld">Téléphone LD Gestionnaire</label>
+                                    <input type="tel" class="form-control" name="gestionnaire_telephone_ld">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="binome_telephone_ld">Téléphone LD Binôme</label>
+                                    <input type="tel" class="form-control" name="binome_telephone_ld">
                                 </div>
                             </div>
 
@@ -305,6 +362,8 @@
                                     @enderror
                                 </div>
 
+
+
                                 <div class="col-md-3 form-group">
                                     <label for="date_signature_contrat">Date de signature du contrat</label>
                                     <input type="date" name="date_signature_contrat" id="date_signature_contrat"
@@ -312,6 +371,10 @@
                                     @error('date_signature_contrat')
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="date_rappel_mail">Date de rappel mail</label>
+                                    <input type="date" name="date_rappel_mail" class="form-control">
                                 </div>
 
                             </div>
@@ -370,6 +433,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     <script>
         $(document).ready(function() {
             // Configuration de Toastr
@@ -454,7 +518,7 @@
                                 // Activer et afficher le prochain onglet
                                 currentStepIndex++;
                                 $(`#clientTabs a[href="#${response.nextStep}"]`).removeClass(
-                                    'disabled');
+                                'disabled');
                                 $(`#clientTabs a[href="#${response.nextStep}"]`).tab('show');
                                 updateButtons();
                             } else {
