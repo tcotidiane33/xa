@@ -16,7 +16,8 @@ class PeriodePaie extends Model
         'reference', 'debut', 'fin', 'validee', 'client_id', 'reception_variables', 'preparation_bp',
         'validation_bp_client', 'preparation_envoie_dsn', 'accuses_dsn', 'notes'
     ];
-    protected $dates = ['debut', 'fin'];
+    protected $dates = ['debut', 'fin', 'reception_variables', 'preparation_bp',
+    'validation_bp_client', 'preparation_envoie_dsn', 'accuses_dsn',];
 
     protected $casts = [
         'debut' => 'date',

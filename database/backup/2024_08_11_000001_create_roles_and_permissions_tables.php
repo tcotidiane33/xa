@@ -11,19 +11,19 @@ return new class extends Migration {
     public function up(): void
     {
         // 2024_08_11_000001_create_roles_and_permissions_tables.php
-        Schema::create('roles', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->string('description')->nullable();
-            $table->timestamps();
-        });
+        // Schema::create('roles', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string('name')->unique();
+        //     $table->string('description')->nullable();
+        //     $table->timestamps();
+        // });
 
-        Schema::create('permissions', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->string('description')->nullable();
-            $table->timestamps();
-        });
+        // Schema::create('permissions', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string('name')->unique();
+        //     $table->string('description')->nullable();
+        //     $table->timestamps();
+        // });
 
         Schema::create('role_user', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained()->onDelete('cascade');

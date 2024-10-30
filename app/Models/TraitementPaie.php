@@ -11,20 +11,13 @@ class TraitementPaie extends Model
 
     protected $fillable = [
         'reference', 'gestionnaire_id', 'client_id', 'periode_paie_id',
-        'nbr_bull', 'reception_variable', 'preparation_bp', 'validation_bp_client',
-        'preparation_envoie_dsn', 'accuses_dsn', 'teledec_urssaf', 'notes',
-        'maj_fiche_para_file',
-        'reception_variables_file',
-        'preparation_bp_file',
-        'validation_bp_client_file',
-        'preparation_envoi_dsn_file',
-        'accuses_dsn_file',
+        'nbr_bull', 'teledec_urssaf',
+        'maj_fiche_para_file', 'reception_variables_file', 'preparation_bp_file',
+        'validation_bp_client_file', 'preparation_envoi_dsn_file', 'accuses_dsn_file',
     ];
 
-
     protected $dates = [
-        'reception_variable', 'preparation_bp', 'validation_bp_client',
-        'preparation_envoie_dsn', 'accuses_dsn', 'teledec_urssaf'
+        'teledec_urssaf'
     ];
 
     protected static function boot()
@@ -35,6 +28,7 @@ class TraitementPaie extends Model
             $traitementPaie->reference = 'TP-' . Str::upper(Str::random(8));
         });
     }
+
     public function gestionnaire()
     {
         return $this->belongsTo(User::class, 'gestionnaire_id');

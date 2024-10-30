@@ -1,46 +1,33 @@
 @extends('layouts.admin')
 
+@section('title', 'Ajouter une nouvelle période de paie')
+
 @section('content')
-    <div class="main-content">
-        <div class="main-page">
-            <div class="row">
-                </br></br>
-            </div>
-            <div class="breadcrumb">
+<div class="container mx-auto p-4 pt-6 md:p-6">
+    <h1 class="text-2xl font-bold mb-4">Ajouter une nouvelle période de paie</h1>
 
-                <h1>Créer un Période de Paie</h1>
-            </div>
-            <div class="container">
-                <form action="{{ route('periodes-paie.store') }}" method="POST">
-                    @csrf
+    <form action="{{ route('periodes-paie.store') }}" method="POST">
+        @csrf
 
-                    <div class="form-group">
-                        <label for="reference">Référence</label>
-                        <input type="text" name="reference" id="reference" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="client_id">Client</label>
-                        <select name="client_id" id="client_id" class="form-control" required>
-                            @foreach ($clients as $client)
-                                <option value="{{ $client->id }}">{{ $client->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="debut">Date de début</label>
-                        <input type="date" name="debut" id="debut" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="fin">Date de fin</label>
-                        <input type="date" name="fin" id="fin" class="form-control" required>
-                    </div>
-
-                    <button type="submit" class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Créer</button>
-                </form>
-            </div>
+        <div class="mb-4 w-sm group">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="debut">
+                Date de début
+            </label>
+            <input type="date" name="debut" id="debut" class="form-control" required>
         </div>
-    </div>
+
+        <div class="mb-4 w-sm group">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="fin">
+                Date de fin
+            </label>
+            <input type="date" name="fin" id="fin" class="form-control" required>
+        </div>
+
+        <button type="submit" class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                Ajouter
+            </span>
+        </button>
+    </form>
+</div>
 @endsection

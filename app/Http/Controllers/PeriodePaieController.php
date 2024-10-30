@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Client;
 use App\Models\PeriodePaie;
 use Illuminate\Http\Request;
+use App\Models\TraitementPaie;
 use App\Models\PeriodePaieHistory;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\RelationUpdated;
@@ -14,6 +16,13 @@ use App\Http\Requests\PeriodePaie\UpdatePeriodePaieRequest;
 
 class PeriodePaieController extends Controller
 {
+    private function generateReference()
+    {
+        $currentMonth = Carbon::now()->format('F');
+        $currentYear = Carbon::now()->format('Y');
+        return 'PERIODE_' . strtoupper($currentMonth) . '_' . $currentYear;
+    }
+
     public function index(Request $request)
     {
         $query = PeriodePaie::query();
@@ -59,23 +68,35 @@ class PeriodePaieController extends Controller
             $periode->decrypted_data = $periode->decryptedData;
         }
     
-        return view('periodes_paie.index', compact('periodesPaie', 'clients', 'gestionnaires'));
+        // Récupérer les clients éligibles
+        $eligibleClients = $this->getEligibleClients();
+        $currentPeriodePaie = PeriodePaie::where('validee', true)->latest()->first();
+    
+        return view('periodes_paie.index', compact('periodesPaie', 'clients', 'gestionnaires', 'eligibleClients', 'currentPeriodePaie'));
     }
-
 
     public function create()
     {
-        $clients = Client::all();
-        $gestionnaires = User::role('gestionnaire')->get();
-        return view('periodes_paie.create', compact('clients', 'gestionnaires'));
+        return view('periodes_paie.create');
     }
 
     public function store(StorePeriodePaieRequest $request)
     {
         $validated = $request->validated();
-        $client = Client::findOrFail($validated['client_id']);
-        $reference = strtoupper(now()->format('M')) . '_' . strtoupper($client->name);
 
+        // Vérifier qu'il n'y a qu'une seule période de paie active par mois
+        $currentMonth = Carbon::now()->format('m');
+        $currentYear = Carbon::now()->format('Y');
+        $existingPeriode = PeriodePaie::whereMonth('debut', $currentMonth)
+            ->whereYear('debut', $currentYear)
+            ->where('validee', true)
+            ->first();
+    
+        if ($existingPeriode) {
+            return redirect()->route('periodes-paie.index')->with('error', 'Il existe déjà une période de paie active pour ce mois.');
+        }
+
+        $reference = $this->generateReference();
         $periodePaie = PeriodePaie::create(array_merge($validated, ['reference' => $reference]));
 
         PeriodePaieHistory::create([
@@ -90,12 +111,14 @@ class PeriodePaieController extends Controller
 
     public function show(PeriodePaie $periodePaie)
     {
-        // $periodePaie->load('client', 'histories.user');
         // Déchiffrer les données de la période de paie
-    $periodePaie->decrypted_data = $periodePaie->decryptedData;
+        $periodePaie->decrypted_data = $periodePaie->decryptedData;
 
-    return view('periodes_paie.show', compact('periodePaie'));
-}
+        // Récupérer les traitements de paie associés à cette période
+        $traitementsPaie = TraitementPaie::where('periode_paie_id', $periodePaie->id)->get();
+
+        return view('periodes_paie.show', compact('periodePaie', 'traitementsPaie'));
+    }
 
     public function edit(PeriodePaie $periodePaie)
     {
@@ -105,19 +128,6 @@ class PeriodePaieController extends Controller
 
         $clients = Client::all();
         return view('periodes_paie.edit', compact('periodePaie', 'clients'));
-    }
-
-
-
-    public function destroy(PeriodePaie $periodePaie)
-    {
-        try {
-            $periodePaie->delete();
-            return redirect()->route('periodes-paie.index')->with('success', 'Période de paie supprimée avec succès.');
-        } catch (\Exception $e) {
-            \Log::error('Erreur lors de la suppression de la période de paie : ' . $e->getMessage());
-            return redirect()->route('periodes-paie.index')->with('error', 'Impossible de supprimer cette période de paie. ' . $e->getMessage());
-        }
     }
 
     public function update(UpdatePeriodePaieRequest $request, PeriodePaie $periodePaie)
@@ -139,6 +149,17 @@ class PeriodePaieController extends Controller
         return redirect()->route('periodes-paie.index')->with('success', 'Période de paie mise à jour avec succès.');
     }
 
+    public function destroy(PeriodePaie $periodePaie)
+    {
+        try {
+            $periodePaie->delete();
+            return redirect()->route('periodes-paie.index')->with('success', 'Période de paie supprimée avec succès.');
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la suppression de la période de paie : ' . $e->getMessage());
+            return redirect()->route('periodes-paie.index')->with('error', 'Impossible de supprimer cette période de paie. ' . $e->getMessage());
+        }
+    }
+
     public function valider(PeriodePaie $periodePaie)
     {
         if ($periodePaie->canBeValidated()) {
@@ -155,6 +176,20 @@ class PeriodePaieController extends Controller
         } else {
             return redirect()->route('periodes-paie.index')->with('error', 'Tous les traitements de paie doivent être complets avant de valider la période.');
         }
+    }
+
+    public function close(PeriodePaie $periodePaie)
+    {
+        $periodePaie->update(['cloturee' => true]);
+
+        PeriodePaieHistory::create([
+            'periode_paie_id' => $periodePaie->id,
+            'user_id' => Auth::id(),
+            'action' => 'closed',
+            'details' => 'Période de paie clôturée',
+        ]);
+
+        return redirect()->route('periodes-paie.index')->with('success', 'Période de paie clôturée avec succès.');
     }
 
     public function updateRelation(Request $request, $userId)
@@ -214,5 +249,25 @@ class PeriodePaieController extends Controller
         ]);
 
         return redirect()->route('periodes-paie.index')->with('success', 'Champ mis à jour avec succès.');
+    }
+
+    public function getInfo($id)
+    {
+        $periodePaie = PeriodePaie::findOrFail($id);
+        return response()->json([
+            'debut' => $periodePaie->debut->format('Y-m-d'),
+            'fin' => $periodePaie->fin->format('Y-m-d'),
+            'progress' => $periodePaie->progressPercentage(),
+        ]);
+    }
+
+    private function getEligibleClients()
+    {
+        $nextMonth = Carbon::now()->addMonth();
+        $fifteenthNextMonth = $nextMonth->copy()->day(15);
+
+        return Client::where('date_signature_contrat', '<=', $fifteenthNextMonth)
+            ->where('date_fin_prestation', '>=', $fifteenthNextMonth)
+            ->get();
     }
 }

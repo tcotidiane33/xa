@@ -3,16 +3,18 @@ namespace App\Models;
 
 use App\Traits\Filterable;
 use Illuminate\Support\Facades\DB;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Client extends Model
+class Client extends Model implements AuditableContract
 {
-    use Filterable, HasFactory, Notifiable;
+    use Filterable, HasFactory, Notifiable, Auditable;
 
     protected $fillable = [
-        'name', 'email', 'phone', 'responsable_paie_id', 'gestionnaire_principal_id', 'gestionnaires_secondaires',
+        'name', 'email', 'phone', 'responsable_paie_id', 'gestionnaire_principal_id',
         'date_debut_prestation', 'contact_paie', 'contact_comptabilite', 'nb_bulletins',
         'maj_fiche_para', 'convention_collective_id', 'status', 'is_portfolio',
         'parent_client_id', 'type_societe', 'ville', 'dirigeant_nom',
@@ -28,14 +30,22 @@ class Client extends Model
     ];
 
     protected $dates = [
-        'date_debut_prestation', 'date_estimative_envoi_variables', 'maj_fiche_para'
+        'date_debut_prestation', 'date_estimative_envoi_variables', 'maj_fiche_para','saisie_variables', 'date_signature_contrat', 'date_formation_saisie', 'date_adhesion_mydrh', 'date_rappel_mail'
     ];
 
     protected $casts = [
         'date_debut_prestation' => 'datetime',
+        'date_fin_prestation' => 'datetime',
         'date_estimative_envoi_variables' => 'datetime',
         'maj_fiche_para' => 'datetime',
+        'date_rappel_mail' => 'datetime',
+        'date_adhesion_mydrh' => 'datetime',
+        'date_formation_saisie' => 'datetime',
+        'date_signature_contrat' => 'datetime',
         'is_portfolio' => 'boolean',
+        'is_cabinet' => 'boolean',
+        'client_forme_saisie' => 'boolean',
+        'adhesion_mydrh' => 'boolean',
         'gestionnaires_secondaires' => 'array',
     ];
 
@@ -44,6 +54,10 @@ class Client extends Model
     public function gestionnairePrincipal()
     {
         return $this->belongsTo(User::class, 'gestionnaire_principal_id');
+    }
+    public function gestionnairesSecondaires()
+    {
+        return $this->belongsToMany(User::class, 'client_gestionnaire_secondaire', 'client_id', 'gestionnaire_id');
     }
 
     public function responsablePaie()
@@ -97,6 +111,23 @@ class Client extends Model
     }
 
     // Methods
+    public function assignGestionnairePrincipal($userId)
+    {
+        $this->gestionnaire_principal_id = $userId;
+        $this->save();
+    }
+
+    public function assignResponsablePaie($userId)
+    {
+        $this->responsable_paie_id = $userId;
+        $this->save();
+    }
+
+    public function assignBinome($userId)
+    {
+        $this->binome_id = $userId;
+        $this->save();
+    }
     public function transferGestionnaire($oldGestionnaireId, $newGestionnaireId, $isPrincipal = false)
     {
         DB::transaction(function () use ($oldGestionnaireId, $newGestionnaireId, $isPrincipal) {

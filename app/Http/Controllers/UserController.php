@@ -46,13 +46,22 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        return view('users.show', compact('user'));
+        // Charger les relations nécessaires
+        $user->load('roles', 'clientsAsGestionnaire', 'clientsAsResponsable', 'clientsAsBinome');
+
+        // Récupérer tous les clients pour permettre l'ajout de nouveaux clients
+        $clients = Client::all();
+        $users = User::all();
+
+        return view('users.show', compact('user', 'clients','users'));
     }
+
 
     public function edit(User $user)
     {
         $roles = Role::all();
-        return view('users.edit', compact('user', 'roles'));
+        $clients = Client::all();
+        return view('users.edit', compact('user', 'roles', 'clients'));
     }
 
     public function update(Request $request, User $user)
@@ -68,6 +77,8 @@ class UserController extends Controller
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'password' => $validated['password'] ? Hash::make($validated['password']) : $user->password,
+
         ]);
 
         if (isset($validated['password'])) {
@@ -88,72 +99,107 @@ class UserController extends Controller
 
     public function manageClients(User $user)
     {
-        $clients = Client::whereHas('gestionnaires', function($query) use ($user) {
+        $clients = Client::whereHas('gestionnaires', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })->paginate(15);
-        
+
         return view('users.manage_clients', compact('user', 'clients'));
     }
 
     public function attachClient(Request $request, User $user)
     {
-        $validated = $request->validate([
+        $request->validate([
             'client_id' => 'required|exists:clients,id',
+            'role' => 'required|string|in:gestionnaire,binome,responsable',
         ]);
 
-        $user->clients()->syncWithoutDetaching([$validated['client_id']]);
+        $client = Client::find($request->client_id);
 
-        return redirect()->route('users.manage_clients', $user)
-            ->with('success', 'Client rattaché avec succès.');
+        switch ($request->role) {
+            case 'gestionnaire':
+                $client->assignGestionnairePrincipal($user->id);
+                break;
+            case 'binome':
+                $client->assignBinome($user->id);
+                break;
+            case 'responsable':
+                $client->assignResponsablePaie($user->id);
+                break;
+        }
+
+        return redirect()->back()->with('success', 'Client ajouté avec succès.');
     }
 
     public function detachClient(Request $request, User $user)
     {
-        $validated = $request->validate([
+        $request->validate([
             'client_id' => 'required|exists:clients,id',
+            'role' => 'required|string|in:gestionnaire,binome,responsable',
         ]);
 
-        $user->clients()->detach($validated['client_id']);
+        $client = Client::find($request->client_id);
 
-        return redirect()->route('users.manage_clients', $user)
-            ->with('success', 'Client détaché avec succès.');
+        switch ($request->role) {
+            case 'gestionnaire':
+                if ($client->gestionnaire_principal_id == $user->id) {
+                    $client->assignGestionnairePrincipal(null);
+                }
+                break;
+            case 'binome':
+                if ($client->binome_id == $user->id) {
+                    $client->assignBinome(null);
+                }
+                break;
+            case 'responsable':
+                if ($client->responsable_paie_id == $user->id) {
+                    $client->assignResponsablePaie(null);
+                }
+                break;
+        }
+
+        return redirect()->back()->with('success', 'Client retiré avec succès.');
     }
 
-    public function transferClients(Request $request, User $fromUser)
+    public function transferClients(Request $request, User $user)
     {
-        $validated = $request->validate([
-            'to_user_id' => 'required|exists:users,id',
+        $request->validate([
+            'new_user_id' => 'required|exists:users,id',
             'client_ids' => 'required|array',
             'client_ids.*' => 'exists:clients,id',
+            'role' => 'required|string|in:gestionnaire,binome,responsable',
         ]);
 
-        $toUser = User::findOrFail($validated['to_user_id']);
+        $newUser = User::find($request->new_user_id);
+        foreach ($request->client_ids as $clientId) {
+            $client = Client::find($clientId);
 
-        DB::transaction(function () use ($fromUser, $toUser, $validated) {
-            foreach ($validated['client_ids'] as $clientId) {
-                $client = Client::findOrFail($clientId);
-                
-                // Si c'est un client portefeuille, transférer tous ses sous-clients
-                if ($client->is_portfolio) {
-                    $subClients = $client->subClients;
-                    foreach ($subClients as $subClient) {
-                        $this->transferClientBetweenUsers($subClient, $fromUser, $toUser);
+            switch ($request->role) {
+                case 'gestionnaire':
+                    if ($client->gestionnaire_principal_id == $user->id) {
+                        $client->assignGestionnairePrincipal($newUser->id);
                     }
-                }
-                
-                $this->transferClientBetweenUsers($client, $fromUser, $toUser);
+                    break;
+                case 'binome':
+                    if ($client->binome_id == $user->id) {
+                        $client->assignBinome($newUser->id);
+                    }
+                    break;
+                case 'responsable':
+                    if ($client->responsable_paie_id == $user->id) {
+                        $client->assignResponsablePaie($newUser->id);
+                    }
+                    break;
             }
-        });
+        }
 
-        return redirect()->route('users.manage_clients', $fromUser)
-            ->with('success', 'Clients transférés avec succès.');
+        return redirect()->back()->with('success', 'Clients transférés avec succès.');
     }
 
     private function transferClientBetweenUsers(Client $client, User $fromUser, User $toUser)
     {
         $client->gestionnaires()->detach($fromUser->id);
         $client->gestionnaires()->attach($toUser->id);
-        
+
         if ($client->gestionnaire_principal_id == $fromUser->id) {
             $client->gestionnaire_principal_id = $toUser->id;
             $client->save();

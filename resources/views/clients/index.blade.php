@@ -100,6 +100,7 @@
             </div>
         </div>
     </div>
+   
     <hr>
     <div class="container mt-3">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -126,7 +127,7 @@
     </div>
     
 @endsection
-
+{{--  --}}
 @push('scripts')
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">

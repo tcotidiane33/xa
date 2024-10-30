@@ -1,43 +1,144 @@
 @extends('layouts.admin')
 
-@section('title', 'Éditer un utilisateur')
+@section('title', 'Modifier un utilisateur')
 
 @section('content')
-    <div class="container mx-auto p-4 pt-6 md:p-6">
-        <div class="flex justify-center mb-4">
-            <h1 class="text-2xl font-bold">Éditer un utilisateur</h1>
+<div class="container mx-auto p-4 pt-6 md:p-6">
+    <h1 class="text-2xl font-bold mb-4">Modifier un utilisateur</h1>
+
+    <form action="{{ route('admin.users.update', $user) }}" method="POST">
+        @csrf
+        @method('PUT')
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+                Nom
+            </label>
+            <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" class="form-control" required>
+            @error('name')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
         </div>
 
-        <form action="{{ route('users.update', $user) }}" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="grid grid-cols-1 gap-4 mb-4">
-                <div class="bg-white rounded-lg shadow-md p-4">
-                    <label for="name" class="block mb-2 text-sm font-medium text-gray-700">Nom</label>
-                    <input type="text" id="name" name="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" value="{{ $user->name }}" required>
-                </div>
-                <div class="bg-white rounded-lg shadow-md p-4">
-                    <label for="email" class="block mb-2 text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" id="email" name="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" value="{{ $user->email }}" required>
-                </div>
-                <div class="bg-white rounded-lg shadow-md p-4">
-                    <label for="password" class="block mb-2 text-sm font-medium text-gray-700">Mot de passe (laisser vide pour ne pas modifier)</label>
-                    <input type="password" id="password" name="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                </div>
-                <div class="bg-white rounded-lg shadow-md p-4">
-                    <label for="password_confirmation" class="block mb-2 text-sm font-medium text-gray-700">Confirmer le mot de passe</label>
-                    <input type="password" id="password_confirmation" name="password_confirmation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                </div>
-                <div class="bg-white rounded-lg shadow-md p-4">
-                    <label for="roles" class="block mb-2 text-sm font-medium text-gray-700">Rôles</label>
-                    <select id="roles" name="roles[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" multiple required>
-                        @foreach($roles as $role)
-                            <option value="{{ $role->id }}" {{ $user->roles->contains($role) ? 'selected' : '' }}>{{ $role->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <button type="submit" class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Mettre à jour</button>
-        </form>
-    </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+                Email
+            </label>
+            <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" class="form-control" required>
+            @error('email')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                Mot de passe
+            </label>
+            <input type="password" name="password" id="password" class="form-control">
+            @error('password')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="password_confirmation">
+                Confirmer le mot de passe
+            </label>
+            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="roles">
+                Rôles
+            </label>
+            <select name="roles[]" id="roles" class="form-control" multiple required>
+                @foreach ($roles as $role)
+                    <option value="{{ $role->id }}" {{ in_array($role->id, old('roles', $user->roles->pluck('id')->toArray())) ? 'selected' : '' }}>
+                        {{ $role->name }}
+                    </option>
+                @endforeach
+            </select>
+            @error('roles')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </form>
+
+    <hr class="my-6">
+
+    <h2 class="text-xl font-bold mb-4">Clients rattachés</h2>
+    <form action="{{ route('admin.users.attachClient', $user) }}" method="POST">
+        @csrf
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="client_id">
+                Ajouter un client
+            </label>
+            <select name="client_id" id="client_id" class="form-control" required>
+                <option value="">Sélectionner un client</option>
+                @foreach ($clients as $client)
+                    <option value="{{ $client->id }}">{{ $client->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+    </form>
+
+    <table class="table-auto w-full mt-4">
+        <thead>
+            <tr>
+                <th class="px-4 py-2">Nom</th>
+                <th class="px-4 py-2">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($user->clients as $client)
+                <tr>
+                    <td class="border px-4 py-2">{{ $client->name }}</td>
+                    <td class="border px-4 py-2">
+                        <form action="{{ route('users.detachClient', $user) }}" method="POST" style="display: inline-block;">
+                            @csrf
+                            <input type="hidden" name="client_id" value="{{ $client->id }}">
+                            <button type="submit" class="btn btn-danger">Détacher</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <hr class="my-6">
+
+    <h2 class="text-xl font-bold mb-4">Transférer des clients</h2>
+    <form action="{{ route('admin.users.transferClients', $user) }}" method="POST">
+        @csrf
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="new_user_id">
+                Transférer à
+            </label>
+            <select name="new_user_id" id="new_user_id" class="form-control" required>
+                <option value="">Sélectionner un utilisateur</option>
+                @foreach ($users as $otherUser)
+                    @if ($otherUser->id !== $user->id)
+                        <option value="{{ $otherUser->id }}">{{ $otherUser->name }}</option>
+                    @endif
+                @endforeach
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="client_ids">
+                Clients à transférer
+            </label>
+            <select name="client_ids[]" id="client_ids" class="form-control" multiple required>
+                @foreach ($user->clients as $client)
+                    <option value="{{ $client->id }}">{{ $client->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Transférer</button>
+    </form>
+</div>
 @endsection

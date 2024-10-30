@@ -9,12 +9,12 @@
         background-color: #d285da; /* Couleur de fond pour les champs non modifiables */
     }
     .progress {
-        background-color: #e0e0e0;
+        background-color: #ff00f231;
         border-radius: 5px;
         overflow: hidden;
     }
     .progress-bar {
-        background-color: #4caf50;
+        background-color: #04e90c;
         height: 20px;
         text-align: center;
         color: white;
@@ -98,51 +98,52 @@
         </div>
     </form>
 
-    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 rounded-6 table-container">
-        <table id="periodesPaieTable" class="table-auto w-full">
-            <thead>
+</div>
+<div class="bg-white w-full shadow-md rounded px-8 pt-6 pb-8 mb-4 table-container">
+    <table id="periodesPaieTable" class="table-auto w-full">
+        <thead>
+            <tr>
+                <th>Client</th>
+                <th>Gestionnaire</th>
+                <th>NB Bulletins</th>
+                <th>Maj fiche para</th>
+                <th class="modifiable">Réception variables</th>
+                <th class="modifiable">Préparation BP</th>
+                <th class="modifiable">Validation BP client</th>
+                <th class="modifiable">Préparation et envoie DSN</th>
+                <th class="modifiable">Accusés DSN</th>
+                <th class="modifiable">NOTES</th>
+                <th>Progression</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($periodesPaie as $periode)
                 <tr>
-                    <th>Gestionnaire</th>
-                    <th>NB Bulletins</th>
-                    <th>Client</th>
-                    <th>Maj fiche para</th>
-                    <th class="modifiable">Réception variables</th>
-                    <th class="modifiable">Préparation BP</th>
-                    <th class="modifiable">Validation BP client</th>
-                    <th class="modifiable">Préparation et envoie DSN</th>
-                    <th class="modifiable">Accusés DSN</th>
-                    <th class="modifiable">NOTES</th>
-                    <th>Progression</th>
-                    <th>Actions</th>
+                    <td>{{ $periode->client->name }}</td>
+                    <td>{{ $periode->client->gestionnairePrincipal->name }}</td>
+                    <td>{{ $periode->client->nb_bulletins }}</td>
+                    <td class="modifiable">{{ $periode->client->maj_fiche_para }}</td>
+                    <td class="modifiable">{{ $periode->reception_variables }}</td>
+                    <td class="modifiable">{{ $periode->preparation_bp }}</td>
+                    <td class="modifiable">{{ $periode->validation_bp_client }}</td>
+                    <td class="modifiable">{{ $periode->preparation_envoie_dsn }}</td>
+                    <td class="modifiable">{{ $periode->accuses_dsn }}</td>
+                    <td class="modifiable">{{ $periode->notes }}</td>
+                    <td>
+                        <div class="progress  transition-all ease-in duration-75 dark:bg-pink-900 rounded-md group-hover:bg-opacity-0">
+                            <div class="progress-bar" role="progressbar" style="width: {{ $periode->progressPercentage() }}%;" aria-valuenow="{{ $periode->progressPercentage() }}" aria-valuemin="0" aria-valuemax="100">{{ $periode->progressPercentage() }}%</div>
+                        </div>
+                    </td>
+                    <td>
+                        
+                        <button class="btn btn-primary" onclick="openEditPopup({{ $periode->id }})">Modifier</button>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach($periodesPaie as $periode)
-                    <tr>
-                        <td>{{ $periode->client->gestionnairePrincipal->name }}</td>
-                        <td>{{ $periode->client->nb_bulletins }}</td>
-                        <td>{{ $periode->client->name }}</td>
-                        <td>{{ $periode->client->maj_fiche_para }}</td>
-                        <td class="modifiable">{{ $periode->decrypted_data['reception_variables'] }}</td>
-                        <td class="modifiable">{{ $periode->decrypted_data['preparation_bp'] }}</td>
-                        <td class="modifiable">{{ $periode->decrypted_data['validation_bp_client'] }}</td>
-                        <td class="modifiable">{{ $periode->decrypted_data['preparation_envoie_dsn'] }}</td>
-                        <td class="modifiable">{{ $periode->decrypted_data['accuses_dsn'] }}</td>
-                        <td class="modifiable">{{ $periode->decrypted_data['notes'] }}</td>
-                        <td>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: {{ $periode->progressPercentage() }}%;" aria-valuenow="{{ $periode->progressPercentage() }}" aria-valuemin="0" aria-valuemax="100">{{ $periode->progressPercentage() }}%</div>
-                            </div>
-                        </td>
-                        <td>
-                            <button class="btn btn-primary" onclick="openEditPopup({{ $periode->id }})">Modifier</button>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-        {{ $periodesPaie->links() }}
-    </div>
+            @endforeach
+        </tbody>
+    </table>
+    {{ $periodesPaie->links() }}
 </div>
 
 <!-- Popup d'édition -->
@@ -176,6 +177,130 @@
         </form>
     </div>
 </div>
+<!-- Liste des clients éligibles -->
+<div class="container mx-auto p-4 pt-6 md:p-6">
+    <h2 class="text-2xl font-bold mb-4">Liste des clients éligibles</h2>
+
+    @if($currentPeriodePaie)
+        @foreach($eligibleClients as $client)
+            <form action="{{ route('traitements-paie.store') }}" method="POST" class="mb-6">
+                @csrf
+                <input type="hidden" name="client_id" value="{{ $client->id }}">
+                <input type="hidden" name="periode_paie_id" value="{{ $currentPeriodePaie->id }}">
+
+                <div class="mb-4 w-sm group">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="reception_variables_{{ $client->id }}">
+                        Réception des variables pour {{ $client->name }}
+                    </label>
+                    <input type="date" name="reception_variables" id="reception_variables_{{ $client->id }}" class="form-control" required>
+                </div>
+
+                <div class="mb-4 w-sm group">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="preparation_bp_{{ $client->id }}">
+                        Préparation BP
+                    </label>
+                    <input type="date" name="preparation_bp" id="preparation_bp_{{ $client->id }}" class="form-control" disabled>
+                </div>
+
+                <div class="mb-4 w-sm group">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="validation_bp_client_{{ $client->id }}">
+                        Validation BP client
+                    </label>
+                    <input type="date" name="validation_bp_client" id="validation_bp_client_{{ $client->id }}" class="form-control" disabled>
+                </div>
+
+                <div class="mb-4 w-sm group">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="preparation_envoie_dsn_{{ $client->id }}">
+                        Préparation et envoie DSN
+                    </label>
+                    <input type="date" name="preparation_envoie_dsn" id="preparation_envoie_dsn_{{ $client->id }}" class="form-control" disabled>
+                </div>
+
+                <div class="mb-4 w-sm group">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="accuses_dsn_{{ $client->id }}">
+                        Accusés DSN
+                    </label>
+                    <input type="date" name="accuses_dsn" id="accuses_dsn_{{ $client->id }}" class="form-control" disabled>
+                </div>
+
+                <div class="mb-4 w-sm group">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="notes_{{ $client->id }}">
+                        Notes
+                    </label>
+                    <textarea name="notes" id="notes_{{ $client->id }}" class="form-control"></textarea>
+                </div>
+
+                <button type="submit" class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+                    <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                        Enregistrer
+                    </span>
+                </button>
+            </form>
+        @endforeach
+    @else
+        <p>Aucune période de paie validée actuellement.</p>
+    @endif
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const saveButtons = document.querySelectorAll('.save-field');
+
+        saveButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const traitementId = this.getAttribute('data-traitement-id');
+                const row = this.closest('tr');
+                const fields = row.querySelectorAll('input, textarea');
+
+                fields.forEach(field => {
+                    const fieldName = field.getAttribute('data-field');
+                    const fieldValue = field.value;
+
+                    fetch('{{ route('periodes-paie.updateField') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            traitement_id: traitementId,
+                            field: fieldName,
+                            value: fieldName === 'notes' ? fieldValue : null,
+                            date_value: fieldName !== 'notes' ? fieldValue : null
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Champ mis à jour avec succès');
+                            if (fieldName === 'reception_variables') {
+                                row.querySelector('input[name="preparation_bp"]').disabled = false;
+                            } else if (fieldName === 'preparation_bp') {
+                                row.querySelector('input[name="validation_bp_client"]').disabled = false;
+                            } else if (fieldName === 'validation_bp_client') {
+                                row.querySelector('input[name="preparation_envoie_dsn"]').disabled = false;
+                            } else if (fieldName === 'preparation_envoie_dsn') {
+                                row.querySelector('input[name="accuses_dsn"]').disabled = false;
+                            }
+                        } else {
+                            alert('Erreur lors de la mise à jour du champ');
+                        }
+                    });
+                });
+            });
+        });
+    });
+
+    function openEditPopup(periodeId) {
+        document.getElementById('periode_id').value = periodeId;
+        document.getElementById('editPopup').style.display = 'block';
+    }
+
+    function closeEditPopup() {
+        document.getElementById('editPopup').style.display = 'none';
+    }
+</script>
 
 <script>
     function openEditPopup(periodeId) {

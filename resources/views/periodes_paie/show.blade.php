@@ -1,109 +1,124 @@
 @extends('layouts.admin')
 
-@section('title', 'Détails de la Période de Paie')
+@section('title', 'Détails de la période de paie')
 
 @section('content')
-    <div class="main-content">
-        <div class="main-page">
-            <div class="breadcrumb">
-                <h1>Détails de la période de paie</h1>
-            </div>
-            <div class="panel-body widget-shadow">
-                <h4>{{ $periodePaie->reference }}</h4>
-                <table class="table">
-                    <tr>
-                        <th>Client</th>
-                        <td><span class="bg-pink-100 text-pink-800 text-xxl font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-pink-400 border border-pink-400">
-                            {{ $periodePaie->client->name }}</span></td>
-                    </tr>
-                    <tr>
-                        <th>Date de début</th>
-                        <td>  <span  class="bg-pink-100 text-pink-800 text-xxl font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-pink-400 border border-pink-400">
-                            {{ $periodePaie->debut->format('d/m/Y') }}</span></td>
-                    </tr>
-                    <tr>
-                        <th>Date de fin</th>
-                        <td> <span   class="bg-pink-100 text-pink-800 text-xxl font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-pink-400 border border-pink-400">                                     
-                            {{ $periodePaie->fin->format('d/m/Y') }}</span></td>
-                    </tr>
-                    <!-- Autres champs -->
-                </table>
-                <div class="mt-4">
-                    <a href="{{ route('periodes-paie.edit', $periodePaie) }}"
-                        class="text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Modifier</a>
-                </div>
-               
-            </div>
-        </div>
-    </div>
-    {{-- ============================================= --}}
-    <div class="main-content">
-        <div class="main-page">
-            
-            <div class="container">
-                <h2 class="mt-4">Traitements de paie associés</h2>
+<div class="container mx-auto p-4 pt-6 md:p-6">
+    <h1 class="text-2xl font-bold mb-4">Détails de la période de paie</h1>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Gestionnaire</th>
-                            <th>Nombre de bulletins</th>
-                            <th>Statut</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($periodePaie->traitementsPaie as $traitement)
-                            <tr>
-                                <td>{{ $traitement->gestionnaire->name }}</td>
-                                <td>{{ $traitement->nbr_bull }}</td>
-                                <td>{{ $traitement->statut }}</td>
-                                <td>
-                                    <a href="{{ route('traitements-paie.show', $traitement) }}"
-                                        class="btn btn-sm btn-info">Voir</a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    <h2 class="text-xl font-bold mb-4">Période : {{ $periodePaie->reference }}</h2>
+    {{-- <p>Date de début : {{ $periodePaie->debut->format('d/m/Y') }}</p>
+    <p>Date de fin : {{ $periodePaie->fin->format('d/m/Y') }}</p> --}}
 
-                <a href="{{ route('periodes-paie.edit', $periodePaie) }}"
-                    class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Modifier</a>
-                <a href="{{ route('periodes-paie.index') }}"
-                    class="text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Retour
-                    à la liste</a>
-            </div>
-            <hr>
-            <div class="container">
-                <h4>Historique des actions</h4>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Utilisateur</th>
-                            <th>Action</th>
-                            <th>Détails</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($periodePaie->histories as $history)
-                            <tr>
-                                <td>{{ $history->created_at->format('d/m/Y H:i') }}</td>
-                                <td>{{ $history->user->name }}</td>
-                                <td>{{ $history->action }}</td>
-                                <td>{{ $history->details }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="row mb-5">
-                <br>
-            </div>
-        </div>
-    </div>
+    @if(!$periodePaie->cloturee)
+        {{-- <form action="{{ route('periodes-paie.close', $periodePaie) }}" method="POST">
+            @csrf
+            @method('PATCH')
+            <button type="submit" class="btn btn-danger">Clôturer la période de paie</button>
+        </form> --}}
+    @endif
 
+    <hr class="my-6">
+
+    <h2 class="text-xl font-bold mb-4">Traitements de paie associés</h2>
+
+    <table class="table-auto w-full">
+        <thead>
+            <tr>
+                <th>Client</th>
+                <th>Réception des variables</th>
+                <th>Préparation BP</th>
+                <th>Validation BP client</th>
+                <th>Préparation et envoie DSN</th>
+                <th>Accusés DSN</th>
+                <th>Notes</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($traitementsPaie as $traitement)
+                <tr>
+                    <td>{{ $traitement->client->name }}</td>
+                    <td>
+                        <input type="date" name="reception_variables" data-field="reception_variables" value="{{ $traitement->reception_variables ? $traitement->reception_variables->format('Y-m-d') : '' }}" {{ $periodePaie->cloturee ? 'disabled' : '' }}>
+                    </td>
+                    <td>
+                        <input type="date" name="preparation_bp" data-field="preparation_bp" value="{{ $traitement->preparation_bp ? $traitement->preparation_bp->format('Y-m-d') : '' }}" disabled {{ $periodePaie->cloturee ? 'disabled' : '' }}>
+                    </td>
+                    <td>
+                        <input type="date" name="validation_bp_client" data-field="validation_bp_client" value="{{ $traitement->validation_bp_client ? $traitement->validation_bp_client->format('Y-m-d') : '' }}" disabled {{ $periodePaie->cloturee ? 'disabled' : '' }}>
+                    </td>
+                    <td>
+                        <input type="date" name="preparation_envoie_dsn" data-field="preparation_envoie_dsn" value="{{ $traitement->preparation_envoie_dsn ? $traitement->preparation_envoie_dsn->format('Y-m-d') : '' }}" disabled {{ $periodePaie->cloturee ? 'disabled' : '' }}>
+                    </td>
+                    <td>
+                        <input type="date" name="accuses_dsn" data-field="accuses_dsn" value="{{ $traitement->accuses_dsn ? $traitement->accuses_dsn->format('Y-m-d') : '' }}" disabled {{ $periodePaie->cloturee ? 'disabled' : '' }}>
+                    </td>
+                    <td>
+                        <textarea name="notes" data-field="notes" {{ $periodePaie->cloturee ? 'disabled' : '' }}>{{ $traitement->notes }}</textarea>
+                    </td>
+                    <td>
+                        @if(!$periodePaie->cloturee)
+                            <button type="button" class="save-field btn btn-primary" data-traitement-id="{{ $traitement->id }}">Enregistrer</button>
+                        @endif
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const saveButtons = document.querySelectorAll('.save-field');
+
+        saveButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const traitementId = this.getAttribute('data-traitement-id');
+                const row = this.closest('tr');
+                const fields = row.querySelectorAll('input, textarea');
+
+                fields.forEach(field => {
+                    const fieldName = field.getAttribute('data-field');
+                    const fieldValue = field.value;
+
+                    fetch('{{ route('periodes-paie.updateField') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            traitement_id: traitementId,
+                            field: fieldName,
+                            value: fieldName === 'notes' ? fieldValue : null,
+                            date_value: fieldName !== 'notes' ? fieldValue : null
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Champ mis à jour avec succès');
+                            if (fieldName === 'reception_variables') {
+                                row.querySelector('input[name="preparation_bp"]').disabled = false;
+                            } else if (fieldName === 'preparation_bp') {
+                                row.querySelector('input[name="validation_bp_client"]').disabled = false;
+                            } else if (fieldName === 'validation_bp_client') {
+                                row.querySelector('input[name="preparation_envoie_dsn"]').disabled = false;
+                            } else if (fieldName === 'preparation_envoie_dsn') {
+                                row.querySelector('input[name="accuses_dsn"]').disabled = false;
+                            }
+                        } else {
+                            alert('Erreur lors de la mise à jour du champ');
+                        }
+                    });
+                });
+            });
+        });
+    });
+</script>
 @endsection
+
 
 {{-- 
 @extends('layouts.admin')

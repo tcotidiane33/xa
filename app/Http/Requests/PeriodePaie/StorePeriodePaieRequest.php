@@ -19,6 +19,13 @@ class StorePeriodePaieRequest extends FormRequest
             'fin' => 'required|date|after:debut',
             'validee' => 'boolean',
             'client_id' => 'required|exists:clients,id',
+            
+            'reception_variables' => 'nullable|date',
+            'preparation_bp' => 'nullable|date',
+            'validation_bp_client' => 'nullable|date',
+            'preparation_envoie_dsn' => 'nullable|date',
+            'accuses_dsn' => 'nullable|date',
+            'notes' => 'nullable|string',
         ];
     }
 }

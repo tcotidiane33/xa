@@ -52,10 +52,12 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('clients', ClientController::class);
     Route::resource('clients.materials', MaterialController::class);
     Route::get('/clients/{client}/info', [ClientController::class, 'getInfo'])->name('clients.info');
+    Route::get('/clients/{clientId}/info', 'ClientController@getClientInfo')->name('clients.info');
+
 
     Route::resource('materials', MaterialController::class);
 
-    // Route::resource('periodes-paie', PeriodePaieController::class);
+    Route::resource('periodes-paie', PeriodePaieController::class);
     // Routes pour PeriodePaie
     Route::get('/periodes-paie', [PeriodePaieController::class, 'index'])->name('periodes-paie.index');
     Route::get('/periodes-paie/create', [PeriodePaieController::class, 'create'])->name('periodes-paie.create');
@@ -65,6 +67,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/periodes-paie/{periodePaie}', [PeriodePaieController::class, 'update'])->name('periodes-paie.update');
     Route::delete('/periodes-paie/{periodePaie}', [PeriodePaieController::class, 'destroy'])->name('periodes-paie.destroy');
     Route::patch('periodes-paie/update-field', [PeriodePaieController::class, 'updateField'])->name('periodes-paie.updateField');
+    Route::get('periodes-paie/{id}/info', [PeriodePaieController::class, 'getInfo'])->name('periodes-paie.info');
 
     // Route::resource('traitements-paie', TraitementPaieController::class);
     Route::get('/traitements-paie', [TraitementPaieController::class, 'index'])->name('traitements-paie.index');
@@ -85,9 +88,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('tickets', TicketController::class);
     Route::resource('convention-collectives', ConventionCollectiveController::class);
 
-     // Notification routes
-     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-     Route::patch('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    // Notification routes
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::patch('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 
     // Ajout de la route validateStep
     Route::get('/clients/{client}/info', [ClientController::class, 'getInfo'])->name('clients.info');
@@ -105,6 +108,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'r
     // Autres routes pour l'admin
     Route::resource('users', UserController::class);
 
+    Route::post('users/{user}/attach-client', [UserController::class, 'attachClient'])->name('users.attachClient');
+    Route::post('users/{user}/detach-client', [UserController::class, 'detachClient'])->name('users.detachClient');
+    Route::post('users/{user}/transfer-clients', [UserController::class, 'transferClients'])->name('users.transferClients');
+
     //Upload Import Export
     Route::get('/files', [FileController::class, 'index'])->name('files.index');
     Route::get('/download-template', [FileController::class, 'downloadTemplate'])->name('files.downloadTemplate');
@@ -113,6 +120,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'r
     Route::get('/clients', [RelationController::class, 'index'])->name('clients.index');
     Route::post('/clients/transfer', [RelationController::class, 'transfer'])->name('clients.transfer');
     Route::get('/admin/clients/filter', [RelationController::class, 'filter'])->name('clients.filter');
+    Route::post('clients/{client}/attach-gestionnaire', [ClientController::class, 'attachGestionnaire'])->name('clients.attachGestionnaire');
+    Route::post('clients/{client}/detach-gestionnaire', [ClientController::class, 'detachGestionnaire'])->name('clients.detachGestionnaire');
+
     // Paramètres et gestion des rôles et permissions
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');

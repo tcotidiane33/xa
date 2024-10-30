@@ -7,13 +7,16 @@ use App\Models\Client;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\ClientHistory;
+use App\Exports\ClientsExport;
 use Illuminate\Support\Facades\DB;
 use App\Models\ConventionCollective;
 use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Mail\ClientManagerChangeMail;
 use App\Notifications\RelationUpdated;
 use App\Mail\ClientAcknowledgementMail;
 use App\Notifications\NewClientCreated;
+
 use App\Http\Requests\Client\StoreClientRequest;
 use App\Http\Requests\Client\UpdateClientRequest;
 
@@ -58,6 +61,13 @@ class ClientController extends Controller
         $clientsByManagerData = $clientsByManager->pluck('clients_gestionnaire_principal_count')->toArray();
         $clientsByManagerLabels = $clientsByManager->pluck('name')->toArray();
 
+        // $chart = Charts::database(Client::all(), 'bar', 'highcharts')
+        // ->title('Clients')
+        // ->elementLabel('Total Clients')
+        // ->dimensions(1000, 500)
+        // ->responsive(false)
+        // ->groupByMonth(date('Y'), true);
+
         return view('clients.index', compact(
             'clients',
             'clientGrowthData',
@@ -65,7 +75,8 @@ class ClientController extends Controller
             'topConventionsData',
             'topConventionsLabels',
             'clientsByManagerData',
-            'clientsByManagerLabels'
+            'clientsByManagerLabels',
+            // 'chart'
         ));
     }
 
@@ -174,7 +185,42 @@ class ClientController extends Controller
     public function show(Client $client)
     {
         $client->load(['responsablePaie', 'gestionnairePrincipal', 'conventionCollective', 'portfolioCabinet']);
-        return view('clients.show', compact('client'));
+        
+        // Préparer les événements pour FullCalendar
+        $events = [
+            [
+                'title' => 'Réception des variables',
+                'start' => $client->date_reception_variables,
+                'color' => 'blue'
+            ],
+            [
+                'title' => 'Préparation BP',
+                'start' => $client->date_preparation_bp,
+                'color' => 'green'
+            ],
+            [
+                'title' => 'Validation BP client',
+                'start' => $client->date_validation_bp_client,
+                'color' => 'orange'
+            ],
+            [
+                'title' => 'Préparation et envoie DSN',
+                'start' => $client->date_preparation_envoie_dsn,
+                'color' => 'red'
+            ],
+            [
+                'title' => 'Accusés DSN',
+                'start' => $client->date_accuses_dsn,
+                'color' => 'purple'
+            ],
+            
+        ];
+
+        return view('clients.show', compact('client', 'events'));
+    }
+    public function export()
+    {
+        return Excel::download(new ClientsExport, 'clients.xlsx');
     }
 
     public function destroy(Client $client)
@@ -399,6 +445,36 @@ class ClientController extends Controller
         $user->notify(new RelationUpdated($action, $details));
 
         return redirect()->back()->with('success', 'Notification envoyée avec succès.');
+    }
+
+    public function attachGestionnaire(Request $request, Client $client)
+    {
+        $request->validate([
+            'gestionnaire_id' => 'required|exists:users,id',
+        ]);
+
+        $gestionnairesSecondaires = $client->gestionnaires_secondaires ?? [];
+        $gestionnairesSecondaires[] = $request->gestionnaire_id;
+        $client->gestionnaires_secondaires = array_unique($gestionnairesSecondaires);
+        $client->save();
+
+        return redirect()->back()->with('success', 'Gestionnaire ajouté avec succès.');
+    }
+
+    public function detachGestionnaire(Request $request, Client $client)
+    {
+        $request->validate([
+            'gestionnaire_id' => 'required|exists:users,id',
+        ]);
+
+        $gestionnairesSecondaires = $client->gestionnaires_secondaires ?? [];
+        if (($key = array_search($request->gestionnaire_id, $gestionnairesSecondaires)) !== false) {
+            unset($gestionnairesSecondaires[$key]);
+        }
+        $client->gestionnaires_secondaires = array_values($gestionnairesSecondaires);
+        $client->save();
+
+        return redirect()->back()->with('success', 'Gestionnaire retiré avec succès.');
     }
 
 }

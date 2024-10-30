@@ -7,13 +7,15 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
 use Avihs\PostReply\Traits\HasPost;
 use Spatie\Permission\Traits\HasRoles;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Auditable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements AuditableContract
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, Auditable;
     use HasRoles;
 
     /**
@@ -68,13 +70,7 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profile::class);
     }
-    // Dans le modèle User
-    // public function clientsGeres()
-    // {
-    //     return $this->belongsToMany(Client::class, 'gestionnaire_client_pivot', 'gestionnaire_id', 'client_id')
-    //                 ->withPivot('is_principal')
-    //                 ->withTimestamps();
-    // }
+  
 
     public function clientsAsGestionnaire()
     {
@@ -84,6 +80,10 @@ class User extends Authenticatable
     public function clientsAsResponsable()
     {
         return $this->hasMany(Client::class, 'responsable_paie_id');
+    }
+    public function clientsAsBinome()
+    {
+        return $this->hasMany(Client::class, 'binome_id');
     }
     public function clientsResponsable()
     {
@@ -95,8 +95,6 @@ class User extends Authenticatable
         return $this->hasMany(Client::class, 'gestionnaire_principal_id');
     }
 
-
-
     public function clientsPrincipaux()
     {
         return $this->clientsGeres()->wherePivot('is_principal', true);
@@ -105,11 +103,6 @@ class User extends Authenticatable
     public function clientsSecondaires()
     {
         return $this->clientsGeres()->wherePivot('is_principal', false);
-    }
-
-    public function gestionnaireClients()
-    {
-        return $this->hasMany(GestionnaireClient::class, 'gestionnaire_id');
     }
 
     public function traitementsPaie()
@@ -139,7 +132,7 @@ class User extends Authenticatable
 
     public function clients()
     {
-        return $this->belongsToMany(Client::class, 'gestionnaire_client', 'user_id', 'client_id');
+        return $this->clientsAsGestionnaire->merge($this->clientsAsResponsable)->merge($this->clientsAsBinome);
     }
 
     public function materials()
@@ -155,19 +148,14 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    public function clientsGestionnaireSecondaire()
-    {
-        return $this->belongsToMany(Client::class, 'client_gestionnaire_secondaire', 'gestionnaire_id', 'client_id');
-    }
-
     public function assignClientsEnMasse(array $clientIds, $isPrincipal = false)
     {
         DB::transaction(function () use ($clientIds, $isPrincipal) {
             foreach ($clientIds as $clientId) {
-                $this->clientsGestionnaireSecondaire()->attach($clientId, ['is_principal' => $isPrincipal]);
+                $this->clients()->attach($clientId, ['is_principal' => $isPrincipal]);
 
                 if ($isPrincipal) {
-                    Client::find($clientId)->gestionnairesSecondaires()
+                    Client::find($clientId)->binomes()
                         ->where('id', '<>', $this->id)
                         ->update(['is_principal' => false]);
                 }
