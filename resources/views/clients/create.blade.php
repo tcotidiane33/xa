@@ -2,567 +2,350 @@
 
 @push('styles')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/default.min.css">
-    <style>
-        .form-container {
-            padding: 20px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
 
-        .tab-content {
-            padding: 20px;
-            border: 1px solid #dee2e6;
-            border-top: none;
-        }
-
-        .form-actions {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-top: 1px solid #dee2e6;
-        }
-
-        .error-feedback {
-            color: #dc3545;
-            font-size: 0.875em;
-            margin-top: 0.25rem;
-        }
-
-        .is-invalid {
-            border-color: #dc3545;
-        }
-
-        .step-buttons {
-            display: flex;
-            justify-content: space-between;
-        }
-    </style>
 @endpush
+
 
 @section('content')
     <div class="container">
-        <div class="breadcrumb">
-            <h1>Créer un nouveau client</h1>
-        </div>
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-        <div class="main-page">
+        <div class="row">
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
             <div class="form-container">
-                <!-- Onglets -->
+                <!-- Menu des onglets -->
                 <ul class="nav nav-tabs" id="clientTabs" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link active" id="societe-tab" data-bs-toggle="tab" href="#societe">Société</a>
+                        <a class="nav-link active" id="societe-tab" data-toggle="tab" href="#societe" role="tab"
+                            aria-controls="societe" aria-selected="true">Société</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link disabled" id="contacts-tab" data-bs-toggle="tab" href="#contacts">Contacts</a>
+                        <a class="nav-link disabled" id="contacts-tab" data-toggle="tab" href="#contacts" role="tab"
+                            aria-controls="contacts" aria-selected="false">Contacts</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link disabled" id="interne-tab" data-bs-toggle="tab" href="#interne">Informations
-                            Internes</a>
+                        <a class="nav-link disabled" id="interne-tab" data-toggle="tab" href="#interne" role="tab"
+                            aria-controls="interne" aria-selected="false">Interne</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link disabled" id="supplementaires-tab" data-bs-toggle="tab"
-                            href="#supplementaires">Informations Supplémentaires</a>
+                        <a class="nav-link disabled" id="supplementaires-tab" data-toggle="tab" href="#supplementaires"
+                            role="tab" aria-controls="supplementaires" aria-selected="false">Supplémentaires</a>
                     </li>
                 </ul>
 
-                <form id="clientForm">
+                <!-- Barre de progression -->
+                <div class="progress mt-3">
+                    <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0"
+                        aria-valuemax="100">25%</div>
+                </div>
+
+                <form id="multiStepForm" method="POST" action="{{ route('clients.storePartial') }}">
                     @csrf
                     <input type="hidden" name="client_id" value="{{ $client->id ?? '' }}">
+                    <input type="hidden" name="step" value="societe">
 
-                    <div class="tab-content mt-3">
-                        <!-- Onglet Société -->
-                        <div class="tab-pane fade show active" id="societe">
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="name">Nom Société *</label>
-                                    <input type="text" class="form-control" name="name" required>
-                                    @error('name')
-                                        <div class="error-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="type_societe">Type</label>
-                                    <input type="text" class="form-control" name="type_societe">
-                                    @error('type_societe')
-                                        <div class="error-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="ville">Ville</label>
-                                    <input type="text" class="form-control" name="ville">
-                                    @error('ville')
-                                        <div class="error-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                    <div class="form-step" id="societe">
+                        <h4>Informations Société</h4>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name">Nom de la société *</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label>Nom du dirigeant</label>
-                                    <input type="text" class="form-control" name="dirigeant_nom">
-                                    @error('name')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-4">
-                                    <label>Téléphone</label>
-                                    <input type="tel" class="form-control" name="dirigeant_telephone">
-                                    @error('dirigeant_telephone')
-                                        <div class="error-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-4">
-                                    <label>Email</label>
-                                    <input type="email" class="form-control" name="dirigeant_email">
-                                    @error('dirigeant_email')
-                                        <div class="error-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                            <div class="col-md-6">
+                                <label for="type_societe">Type de société</label>
+                                <input type="text" class="form-control" id="type_societe" name="type_societe">
                             </div>
-                            <div class="form-group flex gap-6">
-                                <div class="col-md-2">
-
-                                    <label for="date_estimative_envoi_variables">Date estimative d'envoi des
-                                        variables</label>
-                                    <input type="date" name="date_estimative_envoi_variables"
-                                        id="date_estimative_envoi_variables" class="form-control"
-                                        value="{{ old('date_estimative_envoi_variables') }}">
-                                    @error('date_estimative_envoi_variables')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="nb_bulletins">Nombre de bulletins</label>
-                                    <input type="number" name="nb_bulletins" id="nb_bulletins" class="form-control"
-                                        value="{{ old('nb_bulletins') }}">
-                                    @error('nb_bulletins')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                            <div class="col-md-6">
+                                <label for="ville">Ville</label>
+                                <input type="text" class="form-control" id="ville" name="ville">
                             </div>
-
-
+                            <div class="col-md-6">
+                                <label for="dirigeant_nom">Nom du dirigeant</label>
+                                <input type="text" class="form-control" id="dirigeant_nom" name="dirigeant_nom">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dirigeant_telephone">Téléphone du dirigeant</label>
+                                <input type="text" class="form-control" id="dirigeant_telephone"
+                                    name="dirigeant_telephone">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dirigeant_email">Email du dirigeant</label>
+                                <input type="email" class="form-control" id="dirigeant_email" name="dirigeant_email">
+                            </div>
                         </div>
-
-                        <!-- Onglet Contacts -->
-                        <div class="tab-pane fade" id="contacts">
-                            <h4>Contact Paie</h4>
-                            <div class="row mb-3">
-                                <div class="col-md-3">
-                                    <label>Nom</label>
-                                    <input type="text" class="form-control" name="contact_paie_nom">
-                                    @error('contact_paie_nom')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-3">
-                                    <label>Prénom</label>
-                                    <input type="text" class="form-control" name="contact_paie_prenom">
-                                    @error('contact_paie_prenom')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-3">
-                                    <label>Téléphone</label>
-                                    <input type="tel" class="form-control" name="contact_paie_telephone">
-                                    @error('contact_paie_telephone')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md3">
-                                    <label>Email</label>
-                                    <input type="email" class="form-control" name="contact_paie_email">
-                                    @error('contact_paie_email')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                    </div>
+                    <div class="form-step" id="contacts">
+                        <h4>Contacts</h4>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="contact_paie_nom">Nom du contact paie</label>
+                                <input type="text" class="form-control" id="contact_paie_nom" name="contact_paie_nom">
                             </div>
-
-                            <h4>Contact Comptabilité</h4>
-                            <div class="row mb-3">
-                                <div class="col-md-3">
-                                    <label>Nom</label>
-                                    <input type="text" class="form-control" name="contact_compta_nom">
-                                    @error('contact_compta_nom')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-3">
-                                    <label>Prénom</label>
-                                    <input type="text" class="form-control" name="contact_compta_prenom">
-                                    @error('contact_compta_prenom')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-3">
-                                    <label>Téléphone</label>
-                                    <input type="tel" class="form-control" name="contact_compta_telephone">
-                                    @error('contact_compta_telephone')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-3">
-                                    <label>Email</label>
-                                    <input type="email" class="form-control" name="contact_compta_email">
-                                    @error('contact_compta_email')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                            <div class="col-md-6">
+                                <label for="contact_paie_prenom">Prénom du contact paie</label>
+                                <input type="text" class="form-control" id="contact_paie_prenom"
+                                    name="contact_paie_prenom">
                             </div>
-                            {{-- <h4>Binômes Supplémentaires</h4>
-                            <div class="form-group">
-                                <label for="contact_paie">Contact Paie</label>
-                                <input type="text" class="form-control" id="contact_paie" name="contact_paie">
+                            <div class="col-md-6">
+                                <label for="contact_paie_telephone">Téléphone du contact paie</label>
+                                <input type="text" class="form-control" id="contact_paie_telephone"
+                                    name="contact_paie_telephone">
                             </div>
-                            <div class="form-group">
-                                <label for="contact_comptabilite">Contact Comptabilité</label>
-                                <input type="text" class="form-control" id="contact_comptabilite" name="contact_comptabilite">
-                            </div> --}}
+                            <div class="col-md-6">
+                                <label for="contact_paie_email">Email du contact paie</label>
+                                <input type="email" class="form-control" id="contact_paie_email"
+                                    name="contact_paie_email">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contact_compta_nom">Nom du contact comptabilité</label>
+                                <input type="text" class="form-control" id="contact_compta_nom"
+                                    name="contact_compta_nom">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contact_compta_prenom">Prénom du contact comptabilité</label>
+                                <input type="text" class="form-control" id="contact_compta_prenom"
+                                    name="contact_compta_prenom">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contact_compta_telephone">Téléphone du contact comptabilité</label>
+                                <input type="text" class="form-control" id="contact_compta_telephone"
+                                    name="contact_compta_telephone">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contact_compta_email">Email du contact comptabilité</label>
+                                <input type="text" class="form-control" id="contact_compta_email"
+                                    name="contact_compta_email">
+                            </div>
                         </div>
-
-                        <!-- Onglet Informations Internes -->
-                        <div class="tab-pane fade" id="interne">
-                            <h4>Responsable paie</h4>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label>Responsable *</label>
-                                    <select name="responsable_paie_id" class="form-control" required>
-                                        <option value="">Sélectionner un responsable</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label>Téléphone LD</label>
-                                    <input type="tel" class="form-control" name="responsable_telephone_ld">
-                                    @error('tel')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <h4>Gestionnaire et Binôme</h4>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label>Gestionnaire principal *</label>
-                                    <select name="gestionnaire_principal_id" class="form-control" required>
-                                        <option value="">Sélectionner un gestionnaire</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2"
-                                            for="gestionnaires_secondaires">
-                                            Binôme
-                                        </label>
-                                        <select name="binome_id" class="form-control" required>
-                                            <option value="">Sélectionner un binôme</option>
-                                            @foreach ($users as $user)
-                                                <option value="{{ $user->id }}"
-                                                    {{ isset($client) && $client->binome_id == $user->id ? 'selected' : '' }}>
-                                                    {{ $user->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('gestionnaires_secondaires')
-                                            <div class="alert alert-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="gestionnaire_telephone_ld">Téléphone LD Gestionnaire</label>
-                                    <input type="tel" class="form-control" name="gestionnaire_telephone_ld">
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="binome_telephone_ld">Téléphone LD Binôme</label>
-                                    <input type="tel" class="form-control" name="binome_telephone_ld">
-                                </div>
-                            </div>
-
-                            <h4>Convention Collective</h4>
-                            {{-- <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label>Convention Collective *</label>
-                                    <select name="convention_collective_id" class="form-control" required>
-                                        <option value="">Sélectionner une convention collective</option>
-                                        @foreach ($conventionCollectives as $convention)
-                                            <option value="{{ $convention->id }}">{{ $convention->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div> --}}
-                            <div class="form-group">
-                                <label for="convention_collective_id">Convention Collective</label>
-                                <select name="convention_collective_id" id="convention_collective_id"
-                                    class="form-control">
-                                    <option value="">Sélectionner une convention collective</option>
-                                    @foreach ($conventionCollectives as $conventionCollective)
-                                        <option value="{{ $conventionCollective->id }}">{{ $conventionCollective->name }}
-                                        </option>
+                    </div>
+                    <div class="form-step" id="interne">
+                        <h4>Interne</h4>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="responsable_paie_id">Responsable paie</label>
+                                <select class="form-control select2" id="responsable_paie_id" name="responsable_paie_id">
+                                    @foreach ($responsables as $responsable)
+                                        <option value="{{ $responsable->id }}">{{ $responsable->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label for="maj_fiche_para">Date de mise à jour fiche para</label>
-                                <input type="date" name="maj_fiche_para" id="maj_fiche_para" class="form-control"
-                                    value="{{ old('maj_fiche_para') }}">
-                                @error('maj_fiche_para')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
+                            <div class="col-md-6">
+                                <label for="responsable_telephone_ld">Téléphone Responsable</label>
+                                <input type="text" class="form-control" id="responsable_telephone_ld"
+                                    name="responsable_telephone_ld">
                             </div>
-
-                        </div>
-
-                        <!-- Onglet Informations Supplémentaires -->
-                        <div class="tab-pane fade" id="supplementaires">
-                            <h4>Informations Supplémentaires</h4>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label>Saisie des variables *</label>
-                                    <input type="checkbox" name="saisie_variables" value="1">
-                                </div>
-                                <div class="col-md-4">
-                                    <label>Client formé à la saisie en ligne</label>
-                                    <input type="checkbox" name="client_forme_saisie" value="1">
-                                    <input type="date" name="date_formation_saisie" class="form-control">
-                                </div>
+                            <div class="col-md-6">
+                                <label for="gestionnaire_principal_id">Gestionnaire principal</label>
+                                <select class="form-control select2" id="gestionnaire_principal_id"
+                                    name="gestionnaire_principal_id">
+                                    @foreach ($gestionnaires as $gestionnaire)
+                                        <option value="{{ $gestionnaire->id }}">{{ $gestionnaire->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <div class="row mb-3">
-
-                                <div class="col-md-2 form-group">
-                                    <label for="date_debut_prestation">Date de début de prestation</label>
-                                    <input type="date" name="date_debut_prestation" id="date_debut_prestation"
-                                        class="form-control" value="{{ old('date_debut_prestation') }}">
-                                    @error('date_debut_prestation')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-2 form-group">
-                                    <label for="date_fin_prestation">Date de fin de prestation</label>
-                                    <input type="date" name="date_fin_prestation" id="date_fin_prestation"
-                                        class="form-control" value="{{ old('date_fin_prestation') }}">
-                                    @error('date_fin_prestation')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-
-
-                                <div class="col-md-3 form-group">
-                                    <label for="date_signature_contrat">Date de signature du contrat</label>
-                                    <input type="date" name="date_signature_contrat" id="date_signature_contrat"
-                                        class="form-control" value="{{ old('date_signature_contrat') }}">
-                                    @error('date_signature_contrat')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="date_rappel_mail">Date de rappel mail</label>
-                                    <input type="date" name="date_rappel_mail" class="form-control">
-                                </div>
-
+                            <div class="col-md-6">
+                                <label for="gestionnaire_telephone_ld">Téléphone Gestionnaire</label>
+                                <input type="text" class="form-control" id="gestionnaire_telephone_ld"
+                                    name="gestionnaire_telephone_ld">
                             </div>
-
-                            <h4>Taux & Adhésions</h4>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label>Taux AT *</label>
-                                    <input type="text" name="taux_at" class="form-control" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Adhésion myDRH *</label>
-                                    <input type="checkbox" name="adhesion_mydrh" value="1">
-                                    <input type="date" name="date_adhesion_mydrh" class="form-control">
-                                </div>
+                            <div class="col-md-6">
+                                <label for="binome_id">Binôme</label>
+                                <select class="form-control select2" id="binome_id" name="binome_id">
+                                    @foreach ($gestionnaires as $gestionnaire)
+                                        <option value="{{ $gestionnaire->id }}">{{ $gestionnaire->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
-
-                            <h4>Cabinet & Portefeuille Cabinet</h4>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label>Est-ce un cabinet ?</label>
-                                    <input type="checkbox" name="is_cabinet" value="1">
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Portefeuille Cabinet</label>
-                                    <select name="portfolio_cabinet_id" class="form-control">
-                                        <option value="">Sélectionner un portefeuille cabinet</option>
-                                        @foreach ($clients as $client)
-                                            <option value="{{ $client->id }}">{{ $client->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                            <div class="col-md-6">
+                                <label for="binome_telephone_ld">Téléphone Binôme</label>
+                                <input type="text" class="form-control" id="binome_telephone_ld"
+                                    name="binome_telephone_ld">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="convention_collective_id">Convention Collective</label>
+                                <select class="form-control select2" id="convention_collective_id"
+                                    name="convention_collective_id">
+                                    @foreach ($conventions as $convention)
+                                        <option value="{{ $convention->id }}">{{ $convention->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="maj_fiche_para">Mise à jour fiche para</label>
+                                <input type="date" class="form-control" id="maj_fiche_para" name="maj_fiche_para">
                             </div>
                         </div>
                     </div>
-
-                    <div class="form-actions">
-                        <div class="step-buttons">
-                            <button type="button" class="btn btn-secondary prev-step"
-                                style="display: none;">Précédent</button>
-                            <div>
-                                <button type="button" class="btn btn-primary next-step"
-                                    data-step="societe">Suivant</button>
-                                <button type="button" class="btn btn-success submit-form"
-                                    style="display: none;">Enregistrer</button>
+                    <div class="form-step" id="supplementaires">
+                        <h4>Informations Supplémentaires</h4>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="taux_at">Taux AT</label>
+                                <input type="text" class="form-control" id="taux_at" name="taux_at" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="saisie_variables">Saisie des variables</label>
+                                <input type="checkbox" class="form-control" id="saisie_variables"
+                                    name="saisie_variables">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="client_forme_saisie">Client formé à la saisie</label>
+                                <input type="checkbox" class="form-control" id="client_forme_saisie"
+                                    name="client_forme_saisie">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="date_formation_saisie">Date de formation à la saisie</label>
+                                <input type="date" class="form-control" id="date_formation_saisie"
+                                    name="date_formation_saisie">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="date_debut_prestation">Date de début de prestation</label>
+                                <input type="date" class="form-control" id="date_debut_prestation"
+                                    name="date_debut_prestation">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="date_fin_prestation">Date de fin de prestation</label>
+                                <input type="date" class="form-control" id="date_fin_prestation"
+                                    name="date_fin_prestation">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="date_signature_contrat">Date de signature du contrat</label>
+                                <input type="date" class="form-control" id="date_signature_contrat"
+                                    name="date_signature_contrat">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="date_rappel_mail">Date de rappel par mail</label>
+                                <input type="date" class="form-control" id="date_rappel_mail"
+                                    name="date_rappel_mail">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="adhesion_mydrh">Adhésion MyDRH</label>
+                                <input type="checkbox" class="form-control" id="adhesion_mydrh" name="adhesion_mydrh">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="date_adhesion_mydrh">Date d'adhésion MyDRH</label>
+                                <input type="date" class="form-control" id="date_adhesion_mydrh"
+                                    name="date_adhesion_mydrh">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="is_cabinet">Est un cabinet</label>
+                                <input type="checkbox" class="form-control" id="is_cabinet" name="is_cabinet">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="portfolio_cabinet_id">Portfolio Cabinet</label>
+                                <select class="form-control select2" id="portfolio_cabinet_id"
+                                    name="portfolio_cabinet_id">
+                                    @foreach ($clients as $client)
+                                    <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>
+                    <button type="button" class="btn btn-primary next-step">Suivant</button>
+                    <button type="button" class="btn btn-secondary prev-step">Précédent</button>
+                    <button type="submit" class="btn btn-success submit-form">Soumettre</button>
                 </form>
             </div>
         </div>
-    </div>
-@endsection
+    @endsection
 
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    @push('scripts')
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                const steps = ['societe', 'contacts', 'interne', 'supplementaires'];
+                let currentStepIndex = 0;
 
-    <script>
-        $(document).ready(function() {
-            // Configuration de Toastr
-            toastr.options = {
-                "closeButton": true,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "timeOut": "3000"
-            };
-
-            // Ordre des étapes
-            const steps = ['societe', 'contacts', 'interne', 'supplementaires'];
-            let currentStepIndex = 0;
-
-            function updateButtons() {
-                // Gestion du bouton précédent
-                if (currentStepIndex > 0) {
-                    $('.prev-step').show();
-                } else {
-                    $('.prev-step').hide();
+                function showStep(index) {
+                    $('.form-step').hide();
+                    $(`#${steps[index]}`).show();
                 }
 
-                // Gestion des boutons suivant/enregistrer
-                if (currentStepIndex === steps.length - 1) {
-                    $('.next-step').hide();
-                    $('.submit-form').show();
-                } else {
-                    $('.next-step').show();
-                    $('.submit-form').hide();
+                function updateStepButtons() {
+                    $('.prev-step').prop('disabled', currentStepIndex === 0);
+                    $('.next-step').prop('disabled', currentStepIndex === steps.length - 1);
                 }
 
-                // Mise à jour du data-step
-                $('.next-step').data('step', steps[currentStepIndex]);
-            }
-
-            // Gestion du bouton précédent
-            $('.prev-step').click(function() {
-                if (currentStepIndex > 0) {
-                    currentStepIndex--;
-                    $(`#clientTabs a[href="#${steps[currentStepIndex]}"]`).tab('show');
-                    updateButtons();
+                function updateProgressBar() {
+                    const progress = ((currentStepIndex + 1) / steps.length) * 100;
+                    $('.progress-bar').css('width', `${progress}%`);
                 }
-            });
 
-            // Fonction de validation et soumission du formulaire
-            function validateStep(step) {
-                let isValid = true;
-                $('.error-feedback').remove();
-                $('.is-invalid').removeClass('is-invalid');
-
-                $(`#${step} .form-control[required]`).each(function() {
-                    if (!$(this).val()) {
-                        $(this).addClass('is-invalid');
-                        $(this).after('<div class="error-feedback">Ce champ est requis</div>');
-                        isValid = false;
+                function showErrors(errors) {
+                    for (const [field, messages] of Object.entries(errors)) {
+                        const input = $(`[name="${field}"]`);
+                        input.addClass('is-invalid');
+                        input.after(`<div class="invalid-feedback">${messages.join('<br>')}</div>`);
                     }
-                });
-
-                return isValid;
-            }
-
-            function submitStep(step) {
-                if (!validateStep(step)) {
-                    toastr.error('Veuillez corriger les erreurs dans le formulaire');
-                    return;
                 }
 
-                let formData = new FormData($('#clientForm')[0]);
-                formData.append('step', step);
+                function clearErrors() {
+                    $('.is-invalid').removeClass('is-invalid');
+                    $('.invalid-feedback').remove();
+                }
 
-                $.ajax({
-                    url: "{{ route('clients.storePartial') }}",
-                    type: "POST",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        if (response.success) {
-                            toastr.success('Données sauvegardées avec succès');
-
-                            if (response.nextStep) {
-                                // Activer et afficher le prochain onglet
-                                currentStepIndex++;
-                                $(`#clientTabs a[href="#${response.nextStep}"]`).removeClass(
-                                'disabled');
-                                $(`#clientTabs a[href="#${response.nextStep}"]`).tab('show');
-                                updateButtons();
+                function submitStep(step) {
+                    $.ajax({
+                        url: "{{ route('clients.storePartial') }}",
+                        method: 'POST',
+                        data: $(`#${step}`).find(':input').serialize(),
+                        success: function(response) {
+                            clearErrors();
+                            if (response.success) {
+                                if (currentStepIndex < script steps.length - 1) {
+                                    currentStepIndex++;
+                                    showStep(currentStepIndex);
+                                    updateStepButtons();
+                                    updateProgressBar();
+                                } else {
+                                    toastr.success('Formulaire soumis avec succès');
+                                }
                             } else {
-                                toastr.success('Toutes les étapes sont complétées');
+                                if (response.errors) {
+                                    showErrors(response.errors);
+                                    toastr.error('Veuillez corriger les erreurs dans le formulaire');
+                                } else {
+                                    toastr.error('Une erreur est survenue');
+                                }
                             }
-                        }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 422) {
-                            const errors = xhr.responseJSON.errors;
-                            Object.keys(errors).forEach(field => {
-                                const input = $(`[name="${field}"]`);
-                                input.addClass('is-invalid');
-                                input.after(
-                                    `<div class="error-feedback">${errors[field][0]}</div>`);
-                            });
-                            toastr.error('Veuillez corriger les erreurs dans le formulaire');
-                        } else {
+                        },
+                        error: function(xhr) {
+                            console.log('Erreur de soumission', xhr);
+                            clearErrors();
+                            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                                showErrors(xhr.responseJSON.errors);
+                            }
                             toastr.error('Une erreur est survenue');
                         }
+                    });
+                }
+
+                $('.next-step').on('click', function() {
+                    submitStep(steps[currentStepIndex]);
+                });
+
+                $('.submit-form').on('click', function() {
+                    submitStep(steps[currentStepIndex]);
+                });
+
+                $('.prev-step').on('click', function() {
+                    if (currentStepIndex > 0) {
+                        currentStepIndex--;
+                        showStep(currentStepIndex);
+                        updateStepButtons();
+                        updateProgressBar();
                     }
                 });
-            }
 
-            // Gestion des boutons suivant et enregistrer
-            $('.next-step, .submit-form').click(function(e) {
-                e.preventDefault();
-                const step = $(this).data('step');
-                submitStep(step);
+                showStep(currentStepIndex);
+                updateStepButtons();
+                updateProgressBar();
             });
-
-            // Gestion des onglets
-            $('#clientTabs a').on('click', function(e) {
-                if ($(this).hasClass('disabled')) {
-                    e.preventDefault();
-                    return false;
-                }
-                const targetStep = $(this).attr('href').replace('#', '');
-                currentStepIndex = steps.indexOf(targetStep);
-                updateButtons();
-            });
-
-            // Initialisation
-            updateButtons();
-        });
-    </script>
-@endpush
+        </>
+    @endpush

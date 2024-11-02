@@ -32,9 +32,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    // Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
-
-
     Route::post('/profile/update-settings', [ProfileController::class, 'updateSettings'])->name('profile.update-settings');
     Route::post('/profile/update-account', [ProfileController::class, 'updateAccount'])->name('profile.update-account');
     Route::post('/logout', [ProfileController::class, 'logout'])->name('logout');
@@ -52,13 +49,12 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('clients', ClientController::class);
     Route::resource('clients.materials', MaterialController::class);
     Route::get('/clients/{client}/info', [ClientController::class, 'getInfo'])->name('clients.info');
-    Route::get('/clients/{clientId}/info', 'ClientController@getClientInfo')->name('clients.info');
-
+    // Route::get('/clients/create', [ClientController::class, 'create'])->name('clients.create');
+    Route::post('/clients/store-partial', [ClientController::class, 'storePartial'])->name('clients.storePartial');
 
     Route::resource('materials', MaterialController::class);
 
     Route::resource('periodes-paie', PeriodePaieController::class);
-    // Routes pour PeriodePaie
     Route::get('/periodes-paie', [PeriodePaieController::class, 'index'])->name('periodes-paie.index');
     Route::get('/periodes-paie/create', [PeriodePaieController::class, 'create'])->name('periodes-paie.create');
     Route::post('/periodes-paie', [PeriodePaieController::class, 'store'])->name('periodes-paie.store');
@@ -69,7 +65,6 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('periodes-paie/update-field', [PeriodePaieController::class, 'updateField'])->name('periodes-paie.updateField');
     Route::get('periodes-paie/{id}/info', [PeriodePaieController::class, 'getInfo'])->name('periodes-paie.info');
 
-    // Route::resource('traitements-paie', TraitementPaieController::class);
     Route::get('/traitements-paie', [TraitementPaieController::class, 'index'])->name('traitements-paie.index');
     Route::get('/traitements-paie/create', [TraitementPaieController::class, 'create'])->name('traitements-paie.create');
     Route::post('/traitements-paie', [TraitementPaieController::class, 'store'])->name('traitements-paie.store');
@@ -77,10 +72,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/traitements-paie/{traitementPaie}/edit', [TraitementPaieController::class, 'edit'])->name('traitements-paie.edit');
     Route::put('/traitements-paie/{traitementPaie}', [TraitementPaieController::class, 'update'])->name('traitements-paie.update');
     Route::delete('/traitements-paie/{traitementPaie}', [TraitementPaieController::class, 'destroy'])->name('traitements-paie.destroy');
-
     Route::get('/historique', [TraitementPaieController::class, 'historique'])->name('traitements-paie.historique');
-
-    // Route::get('/traitements-paie/create', [TraitementPaieController::class, 'create'])->name('traitements-paie.create');
     Route::post('/traitements-paie/store', [TraitementPaieController::class, 'store'])->name('traitements-paie.store');
     Route::post('/traitements-paie/store-partial', [TraitementPaieController::class, 'storePartial'])->name('traitements-paie.storePartial');
     Route::post('/traitements-paie/cancel', [TraitementPaieController::class, 'cancel'])->name('traitements-paie.cancel');
@@ -93,12 +85,10 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 
     // Ajout de la route validateStep
-    Route::get('/clients/{client}/info', [ClientController::class, 'getInfo'])->name('clients.info');
     Route::post('/clients/validate-step/{step}', [ClientController::class, 'validateStep'])->name('clients.validateStep');
     Route::post('/clients/store-partial', [ClientController::class, 'storePartial'])->name('clients.storePartial');
     Route::put('/clients/{client}/update-partial/{step}', [ClientController::class, 'updatePartial'])->name('clients.updatePartial');
     Route::get('/clients/{client}/get-partial/{step}', [ClientController::class, 'getPartial'])->name('clients.getPartial');
-
 });
 
 // Admin routes

@@ -13,8 +13,8 @@ class ClientService
 {
     public function getClients(Request $request)
     {
-        // Implémentez la logique pour obtenir les clients
-        return Client::all();
+        // Implémentez la logique pour obtenir les clients avec pagination
+        return Client::query(); // Retournez une instance de Builder
     }
 
     public function getClientGrowthData()
@@ -47,110 +47,129 @@ class ClientService
     public function storePartial(Request $request)
 {
     $step = $request->input('step');
+    Log::info("Début de la validation de l'étape : $step");
 
-    // Valider les données en fonction de l'étape
-    $rules = [];
-    switch ($step) {
-        case 'societe':
-            $rules = [
-                'name' => 'required|string|max:255',
-                'type_societe' => 'nullable|string|max:255',
-                'ville' => 'nullable|string|max:255',
-                'dirigeant_nom' => 'nullable|string|max:255',
-                'dirigeant_telephone' => 'nullable|string|max:255',
-                'dirigeant_email' => 'nullable|email|max:255',
-                'date_estimative_envoi_variables' => 'nullable|date',
-                'nb_bulletins' => 'nullable|integer',
-                'reference' => 'nullable|string|max:255',
-            ];
-            break;
-        case 'contacts':
-            $rules = [
-                'contact_paie_nom' => 'nullable|string|max:255',
-                'contact_paie_prenom' => 'nullable|string|max:255',
-                'contact_paie_telephone' => 'nullable|string|max:255',
-                'contact_paie_email' => 'nullable|email|max:255',
-                'contact_compta_nom' => 'nullable|string|max:255',
-                'contact_compta_prenom' => 'nullable|string|max:255',
-                'contact_compta_telephone' => 'nullable|string|max:255',
-                'contact_compta_email' => 'nullable|email|max:255',
-            ];
-            break;
-        case 'interne':
-            $rules = [
-                'responsable_paie_id' => 'required|exists:users,id',
-                'responsable_telephone_ld' => 'nullable|string|max:255',
-                'gestionnaire_principal_id' => 'required|exists:users,id',
-                'binome_id' => 'required|exists:users,id',
-                'gestionnaire_telephone_ld' => 'nullable|string|max:255',
-                'binome_telephone_ld' => 'nullable|string|max:255',
-                'convention_collective_id' => 'nullable|exists:convention_collectives,id',
-                'maj_fiche_para' => 'nullable|date',
-            ];
-            break;
-        case 'supplementaires':
-            $rules = [
-                'saisie_variables' => 'nullable|boolean',
-                'client_forme_saisie' => 'nullable|boolean',
-                'date_formation_saisie' => 'nullable|date',
-                'date_debut_prestation' => 'nullable|date',
-                'date_fin_prestation' => 'nullable|date',
-                'date_signature_contrat' => 'nullable|date',
-                'date_rappel_mail' => 'nullable|date',
-                'taux_at' => 'required|string|max:255',
-                'adhesion_mydrh' => 'nullable|boolean',
-                'date_adhesion_mydrh' => 'nullable|date',
-                'is_cabinet' => 'nullable|boolean',
-                'portfolio_cabinet_id' => 'nullable|exists:clients,id',
-            ];
-            break;
-    }
+    // Définir les règles de validation en fonction de l'étape
+    $rules = $this->getValidationRules($step, $request->input('client_id'));
 
-    try {
-        $validatedData = $request->validate($rules);
+    // Valider les données de la requête
+    $validator = Validator::make($request->all(), $rules);
 
-        // Enregistrer les données partiellement
-        $client = Client::updateOrCreate(
-            ['id' => $request->input('client_id')],
-            $validatedData
-        );
-
-        // Déterminer l'étape suivante
-        $nextStep = null;
-        if ($step === 'societe') {
-            $nextStep = 'contacts';
-        } elseif ($step === 'contacts') {
-            $nextStep = 'interne';
-        } elseif ($step === 'interne') {
-            $nextStep = 'supplementaires';
-        }
-
-        return [
-            'success' => true,
-            'nextStep' => $nextStep,
-        ];
-    } catch (\Exception $e) {
-        Log::error('Erreur lors de l\'enregistrement partiel du client : ' . $e->getMessage(), [
-            'step' => $step,
-            'data' => $request->all(),
-            'exception' => $e,
-        ]);
-
+    if ($validator->fails()) {
+        Log::info("Validation échouée pour l'étape : $step", ['errors' => $validator->errors()]);
         return [
             'success' => false,
-            'message' => 'Une erreur est survenue lors de l\'enregistrement des données.',
-            'errors' => $e->getMessage(),
+            'errors' => $validator->errors()
         ];
     }
+
+    // Enregistrer ou mettre à jour les données partiellement validées
+    $validatedData = $validator->validated();
+
+    // Vérifiez que le champ 'name' est présent dans les données validées
+    if (!isset($validatedData['name'])) {
+        Log::error("Le champ 'name' est manquant dans les données validées pour l'étape : $step");
+        return [
+            'success' => false,
+            'errors' => ['name' => ['Le champ "name" est requis.']]
+        ];
+    }
+
+    $client = Client::updateOrCreate(
+        ['id' => $request->input('client_id')],
+        $validatedData
+    );
+
+    Log::info("Données enregistrées pour l'étape : $step", ['client_id' => $client->id]);
+
+    // Déterminer l'étape suivante
+    $nextStep = $this->getNextStep($step);
+
+    return [
+        'success' => true,
+        'nextStep' => $nextStep,
+        'client_id' => $client->id,
+    ];
 }
+
+    private function getValidationRules($step, $clientId = null)
+    {
+        $rules = [];
+
+        switch ($step) {
+            case 'societe':
+                $rules = [
+                    // 'name' => 'required|string|max:255',
+                    'reference' => 'required|string|max:255',
+                    'name' => 'required|string|max:255|unique:clients,name,' . ($clientId ?? 'NULL'),
+                    'type_societe' => 'nullable|string|max:255',
+                    'ville' => 'nullable|string|max:255',
+                    'dirigeant_nom' => 'nullable|string|max:255',
+                    'dirigeant_telephone' => 'nullable|string|max:255',
+                    'dirigeant_email' => 'nullable|email|max:255',
+                ];
+            case 'contacts':
+                $rules = [
+                    'contact_paie_nom' => 'nullable|string|max:255',
+                    'contact_paie_prenom' => 'nullable|string|max:255',
+                    'contact_paie_telephone' => 'nullable|string|max:255',
+                    'contact_paie_email' => 'nullable|email|max:255',
+                    'contact_compta_nom' => 'nullable|string|max:255',
+                    'contact_compta_prenom' => 'nullable|string|max:255',
+                    'contact_compta_telephone' => 'nullable|string|max:255',
+                    'contact_compta_email' => 'nullable|email|max:255',
+
+                ];
+            case 'interne':
+                $rules = [
+                    'responsable_paie_id' => 'required|exists:users,id',
+                    'responsable_telephone_ld' => 'nullable|string|max:255',
+                    'gestionnaire_principal_id' => 'required|exists:users,id',
+                    'binome_id' => 'required|exists:users,id',
+                    'gestionnaire_telephone_ld' => 'nullable|string|max:255',
+                    'binome_telephone_ld' => 'nullable|string|max:255',
+                    'convention_collective_id' => 'nullable|exists:convention_collectives,id',
+                    'maj_fiche_para' => 'nullable|date',
+                ];
+            case 'supplementaires':
+                $rules = [
+
+                    'saisie_variables' => 'nullable|boolean',
+                    'client_forme_saisie' => 'nullable|boolean',
+                    'date_formation_saisie' => 'nullable|date',
+                    'date_debut_prestation' => 'nullable|date',
+                    'date_fin_prestation' => 'nullable|date',
+                    'date_signature_contrat' => 'nullable|date',
+                    'date_rappel_mail' => 'nullable|date',
+                    'taux_at' => 'required|string|max:255',
+                    'adhesion_mydrh' => 'nullable|boolean',
+                    'date_adhesion_mydrh' => 'nullable|date',
+                    'is_cabinet' => 'nullable|boolean',
+                    'portfolio_cabinet_id' => 'nullable|exists:clients,id',
+
+                ];
+            break;
+        }
+        return  $rules;
+    }
+
+    private function getNextStep($currentStep)
+    {
+        $steps = ['societe', 'contacts', 'interne', 'supplementaires'];
+        $currentIndex = array_search($currentStep, $steps);
+        return $currentIndex !== false && $currentIndex < count($steps) - 1 ? $steps[$currentIndex + 1] : null;
+    }
+
 
     public function storeClient(Request $request)
     {
         // Valider les données
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:clients,name',
             'email' => 'required|email|max:255|unique:clients,email',
             'phone' => 'nullable|string|max:255',
+            'portfolio_cabinet_id' => 'nullable|exists:clients,id',
+
             // Ajoutez d'autres règles de validation ici
         ]);
 
@@ -164,9 +183,11 @@ class ClientService
     {
         // Valider les données
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:clients,name,' . $id,
             'email' => 'required|email|max:255|unique:clients,email,' . $id,
             'phone' => 'nullable|string|max:255',
+            'is_cabinet' => 'nullable|boolean',
+            'portfolio_cabinet_id' => 'nullable|exists:clients,id',
             // Ajoutez d'autres règles de validation ici
         ]);
 

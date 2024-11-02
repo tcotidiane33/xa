@@ -193,10 +193,11 @@ return [
         */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        Barryvdh\Debugbar\ServiceProvider::class,
+        // Barryvdh\Debugbar\ServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\TelescopeServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
         // Encore\Admin\AdminServiceProvider::class,
         // Notify\Laravel\NotifyServiceProvider::class,

@@ -18,8 +18,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $loader = \Illuminate\Foundation\AliasLoader::getInstance();
-        $loader->alias('Debugbar', \Barryvdh\Debugbar\Facades\Debugbar::class);
+        // $loader = \Illuminate\Foundation\AliasLoader::getInstance();
+        // $loader->alias('Debugbar', \Barryvdh\Debugbar\Facades\Debugbar::class);
+
+        if ($this->app->environment('local')) {
+            $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
+            $this->app->register(TelescopeServiceProvider::class);
+        }
     }
 
     /**

@@ -6,7 +6,7 @@
 <div class="container mx-auto p-4 pt-6 md:p-6">
     <h1 class="text-2xl font-bold mb-4">Ajouter une nouvelle période de paie</h1>
 
-    <form action="{{ route('periodes-paie.store') }}" method="POST">
+    <form class="flex" action="{{ route('periodes-paie.store') }}" method="POST">
         @csrf
 
         <div class="mb-4 w-sm group">

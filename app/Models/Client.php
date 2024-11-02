@@ -205,5 +205,16 @@ public function scopeFilterByStatus($query, $status)
         }
     }
 
+     // Méthodes pour distinguer les clients cabinets et les clients portefeuilles cabinets
+     public function isCabinet()
+     {
+         return $this->is_cabinet;
+     }
+ 
+     public function isPortfolioCabinet()
+     {
+         return !$this->is_cabinet && $this->portfolio_cabinet_id !== null;
+     }
+
     
 }

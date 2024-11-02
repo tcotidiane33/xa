@@ -10,13 +10,14 @@ use App\Models\ClientHistory;
 use App\Exports\ClientsExport;
 use App\Services\ClientService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Models\ConventionCollective;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Mail\ClientManagerChangeMail;
 use App\Notifications\RelationUpdated;
-use App\Mail\ClientAcknowledgementMail;
 
+use App\Mail\ClientAcknowledgementMail;
 use App\Notifications\NewClientCreated;
 use App\Http\Requests\Client\StoreClientRequest;
 use App\Http\Requests\Client\UpdateClientRequest;
@@ -31,42 +32,60 @@ class ClientController extends Controller
     }
     public function index(Request $request)
     {
-        $clients = $this->clientService->getClients($request);
+        $clients = $this->clientService->getClients($request)->paginate(10); // Utilisez la pagination ici
         $clientGrowthData = $this->clientService->getClientGrowthData();
+        $clientGrowthLabels = $clientGrowthData->pluck('year'); // Obtenez les labels de croissance des clients
         $topConventionsData = $this->clientService->getTopConventionsData();
+        $topConventionsLabels = $topConventionsData->pluck('convention_collective_id'); // Obtenez les labels des conventions collectives
         $clientsByManagerData = $this->clientService->getClientsByManagerData();
+        $clientsByManagerLabels = $clientsByManagerData->pluck('gestionnaire_principal_id'); // Obtenez les labels des gestionnaires principaux
 
         return view('clients.index', compact(
             'clients',
             'clientGrowthData',
+            'clientGrowthLabels',
             'topConventionsData',
-            'clientsByManagerData'
+            'topConventionsLabels',
+            'clientsByManagerData',
+            'clientsByManagerLabels'
         ));
     }
     public function storePartial(Request $request)
     {
+        Log::info("Début du processus de storePartial", ['request' => $request->all()]);
         $result = $this->clientService->storePartial($request);
 
         if ($result['success']) {
+            Log::info("storePartial réussi", ['client_id' => $result['client_id'], 'nextStep' => $result['nextStep']]);
             return response()->json([
                 'success' => true,
                 'nextStep' => $result['nextStep'],
+                'client_id' => $result['client_id'],
             ]);
         } else {
+            Log::info("storePartial échoué", ['errors' => $result['errors']]);
             return response()->json([
                 'success' => false,
-                'message' => $result['message'],
-                'errors' => $result['errors'] ?? [],
+                'errors' => $result['errors'],
             ], 422);
         }
     }
 
     public function create()
     {
-        $users = User::all();
-        $conventionCollectives = ConventionCollective::all();
-        $clients = Client::all();
-        return view('clients.create', compact('users', 'conventionCollectives', 'clients'));
+        $responsables = User::whereHas('roles', function($query) {
+            $query->where('name', 'responsable');
+        })->get();
+
+        $gestionnaires = User::whereHas('roles', function($query) {
+            $query->where('name', 'gestionnaire');
+        })->get();
+
+        $conventions = ConventionCollective::all();
+        $clients = Client::all(); // Récupère tous les clients depuis la base de données
+
+
+        return view('clients.create', compact('responsables', 'gestionnaires', 'conventions', 'clients'));
     }
 
     public function store(StoreClientRequest $request)
