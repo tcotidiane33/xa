@@ -231,12 +231,6 @@
                             </select>
                         </div>
                     </div>
-                    {{-- <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label>Téléphone LD</label>
-                            <input type="tel" class="form-control" name="responsable_telephone_ld" value="{{ $client->responsable_telephone_ld }}">
-                        </div>
-                    </div> --}}
                     <button type="submit" class="btn btn-primary">Enregistrer</button>
                 </form>
             </div>

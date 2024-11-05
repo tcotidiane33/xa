@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Ticket extends Model
 {
     use HasFactory;
-    protected $fillable = ['titre', 'description', 'statut', 'priorite', 'createur_id', 'assigne_a_id'];
+    protected $fillable = [ 'subject', 'description', 'statut', 'priorite', 'createur_id', 'assigne_a_id'];
 
     public function createur()
     {

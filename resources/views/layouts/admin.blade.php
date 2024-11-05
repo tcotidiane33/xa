@@ -83,15 +83,17 @@
         }
     </style>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/languages/sql.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', (event) => {
-        document.querySelectorAll('pre code').forEach((block) => {
-            hljs.highlightBlock(block);
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/languages/sql.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
         });
-    });
-</script>
+    </script>
+    @livewireStyles
+
 
 </head>
 
@@ -112,14 +114,14 @@
     <div class="mobile-menu-overlay"></div>
 
     <main>
-            @if (session('error'))
-                <div class="alert alert-danger mt-6">
-                    {{ session('error') }}
-                </div>
-            @endif
-            <div class="main-container">
-                @yield('content')
+        @if (session('error'))
+            <div class="alert alert-danger mt-6">
+                {{ session('error') }}
             </div>
+        @endif
+        <div class="main-container">
+            @yield('content')
+        </div>
     </main>
 
     <!-- welcome modal end -->
@@ -141,6 +143,8 @@
     <!-- End Google Tag Manager (noscript) -->
 
     @stack('scripts')
+    @livewireScripts
+
 
 </body>
 

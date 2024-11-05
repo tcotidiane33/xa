@@ -15,10 +15,13 @@ use App\Models\ConventionCollective;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Mail\ClientManagerChangeMail;
-use App\Notifications\RelationUpdated;
 
+use App\Notifications\RelationUpdated;
 use App\Mail\ClientAcknowledgementMail;
 use App\Notifications\NewClientCreated;
+
+use BayAreaWebPro\MultiStepForms\MultiStepForm;
+
 use App\Http\Requests\Client\StoreClientRequest;
 use App\Http\Requests\Client\UpdateClientRequest;
 
@@ -50,6 +53,14 @@ class ClientController extends Controller
             'clientsByManagerLabels'
         ));
     }
+   
+  
+    public function create()
+    {
+        Log::info('Début de la méthode create');
+        return view('clients.create');
+    }
+
     public function storePartial(Request $request)
     {
         Log::info("Début du processus de storePartial", ['request' => $request->all()]);
@@ -69,23 +80,6 @@ class ClientController extends Controller
                 'errors' => $result['errors'],
             ], 422);
         }
-    }
-
-    public function create()
-    {
-        $responsables = User::whereHas('roles', function($query) {
-            $query->where('name', 'responsable');
-        })->get();
-
-        $gestionnaires = User::whereHas('roles', function($query) {
-            $query->where('name', 'gestionnaire');
-        })->get();
-
-        $conventions = ConventionCollective::all();
-        $clients = Client::all(); // Récupère tous les clients depuis la base de données
-
-
-        return view('clients.create', compact('responsables', 'gestionnaires', 'conventions', 'clients'));
     }
 
     public function store(StoreClientRequest $request)

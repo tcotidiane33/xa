@@ -17,6 +17,7 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
+        "deskapp": "^0.0.2",
         "toastr": "^2.1.4"
     }
 }

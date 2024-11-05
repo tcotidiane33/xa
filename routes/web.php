@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ConventionCollectiveController;
 use App\Http\Controllers\Admin\RelationController;
 use App\Http\Controllers\Admin\FileController;
+use App\Http\Controllers\MultiStepFormController;
+
 
 Route::get('/', function () {
     return view('auth.login');
@@ -49,8 +51,17 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('clients', ClientController::class);
     Route::resource('clients.materials', MaterialController::class);
     Route::get('/clients/{client}/info', [ClientController::class, 'getInfo'])->name('clients.info');
-    // Route::get('/clients/create', [ClientController::class, 'create'])->name('clients.create');
     Route::post('/clients/store-partial', [ClientController::class, 'storePartial'])->name('clients.storePartial');
+    Route::post('/clients/validate-step/{step}', [ClientController::class, 'validateStep'])->name('clients.validateStep');
+    Route::put('/clients/{client}/update-partial/{step}', [ClientController::class, 'updatePartial'])->name('clients.updatePartial');
+    Route::get('/clients/{client}/get-partial/{step}', [ClientController::class, 'getPartial'])->name('clients.getPartial');
+
+    //laravel multistep
+    Route::get('/form/create', [MultiStepFormController::class, 'create'])->name('form.create');
+    Route::post('/form/store', [MultiStepFormController::class, 'store'])->name('form.store');
+    Route::get('/form/success', function () {
+        return 'Formulaire soumis avec succès!';
+    })->name('form.success');
 
     Route::resource('materials', MaterialController::class);
 
@@ -84,11 +95,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::patch('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 
-    // Ajout de la route validateStep
-    Route::post('/clients/validate-step/{step}', [ClientController::class, 'validateStep'])->name('clients.validateStep');
-    Route::post('/clients/store-partial', [ClientController::class, 'storePartial'])->name('clients.storePartial');
-    Route::put('/clients/{client}/update-partial/{step}', [ClientController::class, 'updatePartial'])->name('clients.updatePartial');
-    Route::get('/clients/{client}/get-partial/{step}', [ClientController::class, 'getPartial'])->name('clients.getPartial');
+
 });
 
 // Admin routes

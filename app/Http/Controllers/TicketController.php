@@ -26,7 +26,6 @@ class TicketController extends Controller
      */
 
 
-
     public function create()
     {
         $users = User::all();
@@ -40,7 +39,8 @@ class TicketController extends Controller
      public function store(Request $request)
      {
          $validated = $request->validate([
-             'titre' => 'required|string|max:255',
+            //  'titre' => 'required|string|max:255',
+             'subject' => 'required|string|max:255',
              'description' => 'required|string',
              'priorite' => 'required|in:basse,moyenne,haute',
              'assigne_a_id' => 'nullable|exists:users,id',
@@ -71,7 +71,8 @@ class TicketController extends Controller
     public function update(Request $request, Ticket $ticket)
     {
         $validated = $request->validate([
-            'titre' => 'required|string|max:255',
+            // 'titre' => 'required|string|max:255',
+            'subject' => 'required|string|max:255',
             'description' => 'required|string',
             'statut' => 'required|in:ouvert,en_cours,ferme',
             'priorite' => 'required|in:basse,moyenne,haute',
