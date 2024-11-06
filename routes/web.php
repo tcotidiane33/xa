@@ -66,13 +66,13 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('materials', MaterialController::class);
 
     Route::resource('periodes-paie', PeriodePaieController::class);
-    Route::get('/periodes-paie', [PeriodePaieController::class, 'index'])->name('periodes-paie.index');
-    Route::get('/periodes-paie/create', [PeriodePaieController::class, 'create'])->name('periodes-paie.create');
-    Route::post('/periodes-paie', [PeriodePaieController::class, 'store'])->name('periodes-paie.store');
-    Route::get('/periodes-paie/{periodePaie}', [PeriodePaieController::class, 'show'])->name('periodes-paie.show');
-    Route::get('/periodes-paie/{periodePaie}/edit', [PeriodePaieController::class, 'edit'])->name('periodes-paie.edit');
-    Route::put('/periodes-paie/{periodePaie}', [PeriodePaieController::class, 'update'])->name('periodes-paie.update');
-    Route::delete('/periodes-paie/{periodePaie}', [PeriodePaieController::class, 'destroy'])->name('periodes-paie.destroy');
+    // Route::get('/periodes-paie', [PeriodePaieController::class, 'index'])->name('periodes-paie.index');
+    // Route::get('/periodes-paie/create', [PeriodePaieController::class, 'create'])->name('periodes-paie.create');
+    // Route::post('/periodes-paie', [PeriodePaieController::class, 'store'])->name('periodes-paie.store');
+    // Route::get('/periodes-paie/{periodePaie}', [PeriodePaieController::class, 'show'])->name('periodes-paie.show');
+    // Route::get('/periodes-paie/{periodePaie}/edit', [PeriodePaieController::class, 'edit'])->name('periodes-paie.edit');
+    // Route::put('/periodes-paie/{periodePaie}', [PeriodePaieController::class, 'update'])->name('periodes-paie.update');
+    // Route::delete('/periodes-paie/{periodePaie}', [PeriodePaieController::class, 'destroy'])->name('periodes-paie.destroy');
     Route::patch('periodes-paie/update-field', [PeriodePaieController::class, 'updateField'])->name('periodes-paie.updateField');
     Route::get('periodes-paie/{id}/info', [PeriodePaieController::class, 'getInfo'])->name('periodes-paie.info');
 

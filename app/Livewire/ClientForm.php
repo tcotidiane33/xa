@@ -16,7 +16,53 @@ class ClientForm extends Component
     public $contact_paie_nom, $contact_paie_prenom, $contact_paie_telephone, $contact_paie_email;
     public $contact_compta_nom, $contact_compta_prenom, $contact_compta_telephone, $contact_compta_email;
     public $responsable_paie_id, $responsable_telephone_ld, $gestionnaire_principal_id, $binome_id, $convention_collective_id, $maj_fiche_para;
-    public $saisie_variables, $client_forme_saisie, $date_formation_saisie, $date_debut_prestation, $date_fin_prestation, $date_signature_contrat, $date_rappel_mail, $taux_at, $adhesion_mydrh, $date_adhesion_mydrh, $is_cabinet, $portfolio_cabinet_id;
+    public $saisie_variables, $date_saisie_variables, $client_forme_saisie, $date_formation_saisie, $date_debut_prestation, $date_fin_prestation, $date_signature_contrat, $date_rappel_mail, $taux_at, $adhesion_mydrh, $date_adhesion_mydrh, $is_cabinet, $portfolio_cabinet_id;
+
+    public function mount($clientId = null)
+    {
+        if ($clientId) {
+            $this->loadClient($clientId);
+        }
+    }
+
+    public function loadClient($clientId)
+    {
+        $client = Client::findOrFail($clientId);
+        $this->client_id = $client->id;
+        $this->name = $client->name;
+        $this->type_societe = $client->type_societe;
+        $this->ville = $client->ville;
+        $this->dirigeant_nom = $client->dirigeant_nom;
+        $this->dirigeant_telephone = $client->dirigeant_telephone;
+        $this->dirigeant_email = $client->dirigeant_email;
+        $this->contact_paie_nom = $client->contact_paie_nom;
+        $this->contact_paie_prenom = $client->contact_paie_prenom;
+        $this->contact_paie_telephone = $client->contact_paie_telephone;
+        $this->contact_paie_email = $client->contact_paie_email;
+        $this->contact_compta_nom = $client->contact_compta_nom;
+        $this->contact_compta_prenom = $client->contact_compta_prenom;
+        $this->contact_compta_telephone = $client->contact_compta_telephone;
+        $this->contact_compta_email = $client->contact_compta_email;
+        $this->responsable_paie_id = $client->responsable_paie_id;
+        $this->responsable_telephone_ld = $client->responsable_telephone_ld;
+        $this->gestionnaire_principal_id = $client->gestionnaire_principal_id;
+        $this->binome_id = $client->binome_id;
+        $this->convention_collective_id = $client->convention_collective_id;
+        $this->maj_fiche_para = $client->maj_fiche_para;
+        $this->saisie_variables = $client->saisie_variables;
+        $this->date_saisie_variables = $client->date_saisie_variables;
+        $this->client_forme_saisie = $client->client_forme_saisie;
+        $this->date_formation_saisie = $client->date_formation_saisie;
+        $this->date_debut_prestation = $client->date_debut_prestation;
+        $this->date_fin_prestation = $client->date_fin_prestation;
+        $this->date_signature_contrat = $client->date_signature_contrat;
+        $this->date_rappel_mail = $client->date_rappel_mail;
+        $this->taux_at = $client->taux_at;
+        $this->adhesion_mydrh = $client->adhesion_mydrh;
+        $this->date_adhesion_mydrh = $client->date_adhesion_mydrh;
+        $this->is_cabinet = $client->is_cabinet;
+        $this->portfolio_cabinet_id = $client->portfolio_cabinet_id;
+    }
 
     public function render()
     {
@@ -31,7 +77,7 @@ class ClientForm extends Component
         $conventions = ConventionCollective::all();
         $clients = Client::all();
 
-        return view('clients.create', compact('responsables', 'gestionnaires', 'conventions', 'clients'));
+        return view('livewire.client-form', compact('responsables', 'gestionnaires', 'conventions', 'clients'));
     }
 
     public function nextStep()
@@ -74,6 +120,7 @@ class ClientForm extends Component
                 'convention_collective_id' => $this->convention_collective_id,
                 'maj_fiche_para' => $this->maj_fiche_para,
                 'saisie_variables' => $this->saisie_variables,
+                'date_saisie_variables' => $this->date_saisie_variables,
                 'client_forme_saisie' => $this->client_forme_saisie,
                 'date_formation_saisie' => $this->date_formation_saisie,
                 'date_debut_prestation' => $this->date_debut_prestation,
@@ -126,13 +173,14 @@ class ClientForm extends Component
                     'responsable_telephone_ld' => 'nullable|string|max:255',
                     'gestionnaire_principal_id' => 'required|exists:users,id',
                     'binome_id' => 'required|exists:users,id',
-                    'convention_collective_id' => 'nullable|exists:convention_collectives,id',
+                    'convention_collective_id' => 'nullable|exists:convention_collective,id',
                     'maj_fiche_para' => 'nullable|date',
                 ];
                 break;
             case 4:
                 $rules = [
                     'saisie_variables' => 'nullable|boolean',
+                    'date_saisie_variables' => 'nullable|date',
                     'client_forme_saisie' => 'nullable|boolean',
                     'date_formation_saisie' => 'nullable|date',
                     'date_debut_prestation' => 'nullable|date',

@@ -163,7 +163,7 @@ class ClientService
                     'binome_id' => 'required|exists:users,id',
                     'gestionnaire_telephone_ld' => 'nullable|string|max:255',
                     'binome_telephone_ld' => 'nullable|string|max:255',
-                    'convention_collective_id' => 'nullable|exists:convention_collectives,id',
+                    'convention_collective_id' => 'nullable|exists:convention_collective,id',
                     'maj_fiche_para' => 'nullable|date',
                 ];
                 break;
@@ -193,10 +193,6 @@ class ClientService
         $currentIndex = array_search($currentStep, $steps);
         return $currentIndex !== false && $currentIndex < count($steps) - 1 ? $steps[$currentIndex + 1] : null;
     }
-
-
-
-
 
 
     public function getClientInfo(Client $client)

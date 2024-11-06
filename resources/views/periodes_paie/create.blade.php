@@ -2,32 +2,33 @@
 
 @section('title', 'Ajouter une nouvelle période de paie')
 
+@push('styles')
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+@endpush
+
 @section('content')
-<div class="container mx-auto p-4 pt-6 md:p-6">
     <h1 class="text-2xl font-bold mb-4">Ajouter une nouvelle période de paie</h1>
 
-    <form class="flex" action="{{ route('periodes-paie.store') }}" method="POST">
-        @csrf
-
-        <div class="mb-4 w-sm group">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="debut">
-                Date de début
-            </label>
-            <input type="date" name="debut" id="debut" class="form-control" required>
-        </div>
-
-        <div class="mb-4 w-sm group">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="fin">
-                Date de fin
-            </label>
-            <input type="date" name="fin" id="fin" class="form-control" required>
-        </div>
-
-        <button type="submit" class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
-            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                Ajouter
-            </span>
-        </button>
-    </form>
-</div>
+    <div class="container">
+        @livewire('periode-paie-form')
+    </div>
 @endsection
+
+@push('scripts')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2();
+
+            // Afficher les messages d'erreur pour les champs invalides
+            @if ($errors->any())
+                @foreach ($errors->all() as $error)
+                    toastr.error('{{ $error }}');
+                @endforeach
+            @endif
+        });
+    </script>
+@endpush

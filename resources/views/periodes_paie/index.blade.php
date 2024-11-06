@@ -120,16 +120,16 @@
         <tbody>
             @foreach($periodesPaie as $periode)
                 <tr>
-                    <td>{{ $periode->client->name }}</td>
-                    <td>{{ $periode->client->gestionnairePrincipal->name }}</td>
-                    <td>{{ $periode->client->nb_bulletins }}</td>
-                    <td class="modifiable">{{ $periode->client->maj_fiche_para }}</td>
-                    <td class="modifiable">{{ $periode->reception_variables }}</td>
-                    <td class="modifiable">{{ $periode->preparation_bp }}</td>
-                    <td class="modifiable">{{ $periode->validation_bp_client }}</td>
-                    <td class="modifiable">{{ $periode->preparation_envoie_dsn }}</td>
-                    <td class="modifiable">{{ $periode->accuses_dsn }}</td>
-                    <td class="modifiable">{{ $periode->notes }}</td>
+                    <td>{{ $periode->client->name ?? 'N/A' }}</td>
+                    <td>{{ $periode->client->gestionnairePrincipal->name ?? 'N/A' }}</td>
+                    <td>{{ $periode->client->nb_bulletins ?? 'N/A' }}</td>
+                    <td class="modifiable">{{ $periode->client->maj_fiche_para ?? 'N/A' }}</td>
+                    <td class="modifiable">{{ $periode->reception_variables ?? 'N/A' }}</td>
+                    <td class="modifiable">{{ $periode->preparation_bp ?? 'N/A' }}</td>
+                    <td class="modifiable">{{ $periode->validation_bp_client ?? 'N/A' }}</td>
+                    <td class="modifiable">{{ $periode->preparation_envoie_dsn ?? 'N/A' }}</td>
+                    <td class="modifiable">{{ $periode->accuses_dsn ?? 'N/A' }}</td>
+                    <td class="modifiable">{{ $periode->notes ?? 'N/A' }}</td>
                     <td>
                         <div class="progress  transition-all ease-in duration-75 dark:bg-pink-900 rounded-md group-hover:bg-opacity-0">
                             <div class="progress-bar" role="progressbar" style="width: {{ $periode->progressPercentage() }}%;" aria-valuenow="{{ $periode->progressPercentage() }}" aria-valuemin="0" aria-valuemax="100">{{ $periode->progressPercentage() }}%</div>
@@ -146,6 +146,64 @@
     {{ $periodesPaie->links() }}
 </div>
 
+<div id="calendar"></div> <!-- Ajout du calendrier ici -->
+
+<hr>
+<tbody>
+    @foreach($periodesPaie as $periode)
+        <tr class="border-b hover:bg-gray-50">
+            <td class="px-4 py-3 text-gray-700">
+                <span class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">{{ $periode->client->name ?? 'N/A' }}</span>
+            </td>
+            <td class="px-4 py-3 text-gray-700">
+                <span class="bg-green-100 text-green-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">{{ $periode->client->gestionnairePrincipal->name ?? 'N/A' }}</span>
+            </td>
+            <td class="px-4 py-3 text-gray-700">
+                <span class="bg-purple-100 text-purple-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">{{ $periode->client->nb_bulletins ?? 'N/A' }}</span>
+            </td>
+            <td class="px-4 py-3 modifiable text-gray-700">
+                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">{{ $periode->client->maj_fiche_para ?? 'N/A' }}</span>
+            </td>
+            
+            <!-- Champs modifiables avec input de type date -->
+            <td class="px-4 py-3 modifiable">
+                <input type="date" name="reception_variables" class="w-26 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" data-field="reception_variables" value="{{ $periode->reception_variables ?? '' }}" {{ $periode->reception_variables ? 'disabled' : '' }}>
+            </td>
+            <td class="px-4 py-3 modifiable">
+                <input type="date" name="preparation_bp" class="w-26 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" data-field="preparation_bp" value="{{ $periode->preparation_bp ?? '' }}" {{ $periode->preparation_bp ? 'disabled' : '' }}>
+            </td>
+            <td class="px-4 py-3 modifiable">
+                <input type="date" name="validation_bp_client" class="w-26 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" data-field="validation_bp_client" value="{{ $periode->validation_bp_client ?? '' }}" {{ $periode->validation_bp_client ? 'disabled' : '' }}>
+            </td>
+            <td class="px-4 py-3 modifiable">
+                <input type="date" name="preparation_envoie_dsn" class="w-26 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" data-field="preparation_envoie_dsn" value="{{ $periode->preparation_envoie_dsn ?? '' }}" {{ $periode->preparation_envoie_dsn ? 'disabled' : '' }}>
+            </td>
+            <td class="px-4 py-3 modifiable">
+                <input type="date" name="accuses_dsn" class="w-26 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" data-field="accuses_dsn" value="{{ $periode->accuses_dsn ?? '' }}" {{ $periode->accuses_dsn ? 'disabled' : '' }}>
+            </td>
+            
+            <!-- Champ de texte pour les notes -->
+            <td class="px-4 py-3 modifiable">
+                <textarea name="notes" class="w-26 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" data-field="notes">{{ $periode->notes ?? '' }}</textarea>
+            </td>
+
+            <!-- Barre de progression -->
+            <td class="px-4 py-3 ">
+                <div class="relative w-full bg-gray-200 rounded h-8 ">
+                    <div class="bg-blue-600 h-8 rounded" style="width: {{ $periode->progressPercentage() }}%;"></div>
+                    <span class="absolute inset-0 flex items-center justify-center text-white font-semibold text-sm">{{ $periode->progressPercentage() }}%</span>
+                </div>
+            </td>
+<hr>
+            <!-- Bouton d'enregistrement -->
+            <td class="px-4 py-3">
+                <button class="text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-3 py-2.5 save-field" data-traitement-id="{{ $periode->id }}">Enregistrer</button>
+            </td>
+        </tr>
+    @endforeach
+</tbody>
+
+<hr>
 <!-- Popup d'édition -->
 <div id="editPopup" class="modal">
     <div class="modal-content">
@@ -177,70 +235,7 @@
         </form>
     </div>
 </div>
-<!-- Liste des clients éligibles -->
-<div class="container mx-auto p-4 pt-6 md:p-6">
-    <h2 class="text-2xl font-bold mb-4">Liste des clients éligibles</h2>
 
-    @if($currentPeriodePaie)
-        @foreach($eligibleClients as $client)
-            <form action="{{ route('traitements-paie.store') }}" method="POST" class="mb-6">
-                @csrf
-                <input type="hidden" name="client_id" value="{{ $client->id }}">
-                <input type="hidden" name="periode_paie_id" value="{{ $currentPeriodePaie->id }}">
-
-                <div class="mb-4 w-sm group">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="reception_variables_{{ $client->id }}">
-                        Réception des variables pour {{ $client->name }}
-                    </label>
-                    <input type="date" name="reception_variables" id="reception_variables_{{ $client->id }}" class="form-control" required>
-                </div>
-
-                <div class="mb-4 w-sm group">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="preparation_bp_{{ $client->id }}">
-                        Préparation BP
-                    </label>
-                    <input type="date" name="preparation_bp" id="preparation_bp_{{ $client->id }}" class="form-control" disabled>
-                </div>
-
-                <div class="mb-4 w-sm group">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="validation_bp_client_{{ $client->id }}">
-                        Validation BP client
-                    </label>
-                    <input type="date" name="validation_bp_client" id="validation_bp_client_{{ $client->id }}" class="form-control" disabled>
-                </div>
-
-                <div class="mb-4 w-sm group">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="preparation_envoie_dsn_{{ $client->id }}">
-                        Préparation et envoie DSN
-                    </label>
-                    <input type="date" name="preparation_envoie_dsn" id="preparation_envoie_dsn_{{ $client->id }}" class="form-control" disabled>
-                </div>
-
-                <div class="mb-4 w-sm group">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="accuses_dsn_{{ $client->id }}">
-                        Accusés DSN
-                    </label>
-                    <input type="date" name="accuses_dsn" id="accuses_dsn_{{ $client->id }}" class="form-control" disabled>
-                </div>
-
-                <div class="mb-4 w-sm group">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="notes_{{ $client->id }}">
-                        Notes
-                    </label>
-                    <textarea name="notes" id="notes_{{ $client->id }}" class="form-control"></textarea>
-                </div>
-
-                <button type="submit" class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
-                    <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                        Enregistrer
-                    </span>
-                </button>
-            </form>
-        @endforeach
-    @else
-        <p>Aucune période de paie validée actuellement.</p>
-    @endif
-</div>
 
 
 <script>
@@ -350,6 +345,7 @@
         });
     });
 </script>
+
 @endsection
 
 @push('scripts')
@@ -360,6 +356,28 @@
       <!-- DataTables JS -->
       <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+      <!-- CalendarJS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#calendar').fullCalendar({
+                events: [
+                    @foreach($periodesPaie as $periode)
+                    {
+                        title: '{{ $periode->reference }}',
+                        start: '{{ $periode->debut }}',
+                        end: '{{ $periode->fin }}',
+                        color: '{{ $periode->validee ? "#ff0000" : "#00ff00" }}' // Rouge pour les périodes clôturées, vert pour les autres
+                    },
+                    @endforeach
+                ]
+            });
+        });
+    </script>
+
 @endpush
 
 {{-- 

@@ -53,8 +53,8 @@ class ClientController extends Controller
             'clientsByManagerLabels'
         ));
     }
-   
-  
+
+
     public function create()
     {
         Log::info('Début de la méthode create');
@@ -116,8 +116,10 @@ class ClientController extends Controller
     {
         $client->load(['responsablePaie', 'gestionnairePrincipal', 'conventionCollective', 'portfolioCabinet']);
         $events = $this->clientService->getClientEvents($client);
+        // Assurez-vous que la variable $user est définie
+        $user = auth()->user(); // ou $user = User::find($client->user_id); si vous avez une relation utilisateur-client
 
-        return view('clients.show', compact('client', 'events'));
+        return view('clients.show', compact('client', 'events', 'user'));
     }
 
     public function export()
