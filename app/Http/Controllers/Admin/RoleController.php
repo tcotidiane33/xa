@@ -4,15 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Services\AccessControlService;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
 {
-    public function __construct()
+    protected $accessControlService;
+
+    public function __construct(AccessControlService $accessControlService)
     {
-        $this->middleware(['role:admin']);
+        $this->middleware(['role:Admin']);
+        $this->accessControlService = $accessControlService;
     }
 
     public function index()
@@ -35,8 +39,7 @@ class RoleController extends Controller
             'permissions' => 'array'
         ]);
 
-        $role = Role::create(['name' => $request->name]);
-        $role->syncPermissions($request->permissions);
+        $this->accessControlService->createRole($request->name, $request->permissions);
 
         return redirect()->route('admin.roles.index')->with('success', 'Rôle créé avec succès.');
     }
@@ -50,28 +53,28 @@ class RoleController extends Controller
     public function update(Request $request, Role $role)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
+            'name' => "required|string|max:255|unique:roles,name,{$role->id}",
             'permissions' => 'array'
         ]);
 
-        $role->update(['name' => $request->name]);
-        $role->syncPermissions($request->permissions);
+        $this->accessControlService->updateRole($role->id, $request->name, $request->permissions);
 
         return redirect()->route('admin.roles.index')->with('success', 'Rôle mis à jour avec succès.');
     }
 
     public function destroy(Role $role)
     {
-        $role->delete();
+        $this->accessControlService->deleteRole($role->id);
         return redirect()->route('admin.roles.index')->with('success', 'Rôle supprimé avec succès.');
     }
 
+    
     public function assignRoles()
-{
-    $users = User::with('roles')->get();
-    $roles = Role::all();
-    return view('admin.roles.assign_role', compact('users', 'roles'));
-}
+    {
+        $users = User::with('roles')->get();
+        $roles = Role::all();
+        return view('admin.roles.assign_role', compact('users', 'roles'));
+    }
 
     public function storeAssignRoles(Request $request)
     {
@@ -102,13 +105,14 @@ class RoleController extends Controller
     {
         return view('admin.roles.create_permission');
     }
+
     public function storePermission(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:permissions,name'
         ]);
 
-        Permission::create(['name' => $request->name]);
+        $this->accessControlService->createPermission($request->name);
 
         return redirect()->route('admin.roles.index')
             ->with('success', 'Permission créée avec succès.');

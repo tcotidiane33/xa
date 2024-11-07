@@ -16,12 +16,10 @@ class TicketController extends Controller
 
     public function index()
     {
-        // $tickets = Ticket::with('createur', 'assigneA')->paginate(15);
-        $tickets = Ticket::latest()->paginate(10); // Paginer par 10 éléments par page
-
+        $tickets = Ticket::with('createur', 'assigneA')->paginate(10); // Paginer par 10 éléments par page
         return view('tickets.index', compact('tickets'));
     }
-  /**
+    /**
      * Show the form for creating a new resource.
      */
 
@@ -36,23 +34,23 @@ class TicketController extends Controller
      * Store a newly created resource in storage.
      */
 
-     public function store(Request $request)
-     {
-         $validated = $request->validate([
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
             //  'titre' => 'required|string|max:255',
-             'subject' => 'required|string|max:255',
-             'description' => 'required|string',
-             'priorite' => 'required|in:basse,moyenne,haute',
-             'assigne_a_id' => 'nullable|exists:users,id',
-         ]);
-     
-         $validated['createur_id'] = auth()->id();
-         $validated['statut'] = 'ouvert';
-     
-         $ticket = Ticket::create($validated);
+            'subject' => 'required|string|max:255',
+            'description' => 'required|string',
+            'priorite' => 'required|in:basse,moyenne,haute',
+            'assigne_a_id' => 'nullable|exists:users,id',
+        ]);
+
+        $validated['createur_id'] = auth()->id();
+        $validated['statut'] = 'ouvert';
+
+        $ticket = Ticket::create($validated);
         //  $this->logAction('create_ticket', "Création du ticket #{$ticket->id}");
-         return redirect()->route('tickets.show', $ticket)->with('success', 'Ticket créé avec succès.');
-     }
+        return redirect()->route('tickets.show', $ticket)->with('success', 'Ticket créé avec succès.');
+    }
 
     /**
      * Display the specified resource.

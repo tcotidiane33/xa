@@ -6,11 +6,41 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Client;
 use Illuminate\Http\Request;
+use App\Services\AccessControlService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    protected $accessControlService;
+
+    public function __construct(AccessControlService $accessControlService)
+    {
+        $this->accessControlService = $accessControlService;
+        $this->middleware(['auth', 'permission:edit users'])->only(['edit', 'update']);
+        $this->middleware(['auth', 'permission:view users'])->only(['index', 'show']);
+        $this->middleware(['auth', 'permission:delete users'])->only(['destroy']);
+    }
+    public function assignRole(Request $request, User $user)
+    {
+        return $this->accessControlService->assignRole($request, $user);
+    }
+
+    public function revokeRole(Request $request, User $user)
+    {
+        return $this->accessControlService->revokeRole($request, $user);
+    }
+
+    public function givePermission(Request $request, User $user)
+    {
+        return $this->accessControlService->givePermission($request, $user);
+    }
+
+    public function revokePermission(Request $request, User $user)
+    {
+        return $this->accessControlService->revokePermission($request, $user);
+    }
+
     public function index()
     {
         $users = User::with('roles')->paginate(15);
@@ -61,7 +91,8 @@ class UserController extends Controller
     {
         $roles = Role::all();
         $clients = Client::all();
-        return view('users.edit', compact('user', 'roles', 'clients'));
+        $users = User::all(); // Ajoutez cette ligne pour récupérer tous les utilisateurs
+        return view('users.edit', compact('user', 'roles', 'clients', 'users'));
     }
 
     public function update(Request $request, User $user)
@@ -71,21 +102,20 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
             'roles' => 'required|array',
-            'roles.*' => 'exists:roles,id',
+            'roles.*' => 'exists:roles,name', // Utilisez 'name' au lieu de 'id'
         ]);
 
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => $validated['password'] ? Hash::make($validated['password']) : $user->password,
-
         ]);
 
         if (isset($validated['password'])) {
             $user->update(['password' => Hash::make($validated['password'])]);
         }
 
-        $user->roles()->sync($validated['roles']);
+        $user->syncRoles($validated['roles']); // Utilisez syncRoles pour synchroniser les rôles
 
         return redirect()->route('users.show', $user)->with('success', 'Utilisateur mis à jour avec succès.');
     }

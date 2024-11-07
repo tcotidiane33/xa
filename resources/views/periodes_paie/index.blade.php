@@ -60,6 +60,9 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Périodes de Paie</h1>
+    <a href="{{ route('admin.clockwork') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+        Voir Clockwork
+    </a>
 
     <form action="{{ route('periodes-paie.index') }}" method="GET" class="mb-4">
         <div class="flex flex-wrap gap-4">
@@ -136,7 +139,7 @@
                         </div>
                     </td>
                     <td>
-                        
+
                         <button class="btn btn-primary" onclick="openEditPopup({{ $periode->id }})">Modifier</button>
                     </td>
                 </tr>
@@ -164,7 +167,7 @@
             <td class="px-4 py-3 modifiable text-gray-700">
                 <span class="bg-yellow-100 text-yellow-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">{{ $periode->client->maj_fiche_para ?? 'N/A' }}</span>
             </td>
-            
+
             <!-- Champs modifiables avec input de type date -->
             <td class="px-4 py-3 modifiable">
                 <input type="date" name="reception_variables" class="w-26 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" data-field="reception_variables" value="{{ $periode->reception_variables ?? '' }}" {{ $periode->reception_variables ? 'disabled' : '' }}>
@@ -181,7 +184,7 @@
             <td class="px-4 py-3 modifiable">
                 <input type="date" name="accuses_dsn" class="w-26 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" data-field="accuses_dsn" value="{{ $periode->accuses_dsn ?? '' }}" {{ $periode->accuses_dsn ? 'disabled' : '' }}>
             </td>
-            
+
             <!-- Champ de texte pour les notes -->
             <td class="px-4 py-3 modifiable">
                 <textarea name="notes" class="w-26 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" data-field="notes">{{ $periode->notes ?? '' }}</textarea>
@@ -380,7 +383,7 @@
 
 @endpush
 
-{{-- 
+{{--
 <div class="container">
 
     <form action="{{ route('periodes-paie.index') }}" method="GET" class="mb-4">
@@ -452,7 +455,7 @@
                             class="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Voir</a>
                         <a href="{{ route('periodes-paie.edit', $periode) }}"
                             class="text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Modifier</a>
-                      
+
                 </tr>
             @endforeach
         </tbody>

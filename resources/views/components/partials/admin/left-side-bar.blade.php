@@ -1,4 +1,5 @@
 <div class="left-side-bar">
+  
     <div class="brand-logo">
         <a href="#">
             <img src="{{ asset('backoffice/vendors/images/deskapp-logo.svg') }}" alt="" class="dark-logo" />
@@ -47,28 +48,62 @@
                 </li>
 
                 <!-- Périodes de Paie -->
-                <li class="dropdown">
+                <li class="dropdown {{ request()->is('periodes-paie*') ? 'active' : '' }}">
                     <a href="javascript:;" class="dropdown-toggle">
                         <span class="micon bi bi-calendar"></span><span class="mtext">Périodes de Paie</span>
                     </a>
                     <ul class="submenu">
-                        <li><a href="{{ route('periodes-paie.index') }}">Toutes les Périodes</a></li>
-                        <li><a href="{{ route('periodes-paie.create') }}">Créer une Période</a></li>
+                        <li><a href="{{ route('periodes-paie.index') }}"
+                                class="{{ request()->is('periodes-paie') ? 'active' : '' }}">Toutes les Périodes</a>
+                        </li>
+                        <li><a href="{{ route('periodes-paie.create') }}"
+                                class="{{ request()->is('periodes-paie/create') ? 'active' : '' }}">Créer une
+                                Période</a></li>
                     </ul>
                 </li>
 
                 <!-- Traitement des Paies -->
-                <li class="dropdown">
+                <li class="dropdown {{ request()->is('traitements-paie*') ? 'active' : '' }}">
                     <a href="javascript:;" class="dropdown-toggle">
                         <span class="micon bi bi-cash"></span><span class="mtext">Traitements Paie</span>
                     </a>
                     <ul class="submenu">
-                        <li><a href="{{ route('traitements-paie.index') }}">Tous les Traitements</a></li>
-                        <li><a href="{{ route('traitements-paie.create') }}">Nouveau Traitement</a></li>
-                        <li><a href="{{ route('traitements-paie.historique') }}">Historiques</a></li>
+                        <li><a href="{{ route('traitements-paie.index') }}"
+                                class="{{ request()->is('traitements-paie') ? 'active' : '' }}">Tous les
+                                Traitements</a></li>
+                        <li><a href="{{ route('traitements-paie.create') }}"
+                                class="{{ request()->is('traitements-paie/create') ? 'active' : '' }}">Nouveau
+                                Traitement</a></li>
+                        <li><a href="{{ route('traitements-paie.historique') }}"
+                                class="{{ request()->is('traitements-paie/historique') ? 'active' : '' }}">Historiques</a>
+                        </li>
                     </ul>
                 </li>
 
+
+                <!-- Admin -->
+                <li class="dropdown {{ request()->is('admin*') ? 'active' : '' }}">
+                    <a href="javascript:;" class="dropdown-toggle">
+                        <span class="micon bi bi-gear"></span><span class="mtext">Admin</span>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="{{ route('admin.dashboard') }}"
+                                class="{{ request()->is('admin/dashboard') ? 'active' : '' }}">Panneau Admin</a></li>
+                        <li><a href="{{ route('admin.settings.index') }}"
+                                class="{{ request()->is('admin/settings') ? 'active' : '' }}">Paramétrage</a></li>
+                        <li><a href="{{ route('admin.activities.index') }}"
+                                class="{{ request()->is('admin/activities') ? 'active' : '' }}">Historiques
+                                activités</a></li>
+
+                        <li><a href="{{ route('admin.roles.index') }}"
+                                class="{{ request()->is('admin/roles') ? 'active' : '' }}">Rôles</a></li>
+                        <li><a href="{{ route('admin.permissions.index') }}"
+                                class="{{ request()->is('admin/permissions') ? 'active' : '' }}">Permissions</a></li>
+                        <li><a href="{{ route('admin.clients.index') }}"
+                                class="{{ request()->is('admin/clients') ? 'active' : '' }}">Gestion de Relations</a>
+                        </li>
+                    </ul>
+                </li>
                 <!-- Conventions Collectives -->
                 <li>
                     <a href="{{ route('convention-collectives.index') }}" class="dropdown-toggle no-arrow">
@@ -89,20 +124,6 @@
                     </a>
                 </li>
 
-                <!-- Admin - Gestionnaire de clients -->
-                <!-- Admin - Gestionnaire de clients -->
-                <li class="dropdown">
-                    <a href="javascript:;" class="dropdown-toggle">
-                        <span class="micon bi bi-gear"></span><span class="mtext">Admin</span>
-                    </a>
-                    <ul class="submenu">
-                        <!-- Lien vers le tableau de bord admin -->
-                        <li><a href="{{ route('admin.admin.index') }}">Panneau Admin</a></li>
-                        <li><a href="{{ route('admin.settings.index') }}">Paramétrage</a></li>
-                        <!-- Lien vers le gestionnaire de clients -->
-                        <li><a href="{{ route('admin.clients.index') }}">Gestion de Relations</a></li>
-                    </ul>
-                </li>
 
 
             </ul>
@@ -110,3 +131,34 @@
 
     </div>
 </div>
+
+<script src="{{ asset('js/app.js') }}"></script>
+<script>
+    // Inclure les scripts JavaScript ici
+    document.addEventListener('DOMContentLoaded', function () {
+        // Toggle sidebar
+        var closeSidebar = document.querySelector('.close-sidebar');
+        var leftSidebar = document.querySelector('.left-side-bar');
+
+        closeSidebar.addEventListener('click', function () {
+            leftSidebar.classList.toggle('closed');
+        });
+
+        // Toggle dropdowns
+        var dropdowns = document.querySelectorAll('.dropdown');
+
+        dropdowns.forEach(function (dropdown) {
+            var toggle = dropdown.querySelector('.dropdown-toggle');
+            var submenu = dropdown.querySelector('.submenu');
+
+            toggle.addEventListener('click', function () {
+                dropdown.classList.toggle('active');
+                submenu.style.display = dropdown.classList.contains('active') ? 'block' : 'none';
+            });
+
+            submenu.addEventListener('click', function (event) {
+                event.stopPropagation();
+            });
+        });
+    });
+</script>

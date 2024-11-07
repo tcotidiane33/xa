@@ -52,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
         // Partage de variables globales avec toutes les vues
         View::composer('*', function ($view) {
             $view->with([
-                'tickets' => Ticket::with('creator')->latest()->take(5)->get(),
+                'tickets' => Ticket::with('createur')->latest()->take(5)->get(),
                 'posts' => Post::latest()->take(5)->get(),
             ]);
         });

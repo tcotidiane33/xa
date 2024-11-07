@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
+use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Material extends Model
+class Material extends Model implements HasMedia
 {
-    use SoftDeletes;
-    use HasFactory;
+    use SoftDeletes, HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'client_id',
@@ -35,4 +37,12 @@ class Material extends Model
     {
         return $this->hasMany(MaterialHistory::class);
     }
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+              ->width(368)
+              ->height(232)
+              ->sharpen(10);
+    }
+
 }

@@ -4,12 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\Material;
+use App\Services\MaterialService;
 use Illuminate\Http\Request;
-use App\Models\MaterialHistory;
 use Illuminate\Support\Facades\Auth;
 
 class MaterialController extends Controller
 {
+    protected $materialService;
+
+    public function __construct(MaterialService $materialService)
+    {
+        $this->materialService = $materialService;
+    }
+
     public function index(Request $request)
     {
         $query = Material::query();
@@ -25,8 +32,6 @@ class MaterialController extends Controller
         $materials = $query->with(['client', 'user'])->paginate(10);
         // Fetch all clients for the dropdown
         $clients = Client::all();
-
-        $this->logAction('read', 'Viewed materials list');
 
         return view('materials.index', compact('materials', 'clients'));
     }
@@ -48,17 +53,13 @@ class MaterialController extends Controller
             'field_name' => 'nullable|string|max:255',
         ]);
 
-        $material = Material::create($validated + ['user_id' => Auth::id()]);
-
-        $this->logAction('create', 'Created new material: ' . $material->title);
+        $this->materialService->createMaterial($validated);
 
         return redirect()->route('materials.index')->with('success', 'Material created successfully.');
     }
 
     public function show(Material $material)
     {
-        $this->logAction('read', 'Viewed material: ' . $material->title);
-
         $client = $material->client; // Récupérer le client associé au matériel
 
         return view('materials.show', compact('material', 'client'));
@@ -66,7 +67,8 @@ class MaterialController extends Controller
 
     public function edit(Material $material)
     {
-        return view('materials.edit', compact('material'));
+        $clients = Client::all();
+        return view('materials.edit', compact('material', 'clients'));
     }
 
     public function update(Request $request, Material $material)
@@ -79,31 +81,15 @@ class MaterialController extends Controller
             'field_name' => 'nullable|string|max:255',
         ]);
 
-        $material->update($validated);
-
-        $this->logAction('update', 'Updated material: ' . $material->title);
+        $this->materialService->updateMaterial($material, $validated);
 
         return redirect()->route('materials.index')->with('success', 'Material updated successfully.');
     }
 
     public function destroy(Material $material)
     {
-        $materialTitle = $material->title;
-        $material->delete();
-
-        $this->logAction('delete', 'Deleted material: ' . $materialTitle);
+        $this->materialService->deleteMaterial($material);
 
         return redirect()->route('materials.index')->with('success', 'Material deleted successfully.');
-    }
-
-    private function logAction($action, $details)
-    {
-        MaterialHistory::create([
-            // 'material_id' => $material->id ?? null,
-            'material_id' => null, // Set this to the actual material_id when applicable
-            'user_id' => Auth::id(),
-            'action' => $action,
-            'details' => $details,
-        ]);
     }
 }

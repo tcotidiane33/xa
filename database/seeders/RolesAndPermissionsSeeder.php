@@ -5,39 +5,37 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
-    public function run()
+    public function run(): void
     {
-        // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-
-        // Create permissions if they do not exist
-        $permissions = ['manage forms', 'manage fields', 'manage actions'];
+        // Créer les permissions
+        $permissions = [
+            'manage forms',
+            'manage fields',
+            'manage actions',
+        ];
 
         foreach ($permissions as $permission) {
-            if (!Permission::where('name', $permission)->exists()) {
-                Permission::create(['name' => $permission]);
+            if (!Permission::where('name', $permission)->where('guard_name', 'web')->exists()) {
+                Permission::create(['name' => $permission, 'guard_name' => 'web']);
             }
         }
 
-        // Create roles and assign created permissions
+        // Créer les rôles et leur attribuer des permissions
+        $roles = [
+            'Admin' => ['manage forms', 'manage fields', 'manage actions'],
+            'Responsable' => ['manage forms', 'manage fields'],
+            'Gestionnaire' => ['manage forms'],
+        ];
 
-        // Admin (N)
-        $admin = Role::firstOrCreate(['name' => 'Admin']);
-        $admin->givePermissionTo($permissions);
-
-        // Responsable (N-1)
-        $responsable = Role::firstOrCreate(['name' => 'Responsable']);
-        $responsable->givePermissionTo(['manage forms', 'manage fields']);
-
-        // Gestionnaire (N-2)
-        $gestionnaire = Role::firstOrCreate(['name' => 'Gestionnaire']);
-        $gestionnaire->givePermissionTo(['manage forms']);
+        foreach ($roles as $roleName => $rolePermissions) {
+            $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
+            $role->syncPermissions($rolePermissions);
+        }
     }
 }

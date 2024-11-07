@@ -1,94 +1,103 @@
 @extends('layouts.admin')
 
-@section('title', 'Admin Traitements des paies')
+@section('title', 'Liste des Tickets')
 
 @section('content')
     <div class="main-content">
-        <div class="container mx-auto px-4 py-8"">
-            <div class="row">
-                <br>
-                <br>
+        <div class="container mx-auto px-4 py-8">
+            <div class="mb-4">
+                <a href="{{ route('tickets.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fa fa-plus mr-2" aria-hidden="true"></i>Créer un ticket
+                </a>
             </div>
             <div class="row">
-                <div class="container">
-                    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                            <div class="p-6 bg-white border-b border-gray-200">
-                                <a href="{{ route('tickets.create') }}"
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Nouveau
-                                    ticket</a>
 
-                                <table class="min-w-full">
-                                    <thead>
-                                        <tr>
-                                            <th
-                                                class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Titre</th>
-                                            <th
-                                                class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Statut</th>
-                                            <th
-                                                class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Priorité</th>
-                                            <th
-                                                class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Créé par</th>
-                                            <th
-                                                class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($tickets as $ticket)
-                                            <tr>
-                                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                    {{ $ticket->titre }}</td>
-                                                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                            {{ $ticket->statut == 'ouvert' ? 'bg-green-100 text-green-800' : 
-                                                               ($ticket->statut == 'en_cours' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
-                                                            {{ $ticket->statut }}
-                                                        </span>
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                            {{ $ticket->priorite == 'basse' ? 'bg-blue-100 text-blue-800' : 
-                                                               ($ticket->priorite == 'moyenne' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
-                                                            {{ $ticket->priorite }}
-                                                        </span>
-                                                    </td>
-                                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                    {{ $ticket->createur->name }}</td>
-                                                <td
-                                                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 font-medium">
-                                                    <a href="{{ route('tickets.show', $ticket) }}"
-                                                        class="text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Voir</a>
-                                                    <a href="{{ route('tickets.edit', $ticket) }}"
-                                                        class="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Modifier</a>
-                                                    {{-- <form action="{{ route('tickets.destroy', $ticket) }}" method="POST"
-                                                        class="inline-block">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-                                                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce ticket ?')">Supprimer</button>
-                                                            
-                                                    </form> --}}
-                                                </td>
-                                                
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                <div class="bg-white rounded-lg shadow p-6 overflow-x-auto shadow-md sm:rounded-lg">
+                    <h2 class="text-xl font-bold mb-4">{{ __('Liste des tickets') }}</h2>
 
-                                <div class="mt-4">
-                                    {{-- {{ $tickets->links() }} --}}
-                                    {{-- {{ $tickets->links('pagination::tailwind') }} --}}
-                                </div>
-                            </div>
-                        </div>
+                    <table id="ticketsTable" class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
+                                <th scope="col" class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                                <th scope="col" class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priorité</th>
+                                <th scope="col" class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                <th scope="col" class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Créateur</th>
+                                <th scope="col" class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigné à</th>
+                                <th scope="col" class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach ($tickets as $ticket)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $ticket->subject }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $ticket->description }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $ticket->priorite }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $ticket->statut }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $ticket->createur->name ?? 'N/A' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $ticket->assigneA->name ?? 'N/A' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="{{ route('tickets.show', $ticket->id) }}" class="text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Voir</a>
+                                        <a href="{{ route('tickets.edit', $ticket->id) }}" class="text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Modifier</a>
+                                        {{-- <form action="{{ route('tickets.destroy', $ticket->id) }}" method="POST" style="display:inline-block;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Supprimer</button>
+                                        </form> --}}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination -->
+                    <div class="mt-4">
+                        @if ($tickets instanceof \Illuminate\Pagination\AbstractPaginator)
+                            {{ $tickets->links() }}
+                        @else
+                            <p>No pagination available.</p>
+                        @endif
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#ticketsTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "language": {
+                    "lengthMenu": "Afficher _MENU_ enregistrements par page",
+                    "zeroRecords": "Aucun enregistrement trouvé",
+                    "info": "Affichage de la page _PAGE_ sur _PAGES_",
+                    "infoEmpty": "Aucun enregistrement disponible",
+                    "infoFiltered": "(filtré à partir de _MAX_ enregistrements au total)",
+                    "search": "Rechercher:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                }
+            });
+        });
+    </script>
+@endpush

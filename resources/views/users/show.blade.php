@@ -63,9 +63,9 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($user->clients() as $client)
+            @foreach ($user->clients as $client)
                 <tr>
-                    <td>{{ $client->name }}</td>
+                    <td class="border px-4 py-2">{{ $client->name }}</td>
                     <td>
                         @if ($client->gestionnaire_principal_id == $user->id)
                             Gestionnaire
@@ -112,7 +112,7 @@
                 Clients à transférer
             </label>
             <select name="client_ids[]" id="client_ids" class="form-control" multiple required>
-                @foreach ($user->clients() as $client)
+                @foreach ($user->clients as $client)
                     <option value="{{ $client->id }}">{{ $client->name }}</option>
                 @endforeach
             </select>

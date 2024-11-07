@@ -12,10 +12,31 @@ use App\Exports\ClientsExport;
 class ClientService
 {
     public function getClients(Request $request)
-    {
-        // Implémentez la logique pour obtenir les clients avec pagination
-        return Client::query(); // Retournez une instance de Builder
+{
+    $query = Client::query();
+
+    if ($request->has('status') && $request->status != '') {
+        $query->where('status', $request->status);
     }
+
+    if ($request->has('is_cabinet') && $request->is_cabinet != '') {
+        $query->where('is_cabinet', $request->is_cabinet);
+    }
+
+    if ($request->has('portfolio_cabinet_id') && $request->portfolio_cabinet_id != '') {
+        $query->where('portfolio_cabinet_id', $request->portfolio_cabinet_id);
+    }
+
+    if ($request->has('adhesion_mydrh') && $request->adhesion_mydrh != '') {
+        $query->where('adhesion_mydrh', $request->adhesion_mydrh);
+    }
+
+    if ($request->has('client_forme_saisie') && $request->client_forme_saisie != '') {
+        $query->where('client_forme_saisie', $request->client_forme_saisie);
+    }
+
+    return $query;
+}
 
     public function getClientGrowthData()
     {
@@ -28,7 +49,7 @@ class ClientService
 
     public function getTopConventionsData()
     {
-        // Implémentez la logique pour obtenir les données des conventions les plus populaires
+        // Implémentez la logique pour obtenir les données de croissance des clients
         return Client::selectRaw('convention_collective_id, COUNT(*) as count')
             ->groupBy('convention_collective_id')
             ->orderBy('count', 'desc')

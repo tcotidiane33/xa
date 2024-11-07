@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,15 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Ticket extends Model
 {
     use HasFactory;
-    protected $fillable = [ 'subject', 'description', 'statut', 'priorite', 'createur_id', 'assigne_a_id'];
+
+    protected $fillable = [
+        'subject', 'description', 'statut', 'priorite', 'createur_id', 'assigne_a_id'
+    ];
 
     public function createur()
     {
         return $this->belongsTo(User::class, 'createur_id');
-    }
-    public function creator()
-    {
-        return $this->belongsTo(User::class, 'creator_id');
     }
 
     public function assigneA()

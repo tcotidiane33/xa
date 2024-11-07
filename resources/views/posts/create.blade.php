@@ -4,7 +4,7 @@
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Créer un nouveau post</h1>
 
-    <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" class="bg-white-200 shadow-md rounded-lg px-8 py-2 pt-6 pb-8 mb-4">
         @csrf
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="title">

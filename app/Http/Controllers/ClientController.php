@@ -34,25 +34,29 @@ class ClientController extends Controller
         $this->clientService = $clientService;
     }
     public function index(Request $request)
-    {
-        $clients = $this->clientService->getClients($request)->paginate(10); // Utilisez la pagination ici
-        $clientGrowthData = $this->clientService->getClientGrowthData();
-        $clientGrowthLabels = $clientGrowthData->pluck('year'); // Obtenez les labels de croissance des clients
-        $topConventionsData = $this->clientService->getTopConventionsData();
-        $topConventionsLabels = $topConventionsData->pluck('convention_collective_id'); // Obtenez les labels des conventions collectives
-        $clientsByManagerData = $this->clientService->getClientsByManagerData();
-        $clientsByManagerLabels = $clientsByManagerData->pluck('gestionnaire_principal_id'); // Obtenez les labels des gestionnaires principaux
+{
+    $clients = $this->clientService->getClients($request)->paginate(10); // Utilisez la pagination ici
+    $clientGrowthData = $this->clientService->getClientGrowthData();
+    $clientGrowthLabels = $clientGrowthData->pluck('year'); // Obtenez les labels de croissance des clients
+    $topConventionsData = $this->clientService->getTopConventionsData();
+    $topConventionsLabels = $topConventionsData->pluck('convention_collective_id'); // Obtenez les labels des conventions collectives
+    $clientsByManagerData = $this->clientService->getClientsByManagerData();
+    $clientsByManagerLabels = $clientsByManagerData->pluck('gestionnaire_principal_id'); // Obtenez les labels des gestionnaires principaux
 
-        return view('clients.index', compact(
-            'clients',
-            'clientGrowthData',
-            'clientGrowthLabels',
-            'topConventionsData',
-            'topConventionsLabels',
-            'clientsByManagerData',
-            'clientsByManagerLabels'
-        ));
-    }
+    // Récupérer les cabinets portefeuilles pour le filtre
+    $portfolioCabinets = Client::where('is_cabinet', true)->get();
+
+    return view('clients.index', compact(
+        'clients',
+        'clientGrowthData',
+        'clientGrowthLabels',
+        'topConventionsData',
+        'topConventionsLabels',
+        'clientsByManagerData',
+        'clientsByManagerLabels',
+        'portfolioCabinets' // Passez la variable à la vue
+    ));
+}
 
 
     public function create()

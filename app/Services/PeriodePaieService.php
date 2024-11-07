@@ -5,10 +5,13 @@ namespace App\Services;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Client;
+use App\Models\Material;
 use App\Models\PeriodePaie;
+use Illuminate\Http\Request;
+use App\Models\TraitementPaie;
 use App\Models\PeriodePaieHistory;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PeriodePaieService
 {
@@ -77,6 +80,47 @@ class PeriodePaieService
 
         return false;
     }
+    protected function createFilesForClients(PeriodePaie $periodePaie)
+    {
+        $clients = Client::all();
+
+        foreach ($clients as $client) {
+            $traitementPaie = TraitementPaie::where('client_id', $client->id)
+                                             ->where('periode_paie_id', $periodePaie->id)
+                                             ->first();
+
+            $fileName = $periodePaie->reference . 'BACKUP_' . $client->name . '.txt';
+            $filePath = 'materials/' . $fileName;
+
+            $content = "Client: {$client->name}\n";
+            $content .= "Email: {$client->email}\n";
+            $content .= "Téléphone: {$client->phone}\n";
+            $content .= "Responsable: " . ($client->responsable ? $client->responsable->name : 'N/A') . "\n";
+            $content .= "Gestionnaire: " . ($client->gestionnaire ? $client->gestionnaire->name : 'N/A') . "\n";
+            $content .= "Contact Paie: {$client->contact_paie_nom} ({$client->contact_paie_email})\n";
+            $content .= "Contact Comptable: {$client->contact_compta_nom} ({$client->contact_compta_email})\n";
+            $content .= "Période de paie: {$periodePaie->reference}\n";
+            $content .= "Début: {$periodePaie->debut->format('Y-m-d')}\n";
+            $content .= "Fin: {$periodePaie->fin->format('Y-m-d')}\n";
+            $content .= "Réception variables: {$traitementPaie->reception_variables_file}\n";
+            $content .= "Préparation BP: {$traitementPaie->preparation_bp_file}\n";
+            $content .= "Validation BP client: {$traitementPaie->validation_bp_client_file}\n";
+            $content .= "Préparation et envoie DSN: {$traitementPaie->preparation_envoi_dsn_file}\n";
+            $content .= "Accusés DSN: {$traitementPaie->accuses_dsn_file}\n";
+            $content .= "NOTES: {$traitementPaie->notes}\n";
+
+            Storage::put($filePath, $content);
+
+            Material::create([
+                'client_id' => $client->id,
+                'user_id' => Auth::id(),
+                'title' => $fileName,
+                'type' => 'text',
+                'content_url' => $filePath,
+                'field_name' => 'Période de paie'
+            ]);
+        }
+    }
 
     public function closePeriodePaie(PeriodePaie $periodePaie)
     {
@@ -88,6 +132,9 @@ class PeriodePaieService
             'action' => 'closed',
             'details' => 'Période de paie clôturée',
         ]);
+
+        // Créer un fichier pour chaque client
+        $this->createFilesForClients($periodePaie);
     }
 
     public function openPeriodePaie(PeriodePaie $periodePaie)

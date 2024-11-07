@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\File;
 class FileController extends Controller
 {
     protected $restrictedTables = [
-        'users','documents','attachments','material_histories', 'roles', 'role_has_permissions', 'model_has_roles', 'model_has_permissions','migrations','failed_jobs', 'permissions', 'password_reset_tokens', 'personal_access_tokens', 'profiles', 'settings', 'role_user', 'permission_role'
+        'users','documents','attachments','material_histories', 'roles', 'role_has_permissions', 'model_has_roles', 'model_has_permissions','migrations','failed_jobs', 'permissions', 'password_reset_tokens', 'personal_access_tokens', 'profiles', 'settings', 'permission_role'
     ];
 
     public function index()

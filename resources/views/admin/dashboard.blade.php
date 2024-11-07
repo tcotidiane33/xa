@@ -24,7 +24,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Total Permissions</h5>
                     <p class="card-text">{{ $totalPermissions }}</p>
-                    <a href="{{ route('admin.permissions.create') }}" class="btn btn-primary">Gérer les Permissions</a>
+                    <a href="{{ route('admin.permissions.index') }}" class="btn btn-primary">Gérer les Permissions</a>
                 </div>
             </div>
         </div>
@@ -35,7 +35,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Total Utilisateurs</h5>
                     <p class="card-text">{{ $totalUsers }}</p>
-                    <a href="{{ route('users.index') }}" class="btn btn-primary">Gérer les Utilisateurs</a>
+                    <a href="{{ route('admin.users.index') }}" class="btn btn-primary">Gérer les Utilisateurs</a>
                 </div>
             </div>
         </div>
@@ -46,7 +46,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Total Clients</h5>
                     <p class="card-text">{{ $totalClients }}</p>
-                    <a href="{{ route('clients.index') }}" class="btn btn-primary">Gérer les Clients</a>
+                    <a href="{{ route('admin.clients.index') }}" class="btn btn-primary">Gérer les Clients</a>
                 </div>
             </div>
         </div>

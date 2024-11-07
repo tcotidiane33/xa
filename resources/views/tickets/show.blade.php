@@ -22,7 +22,7 @@
                                 <p><strong>Créé le:</strong> {{ $ticket->created_at->format('d/m/Y H:i') }}</p>
                                 <p><strong>Description:</strong></p>
                                 <p class="mt-2">{{ $ticket->description }}</p>
-            
+
                                 <div class="mt-4">
                                     <a href="{{ route('tickets.edit', $ticket) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">Modifier</a>
                                     <a href="{{ route('tickets.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Retour à la liste</a>

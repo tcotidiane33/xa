@@ -76,9 +76,9 @@ public function scopeFilterByStatus($query, $status)
         return $this->belongsTo(User::class, 'gestionnaire_id');
     }
 
-    public function client()
+    public function users()
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsToMany(User::class, 'client_user', 'client_id', 'user_id');
     }
 
     public function periodePaie()

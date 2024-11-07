@@ -27,52 +27,52 @@ class PeriodePaieController extends Controller
     public function index(Request $request)
     {
         $query = PeriodePaie::query();
-    
+
         // Filtre par client
         if ($request->has('client_id') && $request->client_id) {
             $query->where('client_id', $request->client_id);
         }
-    
+
         // Filtre par gestionnaire
         if ($request->has('gestionnaire_id') && $request->gestionnaire_id) {
             $query->whereHas('client.gestionnairePrincipal', function ($q) use ($request) {
                 $q->where('id', $request->gestionnaire_id);
             });
         }
-    
+
         // Filtre par date de début
         if ($request->has('date_debut') && !empty($request->date_debut)) {
             $query->where('debut', '>=', $request->date_debut);
         }
-    
+
         // Filtre par date de fin
         if ($request->has('date_fin') && !empty($request->date_fin)) {
             $query->where('fin', '<=', $request->date_fin);
         }
-    
+
         // Filtre par statut (validée ou non)
         if ($request->has('validee') && $request->validee !== '') {
             $query->where('validee', $request->validee);
         }
-    
+
         // Filtre par mois courant
         if (!$request->has('date_debut') && !$request->has('date_fin')) {
             $query->whereMonth('debut', now()->month);
         }
-    
+
         $periodesPaie = $query->paginate(15);
         $clients = Client::all();
         $gestionnaires = User::role('gestionnaire')->get();
-    
+
         // Déchiffrement des données pour chaque période de paie
         foreach ($periodesPaie as $periode) {
             $periode->decrypted_data = $periode->decryptedData;
         }
-    
+
         // Récupérer les clients éligibles
         $eligibleClients = $this->periodePaieService->getEligibleClients();
         $currentPeriodePaie = PeriodePaie::where('validee', true)->latest()->first();
-    
+
         return view('periodes_paie.index', compact('periodesPaie', 'clients', 'gestionnaires', 'eligibleClients', 'currentPeriodePaie'));
     }
 
@@ -93,7 +93,7 @@ class PeriodePaieController extends Controller
             ->whereYear('debut', $currentYear)
             ->where('validee', true)
             ->first();
-    
+
         if ($existingPeriode) {
             return redirect()->route('periodes-paie.index')->with('error', 'Il existe déjà une période de paie active pour ce mois.');
         }
@@ -156,11 +156,10 @@ class PeriodePaieController extends Controller
         }
     }
 
-    public function close(PeriodePaie $periodePaie)
+    public function close(Request $request, PeriodePaie $periodePaie)
     {
         $this->periodePaieService->closePeriodePaie($periodePaie);
-
-        return redirect()->route('periodes-paie.index')->with('success', 'Période de paie clôturée avec succès.');
+        return redirect()->route('periodes_paie.index')->with('success', 'Période de paie clôturée avec succès.');
     }
 
     public function updateRelation(Request $request, $userId)

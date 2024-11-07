@@ -20,7 +20,7 @@
     <!-- Mobile Specific Metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script src="{{ @asset('vendor/larapex-charts/apexcharts.js') }}"></script>
+    {{-- <script src="{{ @asset('vendor/larapex-charts/apexcharts.js') }}"></script> --}}
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -127,16 +127,16 @@
     <!-- welcome modal end -->
     <script src="https://cdn.jsdelivr.net/npm/flowbite@1.5.3/dist/flowbite.min.js"></script>
     <!-- js -->
-    <script src="{{ asset('backoffice/vendors/scripts/core.js') }}"></script>
-    <script src="{{ asset('backoffice/vendors/scripts/script.min.js') }}"></script>
-    <script src="{{ asset('backoffice/vendors/scripts/process.js') }}"></script>
-    <script src="{{ asset('backoffice/vendors/scripts/layout-settings.js') }}"></script>
-    <script src="{{ asset('backoffice/src/plugins/apexcharts/apexcharts.min.js') }}"></script>
-    <script src="{{ asset('backoffice/src/plugins/datatables/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('backoffice/src/plugins/datatables/js/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('backoffice/src/plugins/datatables/js/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('backoffice/src/plugins/datatables/js/responsive.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('backoffice/vendors/scripts/dashboard3.js') }}"></script>
+    <script src="{{ asset('/backoffice/vendors/scripts/core.js') }}"></script>
+    <script src="{{ asset('/backoffice/vendors/scripts/script.min.js') }}"></script>
+    <script src="{{ asset('/backoffice/vendors/scripts/process.js') }}"></script>
+    <script src="{{ asset('/backoffice/vendors/scripts/layout-settings.js') }}"></script>
+    <script src="{{ asset('/backoffice/src/plugins/apexcharts/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('/backoffice/src/plugins/datatables/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('/backoffice/src/plugins/datatables/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('/backoffice/src/plugins/datatables/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('/backoffice/src/plugins/datatables/js/responsive.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('/backoffice/vendors/scripts/dashboard3.js') }}"></script>
     {{-- <!-- Google Tag Manager (noscript) --> --}}
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0"
             style="display: none; visibility: hidden"></iframe></noscript>

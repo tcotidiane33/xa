@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
-@section('title', 'Modifier un utilisateur')
+@section('title', 'Modifier l\'utilisateur')
 
 @section('content')
 <div class="container mx-auto p-4 pt-6 md:p-6">
-    <h1 class="text-2xl font-bold mb-4">Modifier un utilisateur</h1>
+    <h1 class="text-2xl font-bold mb-4">Modifier l'utilisateur</h1>
 
-    <form action="{{ route('admin.users.update', $user) }}" method="POST">
+    <form action="{{ route('users.update', $user) }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -14,20 +14,14 @@
             <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
                 Nom
             </label>
-            <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" class="form-control" required>
-            @error('name')
-                <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
+            <input type="text" name="name" id="name" class="form-control" value="{{ $user->name }}" required>
         </div>
 
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
                 Email
             </label>
-            <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" class="form-control" required>
-            @error('email')
-                <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
+            <input type="email" name="email" id="email" class="form-control" value="{{ $user->email }}" required>
         </div>
 
         <div class="mb-4">
@@ -35,9 +29,6 @@
                 Mot de passe
             </label>
             <input type="password" name="password" id="password" class="form-control">
-            @error('password')
-                <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
         </div>
 
         <div class="mb-4">
@@ -53,17 +44,14 @@
             </label>
             <select name="roles[]" id="roles" class="form-control" multiple required>
                 @foreach ($roles as $role)
-                    <option value="{{ $role->id }}" {{ in_array($role->id, old('roles', $user->roles->pluck('id')->toArray())) ? 'selected' : '' }}>
+                    <option value="{{ $role->name }}" {{ $user->roles->contains('name', $role->name) ? 'selected' : '' }}>
                         {{ $role->name }}
                     </option>
                 @endforeach
             </select>
-            @error('roles')
-                <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
         </div>
 
-        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <button type="submit" class="btn btn-primary">Mettre à jour</button>
     </form>
 
     <hr class="my-6">
@@ -97,7 +85,7 @@
                 <tr>
                     <td class="border px-4 py-2">{{ $client->name }}</td>
                     <td class="border px-4 py-2">
-                        <form action="{{ route('users.detachClient', $user) }}" method="POST" style="display: inline-block;">
+                        <form action="{{ route('admin.users.detachClient', $user) }}" method="POST" style="display: inline-block;">
                             @csrf
                             <input type="hidden" name="client_id" value="{{ $client->id }}">
                             <button type="submit" class="btn btn-danger">Détacher</button>

@@ -8,16 +8,18 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\Admin\FileController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\PeriodePaieController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\MultiStepFormController;
+use App\Http\Controllers\Admin\ActivityController;
+use App\Http\Controllers\Admin\RelationController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\TraitementPaieController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\ConventionCollectiveController;
-use App\Http\Controllers\Admin\RelationController;
-use App\Http\Controllers\Admin\FileController;
-use App\Http\Controllers\MultiStepFormController;
 
 
 Route::get('/', function () {
@@ -57,11 +59,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/clients/{client}/get-partial/{step}', [ClientController::class, 'getPartial'])->name('clients.getPartial');
 
     //laravel multistep
-    Route::get('/form/create', [MultiStepFormController::class, 'create'])->name('form.create');
-    Route::post('/form/store', [MultiStepFormController::class, 'store'])->name('form.store');
-    Route::get('/form/success', function () {
-        return 'Formulaire soumis avec succès!';
-    })->name('form.success');
+    // Route::get('/form/create', [MultiStepFormController::class, 'create'])->name('form.create');
+    // Route::post('/form/store', [MultiStepFormController::class, 'store'])->name('form.store');
+    // Route::get('/form/success', function () {
+    //     return 'Formulaire soumis avec succès!';
+    // })->name('form.success');
 
     Route::resource('materials', MaterialController::class);
 
@@ -95,15 +97,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::patch('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 
-
 });
 
 // Admin routes
-Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:admin']], function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('admin.index'); // Tableau de bord admin
-
-    // Autres routes pour l'admin
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:Admin']], function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::resource('roles', RoleController::class)->except(['show']);
+    Route::get('roles/assign', [RoleController::class, 'assign'])->name('roles.assign');
+    Route::post('roles/assign', [RoleController::class, 'assignRoles'])->name('roles.assignRoles');
+    Route::resource('permissions', PermissionController::class)->except(['show']);
     Route::resource('users', UserController::class);
+    Route::resource('clients', ClientController::class);
 
     Route::post('users/{user}/attach-client', [UserController::class, 'attachClient'])->name('users.attachClient');
     Route::post('users/{user}/detach-client', [UserController::class, 'detachClient'])->name('users.detachClient');
@@ -114,7 +118,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'r
     Route::get('/download-template', [FileController::class, 'downloadTemplate'])->name('files.downloadTemplate');
     Route::post('/upload-excel', [FileController::class, 'uploadExcel'])->name('files.uploadExcel');
     // Clients relations
-    Route::get('/clients', [RelationController::class, 'index'])->name('clients.index');
     Route::post('/clients/transfer', [RelationController::class, 'transfer'])->name('clients.transfer');
     Route::get('/admin/clients/filter', [RelationController::class, 'filter'])->name('clients.filter');
     Route::post('clients/{client}/attach-gestionnaire', [ClientController::class, 'attachGestionnaire'])->name('clients.attachGestionnaire');
@@ -127,13 +130,23 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'r
     //période paie
     Route::post('/periodes-paie/{periodePaie}/valider', [PeriodePaieController::class, 'valider'])->name('periodes-paie.valider');
 
-    Route::resource('roles', RoleController::class)->except(['show']);
-    Route::get('/permissions/create', [RoleController::class, 'createPermission'])->name('permissions.create');
-    Route::post('/permissions', [RoleController::class, 'storePermission'])->name('permissions.store');
-    Route::get('/roles/assign', [RoleController::class, 'assignRoles'])->name('roles.assign');
-    Route::post('/roles/assign', [RoleController::class, 'storeAssignRoles'])->name('roles.assign.store');
+    //User Acces
+    Route::post('/users/{user}/assign-role', [UserController::class, 'assignRole'])->name('users.assign-role');
+    Route::post('/users/{user}/revoke-role', [UserController::class, 'revokeRole'])->name('users.revoke-role');
+    Route::post('/users/{user}/give-permission', [UserController::class, 'givePermission'])->name('users.give-permission');
+    Route::post('/users/{user}/revoke-permission', [UserController::class, 'revokePermission'])->name('users.revoke-permission');
+
     Route::patch('/users/{user}/toggle-status', [RoleController::class, 'toggleUserStatus'])->name('users.toggle-status');
+
+    Route::get('/activities', [ActivityController::class, 'index'])->name('activities.index');
+    Route::get('/telescope', function () {
+        return redirect('/telescope');
+    })->name('telescope');
+    Route::get('/clockwork', function () {
+        return redirect('/clockwork');
+    })->name('clockwork');
 });
+
 
 
 require __DIR__ . '/auth.php';

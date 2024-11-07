@@ -53,19 +53,18 @@ class User extends Authenticatable implements AuditableContract
         'email_verified_at' => 'datetime',
         'is_active' => 'boolean',
     ];
+        // Assurez-vous que le nom de la connexion est correct dans le fichier de config pour les rôles/permissions
+        protected $guard_name = 'web';
+
 
     /**
      * Get the clients & gestionnaire that owns the Echeancier.
      */
     public function isAdmin()
     {
-        return $this->hasRole('admin'); // ou toute autre logique pour déterminer si l'utilisateur est admin
+        return $this->hasRole('Admin'); // ou toute autre logique pour déterminer si l'utilisateur est admin
     }
 
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class);
-    }
 
     public function profile()
     {
@@ -132,9 +131,13 @@ class User extends Authenticatable implements AuditableContract
         return $this->belongsTo(User::class, 'responsible_id');
     }
 
+    // public function clients()
+    // {
+    //     return $this->clientsAsGestionnaire->merge($this->clientsAsResponsable)->merge($this->clientsAsBinome);
+    // }
     public function clients()
     {
-        return $this->clientsAsGestionnaire->merge($this->clientsAsResponsable)->merge($this->clientsAsBinome);
+        return $this->belongsToMany(Client::class, 'client_user', 'user_id', 'client_id');
     }
 
     public function materials()

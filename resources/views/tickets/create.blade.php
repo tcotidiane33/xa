@@ -1,14 +1,10 @@
 @extends('layouts.admin')
 
-@section('title', 'Admin Traitements des paies')
+@section('title', 'Créer un Ticket')
 
 @section('content')
     <div class="main-content">
-        <div class="main-page">
-            <div class="row">
-                <br>
-                <br>
-            </div>
+        <div class="container mx-auto px-4 py-8">
             <div class="row">
                 <div class="container">
                     <form method="POST" action="{{ route('tickets.store') }}">
