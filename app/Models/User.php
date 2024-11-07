@@ -95,6 +95,7 @@ class User extends Authenticatable implements AuditableContract
     {
         return $this->hasMany(Client::class, 'gestionnaire_principal_id');
     }
+    
 
     public function clientsPrincipaux()
     {

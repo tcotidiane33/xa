@@ -3,10 +3,10 @@
 @section('title', 'Détails du Client')
 
 @push('styles')
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.7/fullcalendar.min.css"/>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.7/fullcalendar.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.css" rel="stylesheet">
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/6.0.6/highcharts.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/6.0.6/highcharts.js" charset="utf-8"></script>
 @endpush
 
 
@@ -74,6 +74,37 @@
                                 class="bg-green-100 text-red-800 text-xxl font-medium me-2 px-3 py-1.5 rounded dark:bg-gray-700 dark:text-pink-400 border border-pink-400">{{ $client->conventionCollective ? $client->conventionCollective->name : 'Non assignée' }}</span>
                         </td>
                     </tr>
+
+                    <hr>
+                    <tr>
+                        <th>Saisie des variables</th>
+                        <td>
+                            <span
+                            class="bg-green-100 text-green-800 text-xxl font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-indigo-400">
+                            {{ $client->saisie_variables ? 'Oui' : 'Non' }}
+                        </span>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Date de saisie des variables</th>
+                        <td>{{ $client->date_saisie_variables ? \Carbon\Carbon::parse($client->date_saisie_variables)->format('d/m/Y') : 'Non définie' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Client formé à la saisie</th>
+                        <td> <span
+                            class="bg-red-100 text-red-800 text-xxl font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-red-400 border border-red-400">
+                            {{ $client->client_forme_saisie ? 'Oui' : 'Non' }}
+                        </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Date de formation à la saisie</th>
+                        <td>{{ $client->date_formation_saisie ? \Carbon\Carbon::parse($client->date_formation_saisie)->format('d/m/Y') : 'Non définie' }}
+                        </td>
+                    </tr>
+                    <hr>
                     <tr>
                         <th>Date de début de prestation</th>
                         <td>{{ $client->date_debut_prestation ? \Carbon\Carbon::parse($client->date_debut_prestation)->format('d/m/Y') : 'Non définie' }}
@@ -81,7 +112,7 @@
                     </tr>
                     <tr>
                         <th>Date de fin de prestation</th>
-                        <td>{{ $client->date_fin_prestation ? \Carbon\Carbon::parse($client->date_fin_prestation)->format('d/m/Y') : 'Non définie' }}
+                        <td>{{ $client->date_fin_prestation ? \Carbon\Carbon::parse($client->date_fin_prestation)->format('d/m/Y') : 'Non défini' }}
                         </td>
                     </tr>
                     <tr>
@@ -133,19 +164,19 @@
         </div>
     </div>
     <hr>
-       <div class="container mx-auto p-4 pt-6 md:p-6">
+    <div class="container mx-auto p-4 pt-6 md:p-6">
         <h1 class="text-2xl font-bold mb-4">Détails de l'utilisateur</h1>
-    
+
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2">Nom</label>
             <p>{{ $user->name }}</p>
         </div>
-    
+
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
             <p>{{ $user->email }}</p>
         </div>
-    
+
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2">Rôles</label>
             <ul>
@@ -205,8 +236,8 @@
 
 
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.7/fullcalendar.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.js"></script>

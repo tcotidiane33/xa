@@ -78,12 +78,19 @@ class PeriodePaieController extends Controller
 
     public function create()
     {
+        // if (!Auth::user()->hasRole('Admin')) {
+            // return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de créer une période de paie.');
+        // }
+
         Log::info('Début de la méthode create');
         return view('periodes_paie.create');
     }
 
     public function store(StorePeriodePaieRequest $request)
     {
+        // if (!Auth::user()->hasRole('Admin')) {
+            // return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de créer une période de paie.');
+        // }
         $validated = $request->validated();
 
         // Vérifier qu'il n'y a qu'une seule période de paie active par mois
@@ -135,9 +142,12 @@ class PeriodePaieController extends Controller
 
         return redirect()->route('periodes-paie.index')->with('success', 'Période de paie mise à jour avec succès.');
     }
-
     public function destroy(PeriodePaie $periodePaie)
     {
+        if (!Auth::user()->hasRole('Admin')) {
+            return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de supprimer une période de paie.');
+        }
+
         try {
             $this->periodePaieService->deletePeriodePaie($periodePaie);
             return redirect()->route('periodes-paie.index')->with('success', 'Période de paie supprimée avec succès.');
@@ -149,6 +159,10 @@ class PeriodePaieController extends Controller
 
     public function valider(PeriodePaie $periodePaie)
     {
+        if (!Auth::user()->hasRole('Admin')) {
+            return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de valider une période de paie.');
+        }
+
         if ($this->periodePaieService->validatePeriodePaie($periodePaie)) {
             return redirect()->route('periodes-paie.index')->with('success', 'Période de paie validée avec succès.');
         } else {
@@ -158,10 +172,13 @@ class PeriodePaieController extends Controller
 
     public function close(Request $request, PeriodePaie $periodePaie)
     {
-        $this->periodePaieService->closePeriodePaie($periodePaie);
-        return redirect()->route('periodes_paie.index')->with('success', 'Période de paie clôturée avec succès.');
-    }
+        if (!Auth::user()->hasRole('Admin')) {
+            return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de clôturer une période de paie.');
+        }
 
+        $this->periodePaieService->closePeriodePaie($periodePaie);
+        return redirect()->route('periodes-paie.index')->with('success', 'Période de paie clôturée avec succès.');
+    }
     public function updateRelation(Request $request, $userId)
     {
         // Récupérer l'utilisateur spécifique
@@ -176,9 +193,12 @@ class PeriodePaieController extends Controller
 
         return redirect()->back()->with('success', 'Notification envoyée avec succès.');
     }
-
     public function encryptOldPeriods()
     {
+        if (!Auth::user()->hasRole('Admin')) {
+            return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de chiffrer les anciennes périodes de paie.');
+        }
+
         $this->periodePaieService->encryptOldPeriods();
 
         return redirect()->route('periodes-paie.index')->with('success', 'Périodes de paie chiffrées avec succès.');
@@ -186,6 +206,10 @@ class PeriodePaieController extends Controller
 
     public function updateField(Request $request)
     {
+        if (!Auth::user()->hasRole('Admin')) {
+            return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de mettre à jour ce champ.');
+        }
+
         $this->periodePaieService->updateField($request);
 
         return redirect()->route('periodes-paie.index')->with('success', 'Champ mis à jour avec succès.');

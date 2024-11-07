@@ -60,9 +60,57 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Périodes de Paie</h1>
-    <a href="{{ route('admin.clockwork') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-        Voir Clockwork
-    </a>
+    @if (Auth::user()->hasRole('Admin'))
+    <div class="mb-4">
+        <a href="{{ route('periodes-paie.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Créer une Période de Paie
+        </a>
+    </div>
+
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead>
+            <tr>
+                <th scope="col" class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Référence</th>
+                <th scope="col" class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date de début</th>
+                <th scope="col" class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date de fin</th>
+                <th scope="col" class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                <th scope="col" class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            @foreach ($periodesPaie as $periode)
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ $periode->reference }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ $periode->debut->format('d/m/Y') }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ $periode->fin->format('d/m/Y') }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ $periode->validee ? 'Validée' : 'Non validée' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        @if (Auth::user()->hasRole('Admin'))
+                            <a href="{{ route('periodes-paie.edit', $periode->id) }}" class="text-blue-500 hover:text-blue-700">Modifier</a>
+                            <form action="{{ route('periodes-paie.destroy', $periode->id) }}" method="POST" style="display:inline-block;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-500 hover:text-red-700">Supprimer</button>
+                            </form>
+                            @if (!$periode->validee)
+                                <form action="{{ route('periodes-paie.valider', $periode->id) }}" method="POST" style="display:inline-block;">
+                                    @csrf
+                                    <button type="submit" class="text-green-500 hover:text-green-700">Valider</button>
+                                </form>
+                            @endif
+                        @elseif (Auth::user()->hasRole('Gestionnaire'))
+                            <a href="{{ route('periodes-paie.show', $periode->id) }}" class="text-blue-500 hover:text-blue-700">Voir</a>
+                        @endif
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <div class="mt-4">
+        {{ $periodesPaie->links() }}
+    </div>
+@endif
 
     <form action="{{ route('periodes-paie.index') }}" method="GET" class="mb-4">
         <div class="flex flex-wrap gap-4">

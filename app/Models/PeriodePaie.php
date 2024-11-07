@@ -81,4 +81,10 @@ class PeriodePaie extends Model
     {
         return Carbon::now()->diffInDays($this->fin) >= 7;
     }
+
+    public static function getNonCloturees()
+    {
+        return PeriodePaie::where('validee', false)->get();
+    }
+
 }

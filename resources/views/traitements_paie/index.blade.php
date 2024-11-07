@@ -5,7 +5,7 @@
 @section('content')
     <div class="main-content">
         <div class="container mx-auto px-4 py-8"">
-          
+
             <div class="row">
                 <a href="{{ route('traitements-paie.historique') }}" class="btn btn-secondary mb-3">Voir l'historique</a>
                 <div class="container mx-auto px-4 py-8"">
@@ -46,9 +46,9 @@
                             </div>
                         </div>
                     </form>
-                
-                    <a href="{{ route('traitements-paie.create') }}" class="btn btn-success mb-3">Créer un nouveau traitement</a>
-                
+
+                    {{-- <a href="{{ route('traitements-paie.create') }}" class="btn btn-success mb-3">Créer un nouveau traitement</a> --}}
+
                     <table class="table">
                         <thead>
                             <tr>
@@ -79,13 +79,13 @@
                             @endforeach
                         </tbody>
                     </table>
-                
+
                     {{ $traitements->links() }}
                 </div>
             </div>
         </div>
 
-       
+
     </div>
 @endsection
 
