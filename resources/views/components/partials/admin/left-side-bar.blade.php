@@ -48,36 +48,18 @@
                 </li>
 
                 <!-- Périodes de Paie -->
-                <li class="dropdown {{ request()->is('periodes-paie*') ? 'active' : '' }}">
-                    <a href="javascript:;" class="dropdown-toggle">
-                        <span class="micon bi bi-calendar"></span><span class="mtext">Périodes de Paie</span>
-                    </a>
-                    <ul class="submenu">
-                        <li><a href="{{ route('periodes-paie.index') }}"
-                                class="{{ request()->is('periodes-paie') ? 'active' : '' }}">Toutes les Périodes</a>
-                        </li>
-                        <li><a href="{{ route('periodes-paie.create') }}"
-                                class="{{ request()->is('periodes-paie/create') ? 'active' : '' }}">Créer une
-                                Période</a></li>
-                    </ul>
+                <li>
+                    <a href="{{ route('periodes-paie.index') }}"  class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-calendar"></span><span class="mtext">Périodes de Paie</span>
+                            </a>
                 </li>
 
                 <!-- Traitement des Paies -->
-                <li class="dropdown {{ request()->is('traitements-paie*') ? 'active' : '' }}">
-                    <a href="javascript:;" class="dropdown-toggle">
+                <li >
+                    <a href="{{ route('traitements-paie.index') }}"  class="dropdown-toggle no-arrow">
                         <span class="micon bi bi-cash"></span><span class="mtext">Traitements Paie</span>
                     </a>
-                    <ul class="submenu">
-                        <li><a href="{{ route('traitements-paie.index') }}"
-                                class="{{ request()->is('traitements-paie') ? 'active' : '' }}">Tous les
-                                Traitements</a></li>
-                        <li><a href="{{ route('traitements-paie.create') }}"
-                                class="{{ request()->is('traitements-paie/create') ? 'active' : '' }}">Nouveau
-                                Traitement</a></li>
-                        <li><a href="{{ route('traitements-paie.historique') }}"
-                                class="{{ request()->is('traitements-paie/historique') ? 'active' : '' }}">Historiques</a>
-                        </li>
-                    </ul>
+                    
                 </li>
 
 

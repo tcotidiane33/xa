@@ -1,122 +1,66 @@
 @extends('layouts.admin')
 
-@section('title', 'Détails du Traitement de Paie')
-
 @section('content')
-<div class="main-content">
-    <div class="main-page">
-        <div class="row">
-            <div class="container">
-                <h1>Détails du Traitement de Paie</h1>
-                <table class="table">
-                    <tr>
-                        <th>Client</th>
-                        <td>{{ $traitementPaie->client->name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Gestionnaire</th>
-                        <td>{{ $traitementPaie->gestionnaire->name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Période de paie</th>
-                        <td>{{ $traitementPaie->periodePaie->reference }}</td>
-                    </tr>
-                    <tr>
-                        <th>Nombre de bulletins</th>
-                        <td>{{ $traitementPaie->nbr_bull }}</td>
-                    </tr>
-                    <tr>
-                        <th>Réception variables</th>
-                        <td>{{ $traitementPaie->reception_variable }}</td>
-                    </tr>
-                    <tr>
-                        <th>Préparation BP</th>
-                        <td>{{ $traitementPaie->preparation_bp }}</td>
-                    </tr>
-                    <tr>
-                        <th>Validation BP client</th>
-                        <td>{{ $traitementPaie->validation_bp_client }}</td>
-                    </tr>
-                    <tr>
-                        <th>Préparation et envoie DSN</th>
-                        <td>{{ $traitementPaie->preparation_envoie_dsn }}</td>
-                    </tr>
-                    <tr>
-                        <th>Accusés DSN</th>
-                        <td>{{ $traitementPaie->accuses_dsn }}</td>
-                    </tr>
-                    <tr>
-                        <th>Notes</th>
-                        <td>{{ $traitementPaie->notes }}</td>
-                    </tr>
-                    <tr>
-                        <th>Fichier MAJ fiche para</th>
-                        <td>
-                            @if($traitementPaie->maj_fiche_para_file)
-                                <a href="{{ asset('storage/' . $traitementPaie->maj_fiche_para_file) }}" target="_blank">Voir le fichier</a>
-                            @else
-                                Aucun fichier
-                            @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Fichier Réception variables</th>
-                        <td>
-                            @if($traitementPaie->reception_variables_file)
-                                <a href="{{ asset('storage/' . $traitementPaie->reception_variables_file) }}" target="_blank">Voir le fichier</a>
-                            @else
-                                Aucun fichier
-                            @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Fichier Préparation BP</th>
-                        <td>
-                            @if($traitementPaie->preparation_bp_file)
-                                <a href="{{ asset('storage/' . $traitementPaie->preparation_bp_file) }}" target="_blank">Voir le fichier</a>
-                            @else
-                                Aucun fichier
-                            @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Fichier Validation BP client</th>
-                        <td>
-                            @if($traitementPaie->validation_bp_client_file)
-                                <a href="{{ asset('storage/' . $traitementPaie->validation_bp_client_file) }}" target="_blank">Voir le fichier</a>
-                            @else
-                                Aucun fichier
-                            @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Fichier Préparation et envoie DSN</th>
-                        <td>
-                            @if($traitementPaie->preparation_envoi_dsn_file)
-                                <a href="{{ asset('storage/' . $traitementPaie->preparation_envoi_dsn_file) }}" target="_blank">Voir le fichier</a>
-                            @else
-                                Aucun fichier
-                            @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Fichier Accusés DSN</th>
-                        <td>
-                            @if($traitementPaie->accuses_dsn_file)
-                                <a href="{{ asset('storage/' . $traitementPaie->accuses_dsn_file) }}" target="_blank">Voir le fichier</a>
-                            @else
-                                Aucun fichier
-                            @endif
-                        </td>
-                    </tr>
-                </table>
-                <a href="{{ route('traitements-paie.edit', $traitementPaie) }}" class="btn btn-primary">Modifier</a>
-                <form action="{{ route('traitements-paie.destroy', $traitementPaie) }}" method="POST" style="display:inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce traitement de paie ?')">Supprimer</button>
-                </form>
-                <a href="{{ route('traitements-paie.index') }}" class="btn btn-secondary">Retour à la liste</a>
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Détails du Traitement de Paie</h1>
+    <div class="bg-white w-full shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="grid gap-6 mb-6 md:grid-cols-4">
+            <div>
+                <div class="form-group">
+                    <label for="reference">Référence</label>
+                    <input type="text" id="reference" class="form-control" value="{{ $traitementPaie->reference }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="client">Client</label>
+                    <input type="text" id="client" class="form-control" value="{{ $traitementPaie->client->name }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="gestionnaire">Gestionnaire</label>
+                    <input type="text" id="gestionnaire" class="form-control" value="{{ $traitementPaie->gestionnaire->name }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="periode_paie">Période de Paie</label>
+                    <input type="text" id="periode_paie" class="form-control" value="{{ $traitementPaie->periodePaie->reference }}" disabled>
+                </div>
+            </div>
+            <div>
+                <div class="form-group">
+                    <label for="reception_variables">Réception variables</label>
+                    <input type="date" id="reception_variables" class="form-control" value="{{ $traitementPaie->reception_variables }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="preparation_bp">Préparation BP</label>
+                    <input type="date" id="preparation_bp" class="form-control" value="{{ $traitementPaie->preparation_bp }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="validation_bp_client">Validation BP client</label>
+                    <input type="date" id="validation_bp_client" class="form-control" value="{{ $traitementPaie->validation_bp_client }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="preparation_envoie_dsn">Préparation et envoie DSN</label>
+                    <input type="date" id="preparation_envoie_dsn" class="form-control" value="{{ $traitementPaie->preparation_envoie_dsn }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="accuses_dsn">Accusés DSN</label>
+                    <input type="date" id="accuses_dsn" class="form-control" value="{{ $traitementPaie->accuses_dsn }}" disabled>
+                </div>
+            </div>
+            <div>
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" class="form-control" disabled>{{ $traitementPaie->notes }}</textarea>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Fichiers associés</h2>
+            <div class="grid gap-6 mb-6 md:grid-cols-4">
+                @foreach ($traitementPaie->fichiers as $fichier)
+                    <div class="form-group">
+                        <label for="fichier_{{ $fichier->id }}">{{ $fichier->nom }}</label>
+                        <a href="{{ route('fichiers.download', $fichier->id) }}" class="text-blue-600 hover:text-blue-900">Télécharger</a>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>

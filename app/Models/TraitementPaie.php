@@ -10,10 +10,7 @@ class TraitementPaie extends Model
     protected $table = 'traitements_paie';
 
     protected $fillable = [
-        'reference', 'gestionnaire_id', 'client_id', 'periode_paie_id',
-        'nbr_bull', 'teledec_urssaf',
-        'maj_fiche_para_file', 'reception_variables_file', 'preparation_bp_file',
-        'validation_bp_client_file', 'preparation_envoi_dsn_file', 'accuses_dsn_file',
+        'reference', 'gestionnaire_id', 'client_id', 'periode_paie_id', 'teledec_urssaf', 'est_verrouille'
     ];
 
     protected $dates = [
@@ -53,5 +50,11 @@ class TraitementPaie extends Model
             ->implode("\n");
 
         return $previousNotes . "\n" . $value;
+    }
+
+    public function ficheClient()
+    {
+        return $this->belongsTo(FicheClient::class, 'client_id', 'client_id')
+                    ->where('periode_paie_id', $this->periode_paie_id);
     }
 }

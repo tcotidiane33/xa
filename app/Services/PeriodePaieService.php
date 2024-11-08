@@ -24,8 +24,9 @@ class PeriodePaieService
 
     public function createPeriodePaie(array $data)
     {
-        $reference = $this->generateReference();
-        $periodePaie = PeriodePaie::create(array_merge($data, ['reference' => $reference]));
+        $periodePaie = PeriodePaie::create($data);
+        $periodePaie->generateReference();
+        $periodePaie->save();
 
         PeriodePaieHistory::create([
             'periode_paie_id' => $periodePaie->id,
@@ -50,6 +51,32 @@ class PeriodePaieService
 
         return $periodePaie;
     }
+    
+    public function openPeriodePaie(PeriodePaie $periodePaie)
+    {
+        $periodePaie->validee = false;
+        $periodePaie->save();
+
+        PeriodePaieHistory::create([
+            'periode_paie_id' => $periodePaie->id,
+            'user_id' => Auth::id(),
+            'action' => 'opened',
+            'details' => 'Période de paie déclôturée',
+        ]);
+    }
+
+    public function closePeriodePaie(PeriodePaie $periodePaie)
+    {
+        $periodePaie->validee = true;
+        $periodePaie->save();
+
+        PeriodePaieHistory::create([
+            'periode_paie_id' => $periodePaie->id,
+            'user_id' => Auth::id(),
+            'action' => 'closed',
+            'details' => 'Période de paie clôturée',
+        ]);
+    }
 
     public function deletePeriodePaie(PeriodePaie $periodePaie)
     {
@@ -65,20 +92,24 @@ class PeriodePaieService
 
     public function validatePeriodePaie(PeriodePaie $periodePaie)
     {
-        if ($periodePaie->canBeValidated()) {
-            $periodePaie->update(['validee' => true]);
+        // Vérifiez que tous les traitements de paie sont complets avant de valider la période
+        $incompleteFiches = $periodePaie->fichesClients()->whereNull('accuses_dsn')->count();
 
-            PeriodePaieHistory::create([
-                'periode_paie_id' => $periodePaie->id,
-                'user_id' => Auth::id(),
-                'action' => 'validated',
-                'details' => 'Période de paie validée',
-            ]);
-
-            return true;
+        if ($incompleteFiches > 0) {
+            return false;
         }
 
-        return false;
+        $periodePaie->validee = true;
+        $periodePaie->save();
+
+        PeriodePaieHistory::create([
+            'periode_paie_id' => $periodePaie->id,
+            'user_id' => Auth::id(),
+            'action' => 'validated',
+            'details' => 'Période de paie validée',
+        ]);
+
+        return true;
     }
     protected function createFilesForClients(PeriodePaie $periodePaie)
     {
@@ -122,33 +153,7 @@ class PeriodePaieService
         }
     }
 
-    public function closePeriodePaie(PeriodePaie $periodePaie)
-    {
-        $periodePaie->update(['cloturee' => true]);
-
-        PeriodePaieHistory::create([
-            'periode_paie_id' => $periodePaie->id,
-            'user_id' => Auth::id(),
-            'action' => 'closed',
-            'details' => 'Période de paie clôturée',
-        ]);
-
-        // Créer un fichier pour chaque client
-        $this->createFilesForClients($periodePaie);
-    }
-
-    public function openPeriodePaie(PeriodePaie $periodePaie)
-    {
-        $periodePaie->update(['cloturee' => false]);
-
-        PeriodePaieHistory::create([
-            'periode_paie_id' => $periodePaie->id,
-            'user_id' => Auth::id(),
-            'action' => 'opened',
-            'details' => 'Période de paie déclôturée',
-        ]);
-    }
-
+   
     public function encryptOldPeriods()
     {
         $periodes = PeriodePaie::where('validee', 1)->get();

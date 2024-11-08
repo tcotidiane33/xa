@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Client;
+use App\Models\FicheClient;
 use App\Models\PeriodePaie;
 use Illuminate\Http\Request;
 use App\Models\TraitementPaie;
@@ -27,70 +28,59 @@ class PeriodePaieController extends Controller
     public function index(Request $request)
     {
         $query = PeriodePaie::query();
-
+    
         // Filtre par client
         if ($request->has('client_id') && $request->client_id) {
-            $query->where('client_id', $request->client_id);
+            $query->whereHas('fichesClients', function ($q) use ($request) {
+                $q->where('client_id', $request->client_id);
+            });
         }
-
+    
         // Filtre par gestionnaire
         if ($request->has('gestionnaire_id') && $request->gestionnaire_id) {
-            $query->whereHas('client.gestionnairePrincipal', function ($q) use ($request) {
+            $query->whereHas('fichesClients.client.gestionnairePrincipal', function ($q) use ($request) {
                 $q->where('id', $request->gestionnaire_id);
             });
         }
-
+    
         // Filtre par date de début
         if ($request->has('date_debut') && !empty($request->date_debut)) {
             $query->where('debut', '>=', $request->date_debut);
         }
-
+    
         // Filtre par date de fin
         if ($request->has('date_fin') && !empty($request->date_fin)) {
             $query->where('fin', '<=', $request->date_fin);
         }
-
+    
         // Filtre par statut (validée ou non)
         if ($request->has('validee') && $request->validee !== '') {
             $query->where('validee', $request->validee);
         }
-
+    
         // Filtre par mois courant
         if (!$request->has('date_debut') && !$request->has('date_fin')) {
             $query->whereMonth('debut', now()->month);
         }
-
+    
         $periodesPaie = $query->paginate(15);
         $clients = Client::all();
         $gestionnaires = User::role('gestionnaire')->get();
-
-        // Déchiffrement des données pour chaque période de paie
-        foreach ($periodesPaie as $periode) {
-            $periode->decrypted_data = $periode->decryptedData;
-        }
-
-        // Récupérer les clients éligibles
-        $eligibleClients = $this->periodePaieService->getEligibleClients();
-        $currentPeriodePaie = PeriodePaie::where('validee', true)->latest()->first();
-
-        return view('periodes_paie.index', compact('periodesPaie', 'clients', 'gestionnaires', 'eligibleClients', 'currentPeriodePaie'));
+        $fichesClients = FicheClient::paginate(15);
+    
+        $currentPeriodePaie = PeriodePaie::where('validee', false)->latest()->first();
+    
+        return view('periodes_paie.index', compact('periodesPaie', 'clients', 'gestionnaires', 'currentPeriodePaie', 'fichesClients'));
     }
 
     public function create()
     {
-        // if (!Auth::user()->hasRole('Admin')) {
-            // return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de créer une période de paie.');
-        // }
-
         Log::info('Début de la méthode create');
         return view('periodes_paie.create');
     }
 
     public function store(StorePeriodePaieRequest $request)
     {
-        // if (!Auth::user()->hasRole('Admin')) {
-            // return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de créer une période de paie.');
-        // }
         $validated = $request->validated();
 
         // Vérifier qu'il n'y a qu'une seule période de paie active par mois
@@ -105,7 +95,9 @@ class PeriodePaieController extends Controller
             return redirect()->route('periodes-paie.index')->with('error', 'Il existe déjà une période de paie active pour ce mois.');
         }
 
-        $periodePaie = $this->periodePaieService->createPeriodePaie($validated);
+        $periodePaie = PeriodePaie::create($validated);
+        $periodePaie->generateReference();
+        $periodePaie->save();
 
         return redirect()->route('periodes-paie.index')->with('success', 'Période de paie créée avec succès.');
     }
@@ -127,8 +119,7 @@ class PeriodePaieController extends Controller
             return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de modifier une période validée.');
         }
 
-        $clients = Client::all();
-        return view('periodes_paie.edit', compact('periodePaie', 'clients'));
+        return view('periodes_paie.edit', compact('periodePaie'));
     }
 
     public function update(UpdatePeriodePaieRequest $request, PeriodePaie $periodePaie)
@@ -138,10 +129,11 @@ class PeriodePaieController extends Controller
         }
 
         $validated = $request->validated();
-        $this->periodePaieService->updatePeriodePaie($periodePaie, $validated);
+        $periodePaie->update($validated);
 
         return redirect()->route('periodes-paie.index')->with('success', 'Période de paie mise à jour avec succès.');
     }
+
     public function destroy(PeriodePaie $periodePaie)
     {
         if (!Auth::user()->hasRole('Admin')) {
@@ -149,79 +141,11 @@ class PeriodePaieController extends Controller
         }
 
         try {
-            $this->periodePaieService->deletePeriodePaie($periodePaie);
+            $periodePaie->delete();
             return redirect()->route('periodes-paie.index')->with('success', 'Période de paie supprimée avec succès.');
         } catch (\Exception $e) {
             \Log::error('Erreur lors de la suppression de la période de paie : ' . $e->getMessage());
             return redirect()->route('periodes-paie.index')->with('error', 'Impossible de supprimer cette période de paie. ' . $e->getMessage());
         }
-    }
-
-    public function valider(PeriodePaie $periodePaie)
-    {
-        if (!Auth::user()->hasRole('Admin')) {
-            return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de valider une période de paie.');
-        }
-
-        if ($this->periodePaieService->validatePeriodePaie($periodePaie)) {
-            return redirect()->route('periodes-paie.index')->with('success', 'Période de paie validée avec succès.');
-        } else {
-            return redirect()->route('periodes-paie.index')->with('error', 'Tous les traitements de paie doivent être complets avant de valider la période.');
-        }
-    }
-
-    public function close(Request $request, PeriodePaie $periodePaie)
-    {
-        if (!Auth::user()->hasRole('Admin')) {
-            return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de clôturer une période de paie.');
-        }
-
-        $this->periodePaieService->closePeriodePaie($periodePaie);
-        return redirect()->route('periodes-paie.index')->with('success', 'Période de paie clôturée avec succès.');
-    }
-    public function updateRelation(Request $request, $userId)
-    {
-        // Récupérer l'utilisateur spécifique
-        $user = User::findOrFail($userId);
-
-        // Définir les détails de la notification
-        $action = 'Voir les détails';
-        $details = 'La relation a été mise à jour.';
-
-        // Envoyer la notification
-        $user->notify(new RelationUpdated($action, $details));
-
-        return redirect()->back()->with('success', 'Notification envoyée avec succès.');
-    }
-    public function encryptOldPeriods()
-    {
-        if (!Auth::user()->hasRole('Admin')) {
-            return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de chiffrer les anciennes périodes de paie.');
-        }
-
-        $this->periodePaieService->encryptOldPeriods();
-
-        return redirect()->route('periodes-paie.index')->with('success', 'Périodes de paie chiffrées avec succès.');
-    }
-
-    public function updateField(Request $request)
-    {
-        if (!Auth::user()->hasRole('Admin')) {
-            return redirect()->route('periodes-paie.index')->with('error', 'Vous n\'avez pas l\'autorisation de mettre à jour ce champ.');
-        }
-
-        $this->periodePaieService->updateField($request);
-
-        return redirect()->route('periodes-paie.index')->with('success', 'Champ mis à jour avec succès.');
-    }
-
-    public function getInfo($id)
-    {
-        $periodePaie = PeriodePaie::findOrFail($id);
-        return response()->json([
-            'debut' => $periodePaie->debut->format('Y-m-d'),
-            'fin' => $periodePaie->fin->format('Y-m-d'),
-            'progress' => $periodePaie->progressPercentage(),
-        ]);
     }
 }

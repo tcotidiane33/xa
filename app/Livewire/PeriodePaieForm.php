@@ -18,9 +18,17 @@ class PeriodePaieForm extends Component
     public $isGestionnaire;
     public $periodesPaieNonCloturees;
     public $clients;
+
     // Propriétés pour les champs de date
     public $reception_variables, $preparation_bp, $validation_bp_client, $preparation_envoie_dsn, $accuses_dsn, $notes;
 
+
+    // Propriétés pour les champs de date
+    public $isReceptionVariablesSubmitted = false;
+    public $isPreparationBpSubmitted = false;
+    public $isValidationBpClientSubmitted = false;
+    public $isPreparationEnvoieDsnSubmitted = false;
+    public $isAccusesDsnSubmitted = false;
 
     public function mount()
     {
@@ -56,6 +64,7 @@ class PeriodePaieForm extends Component
             'reference' => $reference,
             'debut' => $this->debut,
             'fin' => $this->fin,
+            'validee' => false,
             // 'client_id' => 0, // Indique que cela concerne tous les clients
         ]);
 
@@ -84,15 +93,11 @@ class PeriodePaieForm extends Component
 
     private function generateUniqueReference()
     {
-        $currentMonth = Carbon::now()->format('F');
-        $currentYear = Carbon::now()->format('Y');
-        $reference = 'PERIODE_' . strtoupper($currentMonth) . '_' . $currentYear;
-
-        // Vérifier si la référence existe déjà
+        $reference = 'PERIODE_' . strtoupper(Carbon::parse($this->debut)->format('F_Y'));
         $existingReference = PeriodePaie::where('reference', $reference)->exists();
+
         if ($existingReference) {
-            // Ajouter un suffixe unique si la référence existe déjà
-            $reference .= '_' . uniqid();
+            $reference .= '_' . strtoupper(Carbon::now()->format('His'));
         }
 
         return $reference;
@@ -121,11 +126,11 @@ class PeriodePaieForm extends Component
     public function saveVariables()
     {
         $this->validate([
-            'reception_variables' => 'required|date|after_or_equal:' . $this->debut . '|before_or_equal:' . $this->fin,
-            'preparation_bp' => 'nullable|date|after_or_equal:reception_variables|before_or_equal:' . $this->fin,
-            'validation_bp_client' => 'nullable|date|after_or_equal:preparation_bp|before_or_equal:' . $this->fin,
-            'preparation_envoie_dsn' => 'nullable|date|after_or_equal:validation_bp_client|before_or_equal:' . $this->fin,
-            'accuses_dsn' => 'nullable|date|after_or_equal:preparation_envoie_dsn|before_or_equal:' . $this->fin,
+            'reception_variables' => 'required|date',
+            'preparation_bp' => 'nullable|date',
+            'validation_bp_client' => 'nullable|date',
+            'preparation_envoie_dsn' => 'nullable|date',
+            'accuses_dsn' => 'nullable|date',
             'notes' => 'nullable|string',
         ], [
             'reception_variables.after_or_equal' => 'La date de réception des variables doit être après ou égale à la date de début de la période.',
@@ -140,6 +145,23 @@ class PeriodePaieForm extends Component
             'accuses_dsn.before_or_equal' => 'La date des accusés DSN doit être avant ou égale à la date de fin de la période.',
         ]);
 
+            // Ajouter des messages de débogage
+        \Log::info('Client ID: ' . $this->clientId);
+        \Log::info('Période Paie ID: ' . $this->periodePaieId);
+        \Log::info('Réception Variables: ' . $this->reception_variables);
+        \Log::info('Préparation BP: ' . $this->preparation_bp);
+        \Log::info('Validation BP Client: ' . $this->validation_bp_client);
+        \Log::info('Préparation Envoie DSN: ' . $this->preparation_envoie_dsn);
+        \Log::info('Accusés DSN: ' . $this->accuses_dsn);
+        \Log::info('Notes: ' . $this->notes);
+
+        // Set flags based on submission for field availability
+        $this->isReceptionVariablesSubmitted = !empty($this->reception_variables);
+        $this->isPreparationBpSubmitted = !empty($this->preparation_bp);
+        $this->isValidationBpClientSubmitted = !empty($this->validation_bp_client);
+        $this->isPreparationEnvoieDsnSubmitted = !empty($this->preparation_envoie_dsn);
+        $this->isAccusesDsnSubmitted = !empty($this->accuses_dsn);
+
         TraitementPaie::create([
             'client_id' => $this->clientId,
             'periode_paie_id' => $this->periodePaieId,
@@ -152,7 +174,18 @@ class PeriodePaieForm extends Component
         ]);
 
         session()->flash('message', 'Variables enregistrées avec succès.');
-
         return redirect()->route('periodes-paie.index');
+    }
+
+    // Utility function to check if the date is more than 3 days ago
+    // public function isDateExceeded($date)
+    // {
+    //     if (!$date) return false;
+
+    //     return \Carbon\Carbon::parse($date)->diffInDays(now()) > 3;
+    // }
+    public function isDateExceeded($date)
+    {
+        return Carbon::now()->diffInDays(Carbon::parse($date)) > 3;
     }
 }

@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\Admin\FileController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\FicheClientController;
 use App\Http\Controllers\PeriodePaieController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MultiStepFormController;
@@ -77,6 +78,16 @@ Route::middleware(['auth'])->group(function () {
     // Route::delete('/periodes-paie/{periodePaie}', [PeriodePaieController::class, 'destroy'])->name('periodes-paie.destroy');
     Route::patch('periodes-paie/update-field', [PeriodePaieController::class, 'updateField'])->name('periodes-paie.updateField');
     Route::get('periodes-paie/{id}/info', [PeriodePaieController::class, 'getInfo'])->name('periodes-paie.info');
+
+    Route::resource('fiches-clients', FicheClientController::class);
+    // Routes éclatées pour FicheClientController
+    Route::get('fiches-clients', [FicheClientController::class, 'index'])->name('fiches-clients.index');
+    Route::get('fiches-clients/create', [FicheClientController::class, 'create'])->name('fiches-clients.create');
+    Route::post('fiches-clients', [FicheClientController::class, 'store'])->name('fiches-clients.store');
+    Route::get('fiches-clients/{fiches_client}', [FicheClientController::class, 'show'])->name('fiches-clients.show');
+    Route::get('fiches-clients/{fiches_client}/edit', [FicheClientController::class, 'edit'])->name('fiches-clients.edit');
+    Route::put('fiches-clients/{fiches_client}', [FicheClientController::class, 'update'])->name('fiches-clients.update');
+    Route::delete('fiches-clients/{fiches_client}', [FicheClientController::class, 'destroy'])->name('fiches-clients.destroy');
 
     Route::get('/traitements-paie', [TraitementPaieController::class, 'index'])->name('traitements-paie.index');
     Route::get('/traitements-paie/create', [TraitementPaieController::class, 'create'])->name('traitements-paie.create');

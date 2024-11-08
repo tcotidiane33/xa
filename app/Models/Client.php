@@ -216,5 +216,23 @@ public function scopeFilterByStatus($query, $status)
          return !$this->is_cabinet && $this->portfolio_cabinet_id !== null;
      }
 
+     public function progressPercentage()
+     {
+         // Implémentez la logique pour calculer le pourcentage de progression
+         $totalSteps = 5; // Nombre total d'étapes
+         $completedSteps = 0;
+ 
+         if ($this->reception_variables) $completedSteps++;
+         if ($this->preparation_bp) $completedSteps++;
+         if ($this->validation_bp_client) $completedSteps++;
+         if ($this->preparation_envoie_dsn) $completedSteps++;
+         if ($this->accuses_dsn) $completedSteps++;
+ 
+         return ($completedSteps / $totalSteps) * 100;
+     }
+     public function fichesClients()
+     {
+         return $this->hasMany(FicheClient::class);
+     }
     
 }
