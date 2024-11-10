@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\Material;
-use App\Services\MaterialService;
+use PDF;
 use Illuminate\Http\Request;
+use App\Exports\MaterialExport;
+use App\Services\MaterialService;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class MaterialController extends Controller
 {
@@ -92,4 +96,19 @@ class MaterialController extends Controller
 
         return redirect()->route('materials.index')->with('success', 'Material deleted successfully.');
     }
+
+    public function exportExcel($id)
+    {
+        $material = Material::findOrFail($id);
+        return Excel::download(new MaterialExport($material), $material->title . '.xlsx');
+    }
+
+    public function exportPDF($id)
+    {
+        $material = Material::findOrFail($id);
+        $pdf = PDF::loadView('materials.pdf', compact('material'));
+        return $pdf->download($material->title . '.pdf');
+    }
 }
+
+

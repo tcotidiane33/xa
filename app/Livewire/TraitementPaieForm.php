@@ -25,8 +25,10 @@ class TraitementPaieForm extends Component
     public $reception_variables_file;
     public $preparation_bp_file;
     public $validation_bp_client_file;
-    public $preparation_envoi_dsn_file;
+    public $preparation_envoie_dsn_file;
     public $accuses_dsn_file;
+    public $nb_bulletins_file;
+    public $maj_fiche_para_file;
 
     public function mount($traitementPaieId = null)
     {
@@ -79,6 +81,8 @@ class TraitementPaieForm extends Component
         }
     }
 
+
+
     public function render()
     {
         return view('livewire.traitement-paie-form');
@@ -93,8 +97,10 @@ class TraitementPaieForm extends Component
             'reception_variables_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx',
             'preparation_bp_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx',
             'validation_bp_client_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx',
-            'preparation_envoi_dsn_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx',
+            'preparation_envoie_dsn_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx',
             'accuses_dsn_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx',
+            'nb_bulletins_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx',
+            'maj_fiche_para_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx',
         ]);
 
         // Vérifier si le gestionnaire connecté est rattaché au client
@@ -108,30 +114,40 @@ class TraitementPaieForm extends Component
 
         // Mettre à jour la fiche client
         $ficheClient = FicheClient::where('client_id', $this->client_id)
-                                  ->where('periode_paie_id', $this->periode_paie_id)
-                                  ->first();
+            ->where('periode_paie_id', $this->periode_paie_id)
+            ->first();
 
         if ($ficheClient) {
             $fileFields = [
                 'reception_variables_file',
                 'preparation_bp_file',
                 'validation_bp_client_file',
-                'preparation_envoi_dsn_file',
-                'accuses_dsn_file'
+                'preparation_envoie_dsn_file',
+                'accuses_dsn_file',
+                'nb_bulletins_file',
+                'maj_fiche_para_file'
             ];
 
             foreach ($fileFields as $field) {
                 if ($this->$field) {
-                    $ficheClient->$field = $this->$field->store('fiches_clients');
+                    $path = $this->$field->store('fiches_clients');
+                    if ($path) {
+                        $ficheClient->$field = $path;
+                    } else {
+                        session()->flash('error', 'Erreur lors du téléchargement du fichier ' . $field);
+                        return;
+                    }
                 }
             }
 
             $ficheClient->save();
+        } else {
+            session()->flash('error', 'Fiche client introuvable.');
+            return;
         }
 
         session()->flash('message', 'Fichiers de la fiche client enregistrés avec succès.');
 
         return redirect()->route('traitements-paie.index');
     }
-
 }

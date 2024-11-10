@@ -67,6 +67,8 @@ Route::middleware(['auth'])->group(function () {
     // })->name('form.success');
 
     Route::resource('materials', MaterialController::class);
+    Route::get('materials/{id}/export/excel', [MaterialController::class, 'exportExcel'])->name('materials.export.excel');
+    Route::get('materials/{id}/export/pdf', [MaterialController::class, 'exportPDF'])->name('materials.export.pdf');
 
     Route::resource('periodes-paie', PeriodePaieController::class);
     // Route::get('/periodes-paie', [PeriodePaieController::class, 'index'])->name('periodes-paie.index');
@@ -140,6 +142,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'r
 
     //période paie
     Route::post('/periodes-paie/{periodePaie}/valider', [PeriodePaieController::class, 'valider'])->name('periodes-paie.valider');
+    Route::patch('periodes-paie/{id}/cloturer', [PeriodePaieController::class, 'cloturer'])->name('periodes-paie.cloturer');
+    Route::patch('periodes-paie/{id}/decloturer', [PeriodePaieController::class, 'decloturer'])->name('periodes-paie.decloturer');
 
     //User Acces
     Route::post('/users/{user}/assign-role', [UserController::class, 'assignRole'])->name('users.assign-role');

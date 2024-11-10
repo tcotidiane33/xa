@@ -63,7 +63,9 @@ class PeriodePaieController extends Controller
             $query->whereMonth('debut', now()->month);
         }
     
-        $periodesPaie = $query->paginate(15);
+        // $periodesPaie = $query->paginate(15);
+        $periodesPaie = PeriodePaie::paginate(15);
+
         $clients = Client::all();
         $gestionnaires = User::role('gestionnaire')->get();
         $fichesClients = FicheClient::paginate(15);
@@ -147,5 +149,21 @@ class PeriodePaieController extends Controller
             \Log::error('Erreur lors de la suppression de la période de paie : ' . $e->getMessage());
             return redirect()->route('periodes-paie.index')->with('error', 'Impossible de supprimer cette période de paie. ' . $e->getMessage());
         }
+    }
+
+    public function cloturer($id)
+    {
+        $periodePaie = PeriodePaie::findOrFail($id);
+        $this->periodePaieService->closePeriodePaie($periodePaie);
+
+        return redirect()->route('periodes-paie.index')->with('success', 'Période de paie clôturée avec succès.');
+    }
+
+    public function decloturer($id)
+    {
+        $periodePaie = PeriodePaie::findOrFail($id);
+        $this->periodePaieService->openPeriodePaie($periodePaie);
+
+        return redirect()->route('periodes-paie.index')->with('success', 'Période de paie déclôturée avec succès.');
     }
 }

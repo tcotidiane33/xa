@@ -38,18 +38,28 @@ class TraitementPaieController extends Controller
     public function store(TraitementPaieRequest $request)
     {
         $validatedData = $request->validated();
-
+    
         // Vérifier si le gestionnaire connecté est rattaché au client
         $gestionnaire = Auth::user();
         $client = Client::findOrFail($validatedData['client_id']);
-
+    
         if ($client->gestionnaire_principal_id !== $gestionnaire->id) {
             return redirect()->route('traitements-paie.create')
                 ->with('error', 'Vous n\'êtes pas autorisé à modifier les informations de ce client.');
         }
-
+    
+        // Vérifier l'unicité de la période de paie
+        $existingTraitement = TraitementPaie::where('client_id', $validatedData['client_id'])
+            ->where('periode_paie_id', $validatedData['periode_paie_id'])
+            ->first();
+    
+        if ($existingTraitement) {
+            return redirect()->route('traitements-paie.create')
+                ->with('error', 'Un traitement de paie pour ce client et cette période existe déjà.');
+        }
+    
         $this->traitementPaieService->createTraitementPaie($validatedData);
-
+    
         return redirect()->route('traitements-paie.index')
             ->with('success', 'Traitement de paie créé avec succès.');
     }
@@ -61,11 +71,13 @@ class TraitementPaieController extends Controller
 
     public function edit(TraitementPaie $traitementPaie)
     {
-        $clients = Client::with('fichesClients')->get();
+        $gestionnaire = Auth::user();
+        $clients = Client::where('gestionnaire_principal_id', $gestionnaire->id)->with('fichesClients')->get();
         $gestionnaires = User::role('gestionnaire')->get();
         $periodesPaie = PeriodePaie::all();
         return view('traitements_paie.edit', compact('traitementPaie', 'clients', 'gestionnaires', 'periodesPaie'));
     }
+
 
     public function update(TraitementPaieRequest $request, TraitementPaie $traitementPaie)
     {

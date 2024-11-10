@@ -91,6 +91,78 @@
                 </a>
             </div>
         @endif
+        @if (Auth::user()->hasRole(['Admin', 'Responsable']))
+            <div class="container mx-auto px-4 py-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-6">Liste des Périodes de Paie</h1>
+
+                @if (session('success'))
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+                        role="alert">
+                        <span class="block sm:inline">{{ session('success') }}</span>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <span class="block sm:inline">{{ session('error') }}</span>
+                    </div>
+                @endif
+
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">Référence</th>
+                                <th scope="col" class="px-6 py-3">Début</th>
+                                <th scope="col" class="px-6 py-3">Fin</th>
+                                <th scope="col" class="px-6 py-3">Statut</th>
+                                <th scope="col" class="px-6 py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($periodesPaie as $periode)
+                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                    <td class="px-6 py-4">{{ $periode->reference }}</td>
+                                    <td class="px-6 py-4">{{ $periode->debut->format('Y-m-d') }}</td>
+                                    <td class="px-6 py-4">{{ $periode->fin->format('Y-m-d') }}</td>
+                                    <td class="px-6 py-4">
+                                        @if ($periode->validee)
+                                            <span
+                                                class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">Clôturée</span>
+                                        @else
+                                            <span
+                                                class="bg-red-100 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Ouverte</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 flex space-x-2">
+                                        @if ($periode->validee)
+                                            <form action="{{ route('admin.periodes-paie.decloturer', $periode->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit"
+                                                    class="text-white bg-yellow-500 hover:bg-yellow-600 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Déclôturer</button>
+                                            </form>
+                                        @else
+                                            <form action="{{ route('admin.periodes-paie.cloturer', $periode->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit"
+                                                    class="text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Clôturer</button>
+                                            </form>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <div class="mt-4">
+                        {{ $periodesPaie->links() }}
+                    </div>
+                </div>
+            </div>
+        @endif
 
         <form action="{{ route('periodes-paie.index') }}" method="GET" class="mb-4">
             <div class="flex flex-wrap gap-4">
@@ -98,7 +170,8 @@
                     <select name="client_id" class="form-control">
                         <option value="">Tous les clients</option>
                         @foreach ($clients as $client)
-                            <option value="{{ $client->id }}" {{ request('client_id') == $client->id ? 'selected' : '' }}>
+                            <option value="{{ $client->id }}"
+                                {{ request('client_id') == $client->id ? 'selected' : '' }}>
                                 {{ $client->name }}</option>
                         @endforeach
                     </select>
@@ -153,15 +226,26 @@
                     @foreach ($fichesClients as $fiche)
                         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                             <td class="px-6 py-4">{{ $fiche->client->name }}</td>
-                            <td class="px-6 py-4">{{ $fiche->reception_variables ? \Carbon\Carbon::parse($fiche->reception_variables)->format('d/m') : 'N/A' }}</td>
-                            <td class="px-6 py-4">{{ $fiche->preparation_bp ? \Carbon\Carbon::parse($fiche->preparation_bp)->format('d/m') : 'N/A' }}</td>
-                            <td class="px-6 py-4">{{ $fiche->validation_bp_client ? \Carbon\Carbon::parse($fiche->validation_bp_client)->format('d/m') : 'N/A' }}</td>
-                            <td class="px-6 py-4">{{ $fiche->preparation_envoie_dsn ? \Carbon\Carbon::parse($fiche->preparation_envoie_dsn)->format('d/m') : 'N/A' }}</td>
-                            <td class="px-6 py-4">{{ $fiche->accuses_dsn ? \Carbon\Carbon::parse($fiche->accuses_dsn)->format('d/m') : 'N/A' }}</td>
+                            <td class="px-6 py-4">
+                                {{ $fiche->reception_variables ? \Carbon\Carbon::parse($fiche->reception_variables)->format('d/m') : 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ $fiche->preparation_bp ? \Carbon\Carbon::parse($fiche->preparation_bp)->format('d/m') : 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ $fiche->validation_bp_client ? \Carbon\Carbon::parse($fiche->validation_bp_client)->format('d/m') : 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ $fiche->preparation_envoie_dsn ? \Carbon\Carbon::parse($fiche->preparation_envoie_dsn)->format('d/m') : 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ $fiche->accuses_dsn ? \Carbon\Carbon::parse($fiche->accuses_dsn)->format('d/m') : 'N/A' }}
+                            </td>
                             {{-- <td class="px-6 py-4">{{ $fiche->teledec_urssaf ? \Carbon\Carbon::parse($fiche->teledec_urssaf)->format('d/m') : 'N/A' }}</td> --}}
                             <td class="px-6 py-4">{{ $fiche->notes ?? 'N/A' }}</td>
                             <td class="px-6 py-4 flex space-x-2">
-                                <a href="{{ route('fiches-clients.edit', ['fiches_client' => $fiche->id]) }}" class="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Modifier</a>
+                                <a href="{{ route('fiches-clients.edit', ['fiches_client' => $fiche->id]) }}"
+                                    class="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Modifier</a>
                                 {{-- <form action="{{ route('fiches-clients.destroy', $fiche->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
@@ -260,120 +344,129 @@
         @endforeach
     </tbody>
 
-   
 
-<script>
-    function openEditPopup(ficheClientId) {
-        // Remplir le formulaire avec les données de la fiche client
-        fetch(`/fiches-clients/${ficheClientId}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('editForm').action = `{{ url('fiches-clients') }}/${ficheClientId}`;
-                document.getElementById('fiche_client_id').value = ficheClientId;
-                document.getElementById('reception_variables').value = data.reception_variables;
-                document.getElementById('preparation_bp').value = data.preparation_bp;
-                document.getElementById('validation_bp_client').value = data.validation_bp_client;
-                document.getElementById('preparation_envoie_dsn').value = data.preparation_envoie_dsn;
-                document.getElementById('accuses_dsn').value = data.accuses_dsn;
-                document.getElementById('notes').value = data.notes;
 
-                // Afficher le popup
-                document.getElementById('editPopup').style.display = 'block';
-            });
-    }
+    <script>
+        function openEditPopup(ficheClientId) {
+            // Remplir le formulaire avec les données de la fiche client
+            fetch(`/fiches-clients/${ficheClientId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('editForm').action = `{{ url('fiches-clients') }}/${ficheClientId}`;
+                    document.getElementById('fiche_client_id').value = ficheClientId;
+                    document.getElementById('reception_variables').value = data.reception_variables;
+                    document.getElementById('preparation_bp').value = data.preparation_bp;
+                    document.getElementById('validation_bp_client').value = data.validation_bp_client;
+                    document.getElementById('preparation_envoie_dsn').value = data.preparation_envoie_dsn;
+                    document.getElementById('accuses_dsn').value = data.accuses_dsn;
+                    document.getElementById('notes').value = data.notes;
 
-    function closeEditPopup() {
-        document.getElementById('editPopup').style.display = 'none';
-    }
+                    // Afficher le popup
+                    document.getElementById('editPopup').style.display = 'block';
+                });
+        }
 
-    function openCreatePopup(clientId) {
-        document.getElementById('createForm').action = `{{ url('fiches-clients') }}`;
-        document.getElementById('client_id').value = clientId;
+        function closeEditPopup() {
+            document.getElementById('editPopup').style.display = 'none';
+        }
 
-        // Afficher le popup
-        document.getElementById('createPopup').style.display = 'block';
-    }
+        function openCreatePopup(clientId) {
+            document.getElementById('createForm').action = `{{ url('fiches-clients') }}`;
+            document.getElementById('client_id').value = clientId;
 
-    function closeCreatePopup() {
-        document.getElementById('createPopup').style.display = 'none';
-    }
+            // Afficher le popup
+            document.getElementById('createPopup').style.display = 'block';
+        }
 
-    $(document).ready(function() {
-        const saveButtons = document.querySelectorAll('.save-field');
+        function closeCreatePopup() {
+            document.getElementById('createPopup').style.display = 'none';
+        }
 
-        saveButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const traitementId = this.getAttribute('data-traitement-id');
-                const row = this.closest('tr');
-                const fields = row.querySelectorAll('input, textarea');
+        $(document).ready(function() {
+            const saveButtons = document.querySelectorAll('.save-field');
 
-                fields.forEach(field => {
-                    const fieldName = field.getAttribute('data-field');
-                    const fieldValue = field.value;
+            saveButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const traitementId = this.getAttribute('data-traitement-id');
+                    const row = this.closest('tr');
+                    const fields = row.querySelectorAll('input, textarea');
 
-                    fetch('{{ route('periodes-paie.updateField') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({
-                                traitement_id: traitementId,
-                                field: fieldName,
-                                value: fieldName === 'notes' ? fieldValue : null,
-                                date_value: fieldName !== 'notes' ? fieldValue : null
+                    fields.forEach(field => {
+                        const fieldName = field.getAttribute('data-field');
+                        const fieldValue = field.value;
+
+                        fetch('{{ route('periodes-paie.updateField') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    traitement_id: traitementId,
+                                    field: fieldName,
+                                    value: fieldName === 'notes' ? fieldValue :
+                                        null,
+                                    date_value: fieldName !== 'notes' ?
+                                        fieldValue : null
+                                })
                             })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert('Champ mis à jour avec succès');
-                                if (fieldName === 'reception_variables') {
-                                    row.querySelector('input[name="preparation_bp"]').disabled = false;
-                                } else if (fieldName === 'preparation_bp') {
-                                    row.querySelector('input[name="validation_bp_client"]').disabled = false;
-                                } else if (fieldName === 'validation_bp_client') {
-                                    row.querySelector('input[name="preparation_envoie_dsn"]').disabled = false;
-                                } else if (fieldName === 'preparation_envoie_dsn') {
-                                    row.querySelector('input[name="accuses_dsn"]').disabled = false;
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('Champ mis à jour avec succès');
+                                    if (fieldName === 'reception_variables') {
+                                        row.querySelector(
+                                                'input[name="preparation_bp"]')
+                                            .disabled = false;
+                                    } else if (fieldName === 'preparation_bp') {
+                                        row.querySelector(
+                                                'input[name="validation_bp_client"]')
+                                            .disabled = false;
+                                    } else if (fieldName === 'validation_bp_client') {
+                                        row.querySelector(
+                                                'input[name="preparation_envoie_dsn"]')
+                                            .disabled = false;
+                                    } else if (fieldName === 'preparation_envoie_dsn') {
+                                        row.querySelector('input[name="accuses_dsn"]')
+                                            .disabled = false;
+                                    }
+                                } else {
+                                    alert('Erreur lors de la mise à jour du champ');
                                 }
-                            } else {
-                                alert('Erreur lors de la mise à jour du champ');
-                            }
-                        });
+                            });
+                    });
                 });
             });
         });
-    });
-</script>
+    </script>
 
-<script>
-    $(document).ready(function() {
-        $('#periodesPaieTable').DataTable({
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": true,
-            "responsive": true,
-            "language": {
-                "lengthMenu": "Afficher _MENU_ enregistrements par page",
-                "zeroRecords": "Aucun enregistrement trouvé",
-                "info": "Affichage de la page _PAGE_ sur _PAGES_",
-                "infoEmpty": "Aucun enregistrement disponible",
-                "infoFiltered": "(filtré à partir de _MAX_ enregistrements au total)",
-                "search": "Rechercher:",
-                "paginate": {
-                    "first": "Premier",
-                    "last": "Dernier",
-                    "next": "Suivant",
-                    "previous": "Précédent"
+    <script>
+        $(document).ready(function() {
+            $('#periodesPaieTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": true,
+                "responsive": true,
+                "language": {
+                    "lengthMenu": "Afficher _MENU_ enregistrements par page",
+                    "zeroRecords": "Aucun enregistrement trouvé",
+                    "info": "Affichage de la page _PAGE_ sur _PAGES_",
+                    "infoEmpty": "Aucun enregistrement disponible",
+                    "infoFiltered": "(filtré à partir de _MAX_ enregistrements au total)",
+                    "search": "Rechercher:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
                 }
-            }
+            });
         });
-    });
-</script>
+    </script>
 @endsection
 
 @push('scripts')
@@ -406,23 +499,19 @@
                             title: '{{ $fiche->client->name }} - Réception variables',
                             start: '{{ $fiche->reception_variables }}',
                             color: '#ff9f89'
-                        },
-                        {
+                        }, {
                             title: '{{ $fiche->client->name }} - Préparation BP',
                             start: '{{ $fiche->preparation_bp }}',
                             color: '#f39c12'
-                        },
-                        {
+                        }, {
                             title: '{{ $fiche->client->name }} - Validation BP client',
                             start: '{{ $fiche->validation_bp_client }}',
                             color: '#00c0ef'
-                        },
-                        {
+                        }, {
                             title: '{{ $fiche->client->name }} - Préparation et envoie DSN',
                             start: '{{ $fiche->preparation_envoie_dsn }}',
                             color: '#3c8dbc'
-                        },
-                        {
+                        }, {
                             title: '{{ $fiche->client->name }} - Accusés DSN',
                             start: '{{ $fiche->accuses_dsn }}',
                             color: '#00a65a'

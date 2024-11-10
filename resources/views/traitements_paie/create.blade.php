@@ -3,12 +3,22 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Créer un Traitement de Paie</h1>
+    @if (session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ session('error') }}</span>
+        </div>
     @livewire('traitement-paie-form')
 
     <div class="mt-8">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Informations du Client</h2>
         <div class="grid grid-cols-2 gap-4">
-            @foreach($clients as $client)
+            @forelse($clients as $client)
                 <div class="border p-4 rounded">
                     <h3 class="text-xl font-bold">{{ $client->name }}</h3>
                     <p>Saisie des variables: 
@@ -62,8 +72,11 @@
                         </span>
                     </p>
                 </div>
-            @endforeach
+            @empty
+                @livewire('skeleton-loader')
+            @endforelse
         </div>
     </div>
 </div>
 @endsection
+

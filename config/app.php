@@ -186,7 +186,7 @@ return [
         */
         Maatwebsite\Excel\ExcelServiceProvider::class,
         ConsoleTVs\Charts\ChartsServiceProvider::class,
-
+        Barryvdh\DomPDF\ServiceProvider::class,
 
         /*
         * Application Service Providers...
@@ -221,6 +221,7 @@ return [
         // 'Form' => Encore\Admin\Form::class,
         // 'Notify' => Notify\Laravel\Facades\Notify::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,
 
 
     ])->toArray(),

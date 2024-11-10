@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Material;
+use App\Models\MaterialHistory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,37 +13,30 @@ class MaterialService
     {
         $material = Material::create($data + ['user_id' => Auth::id()]);
 
-        // Log the action
-        $this->logAction('create', 'Created new material: ' . $material->title, $material->id);
-
-        return $material;
+        // Enregistrer l'historique des actions sur le matériau
+        $this->logMaterialAction($material, 'created', 'Matériau créé.');
     }
 
     public function updateMaterial(Material $material, array $data)
     {
         $material->update($data);
 
-        // Log the action
-        $this->logAction('update', 'Updated material: ' . $material->title, $material->id);
-
-        return $material;
+        // Enregistrer l'historique des actions sur le matériau
+        $this->logMaterialAction($material, 'updated', 'Matériau mis à jour.');
     }
 
     public function deleteMaterial(Material $material)
     {
-        $materialTitle = $material->title;
         $material->delete();
 
-        // Log the action
-        $this->logAction('delete', 'Deleted material: ' . $materialTitle, $material->id);
-
-        return true;
+        // Enregistrer l'historique des actions sur le matériau
+        $this->logMaterialAction($material, 'deleted', 'Matériau supprimé.');
     }
 
-    private function logAction($action, $details, $materialId = null)
+    protected function logMaterialAction(Material $material, $action, $details)
     {
         MaterialHistory::create([
-            'material_id' => $materialId,
+            'material_id' => $material->id,
             'user_id' => Auth::id(),
             'action' => $action,
             'details' => $details,

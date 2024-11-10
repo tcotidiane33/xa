@@ -44,7 +44,7 @@ class TraitementPaie extends Model
 
     public function getNotesAttribute($value)
     {
-        $previousNotes = self::where('client_id', $this->client_id)
+        $previousNotes = FicheClient::where('client_id', $this->client_id)
             ->where('periode_paie_id', '<', $this->periode_paie_id)
             ->pluck('notes')
             ->implode("\n");
