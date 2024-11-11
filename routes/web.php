@@ -86,10 +86,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('fiches-clients', [FicheClientController::class, 'index'])->name('fiches-clients.index');
     Route::get('fiches-clients/create', [FicheClientController::class, 'create'])->name('fiches-clients.create');
     Route::post('fiches-clients', [FicheClientController::class, 'store'])->name('fiches-clients.store');
-    Route::get('fiches-clients/{fiches_client}', [FicheClientController::class, 'show'])->name('fiches-clients.show');
+    // Route::get('fiches-clients/{fiches_client}', [FicheClientController::class, 'show'])->name('fiches-clients.show');
+    Route::get('fiches-clients/{ficheClient}', [FicheClientController::class, 'show'])->name('fiches-clients.show');
     Route::get('fiches-clients/{fiches_client}/edit', [FicheClientController::class, 'edit'])->name('fiches-clients.edit');
     Route::put('fiches-clients/{fiches_client}', [FicheClientController::class, 'update'])->name('fiches-clients.update');
     Route::delete('fiches-clients/{fiches_client}', [FicheClientController::class, 'destroy'])->name('fiches-clients.destroy');
+    Route::post('fiches-clients/migrate', [FicheClientController::class, 'migrateToNewPeriod'])->name('fiches-clients.migrate');
+
+    Route::get('fiches-clients/export/excel', [FicheClientController::class, 'exportExcel'])->name('fiches-clients.export.excel');
+Route::get('fiches-clients/export/pdf', [FicheClientController::class, 'exportPDF'])->name('fiches-clients.export.pdf');
 
     Route::get('/traitements-paie', [TraitementPaieController::class, 'index'])->name('traitements-paie.index');
     Route::get('/traitements-paie/create', [TraitementPaieController::class, 'create'])->name('traitements-paie.create');

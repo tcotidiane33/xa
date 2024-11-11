@@ -40,7 +40,37 @@ class PeriodePaieService
             'details' => 'Période de paie créée',
         ]);
 
+        // Dupliquer les fiches clients de la période précédente
+        $this->duplicateFichesClients($periodePaie);
+
         return $periodePaie;
+    }
+
+    protected function duplicateFichesClients(PeriodePaie $newPeriodePaie)
+    {
+        $previousPeriodePaie = PeriodePaie::where('validee', true)->latest()->first();
+
+        if ($previousPeriodePaie) {
+            $previousFichesClients = $previousPeriodePaie->fichesClients;
+
+            foreach ($previousFichesClients as $previousFicheClient) {
+                FicheClient::create([
+                    'client_id' => $previousFicheClient->client_id,
+                    'periode_paie_id' => $newPeriodePaie->id, // Assurez-vous que l'ID de la nouvelle période de paie est utilisé
+                    'reception_variables' => null,
+                    'reception_variables_file' => null,
+                    'preparation_bp' => null,
+                    'preparation_bp_file' => null,
+                    'validation_bp_client' => null,
+                    'validation_bp_client_file' => null,
+                    'preparation_envoie_dsn' => null,
+                    'preparation_envoie_dsn_file' => null,
+                    'accuses_dsn' => null,
+                    'accuses_dsn_file' => null,
+                    'notes' => $previousFicheClient->notes, // Conserver les notes
+                ]);
+            }
+        }
     }
 
     public function updatePeriodePaie(PeriodePaie $periodePaie, array $data)
@@ -74,37 +104,37 @@ class PeriodePaieService
     {
         $periodePaie->validee = true;
         $periodePaie->save();
-    
+
         PeriodePaieHistory::create([
             'periode_paie_id' => $periodePaie->id,
             'user_id' => Auth::id(),
             'action' => 'closed',
             'details' => 'Période de paie clôturée',
         ]);
-    
+
         // Sauvegarder les fiches clients comme archives
         $this->createFilesForClients($periodePaie);
-    
+
         // Exporter les données des clients pour la période de paie
         Excel::store(new ClientPeriodeExport($periodePaie), 'exports/clients_periode_' . $periodePaie->id . '.xlsx');
     }
-    
+
     protected function createFilesForClients(PeriodePaie $periodePaie)
     {
         $clients = Client::all();
-    
+
         foreach ($clients as $client) {
             $ficheClient = FicheClient::where('client_id', $client->id)
-                                      ->where('periode_paie_id', $periodePaie->id)
-                                      ->first();
-    
+                ->where('periode_paie_id', $periodePaie->id)
+                ->first();
+
             if ($ficheClient) {
                 $fileName = $client->name . '_BACKUP_' . $periodePaie->reference . '_FC_' . now()->year . '.xlsx';
                 $filePath = 'materials/' . $fileName;
-    
+
                 // Générer le fichier Excel
                 Excel::store(new ClientPeriodeExport($periodePaie), $filePath);
-    
+
                 // Créer un enregistrement dans la table materials
                 $material = Material::create([
                     'client_id' => $client->id,
@@ -114,13 +144,30 @@ class PeriodePaieService
                     'content_url' => $filePath,
                     'field_name' => 'Période de paie'
                 ]);
-    
+
+
                 // Enregistrer l'historique des actions sur le matériau
                 $this->logMaterialAction($material, 'created', 'Fichier de sauvegarde créé lors de la clôture de la période de paie.');
+                // Conserver les notes de rappel
+                $previousNotes = $ficheClient->notes;
+                // Vider les données de la fiche client
+                $ficheClient->update([
+                    // 'reception_variables' => null,
+                    // 'reception_variables_file' => null,
+                    // 'preparation_bp' => null,
+                    // 'preparation_bp_file' => null,
+                    // 'validation_bp_client' => null,
+                    // 'validation_bp_client_file' => null,
+                    // 'preparation_envoie_dsn' => null,
+                    // 'preparation_envoie_dsn_file' => null,
+                    // 'accuses_dsn' => null,
+                    // 'accuses_dsn_file' => null,
+                    'notes' => $previousNotes, // Conserver les notes de rappel
+                ]);
             }
         }
     }
-    
+
     protected function logMaterialAction(Material $material, $action, $details)
     {
         MaterialHistory::create([

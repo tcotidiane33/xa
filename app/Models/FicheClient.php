@@ -26,6 +26,12 @@ class FicheClient extends Model
         return $this->belongsTo(PeriodePaie::class);
     }
 
+    
+    public function traitementPaie()
+    {
+        return $this->hasOne(TraitementPaie::class, 'client_id', 'client_id')
+                    ->where('periode_paie_id', $this->periode_paie_id);
+    }
     public function client()
     {
         return $this->belongsTo(Client::class);

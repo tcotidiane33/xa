@@ -1,0 +1,275 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Hôte : 127.0.0.1:3306
+-- Généré le : lun. 11 nov. 2024 à 02:06
+-- Version du serveur : 10.4.32-MariaDB
+-- Version de PHP : 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de données : `xal`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `clients`
+--
+
+CREATE TABLE `clients` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `responsable_paie_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `gestionnaire_principal_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `date_debut_prestation` date DEFAULT NULL,
+  `date_estimative_envoi_variables` date DEFAULT NULL,
+  `date_rappel_mail` date DEFAULT NULL,
+  `status` varchar(255) DEFAULT 'actif',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `nb_bulletins` int(11) DEFAULT 0,
+  `maj_fiche_para` date DEFAULT NULL,
+  `convention_collective_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `is_portfolio` tinyint(1) NOT NULL DEFAULT 0,
+  `parent_client_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `type_societe` varchar(255) DEFAULT NULL,
+  `ville` varchar(255) DEFAULT NULL,
+  `dirigeant_nom` varchar(255) DEFAULT NULL,
+  `dirigeant_telephone` varchar(255) DEFAULT NULL,
+  `dirigeant_email` varchar(255) DEFAULT NULL,
+  `binome_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `responsable_telephone_ld` varchar(255) DEFAULT NULL,
+  `gestionnaire_telephone_ld` varchar(255) DEFAULT NULL,
+  `binome_telephone_ld` varchar(255) DEFAULT NULL,
+  `saisie_variables` tinyint(1) NOT NULL DEFAULT 0,
+  `client_forme_saisie` tinyint(1) NOT NULL DEFAULT 0,
+  `date_formation_saisie` date DEFAULT NULL,
+  `date_fin_prestation` date DEFAULT NULL,
+  `date_signature_contrat` date DEFAULT NULL,
+  `taux_at` varchar(255) DEFAULT NULL,
+  `adhesion_mydrh` tinyint(1) NOT NULL DEFAULT 0,
+  `date_adhesion_mydrh` date DEFAULT NULL,
+  `is_cabinet` tinyint(1) NOT NULL DEFAULT 0,
+  `portfolio_cabinet_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `contact_paie` varchar(255) DEFAULT NULL,
+  `contact_comptabilite` varchar(255) DEFAULT NULL,
+  `contact_paie_nom` varchar(255) DEFAULT NULL,
+  `contact_paie_prenom` varchar(255) DEFAULT NULL,
+  `contact_paie_telephone` varchar(255) DEFAULT NULL,
+  `contact_paie_email` varchar(255) DEFAULT NULL,
+  `contact_compta_nom` varchar(255) DEFAULT NULL,
+  `contact_compta_prenom` varchar(255) DEFAULT NULL,
+  `contact_compta_telephone` varchar(255) DEFAULT NULL,
+  `contact_compta_email` varchar(255) DEFAULT NULL,
+  `reference` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `clients`
+--
+
+INSERT INTO `clients` (`id`, `name`, `responsable_paie_id`, `gestionnaire_principal_id`, `date_debut_prestation`, `date_estimative_envoi_variables`, `date_rappel_mail`, `status`, `created_at`, `updated_at`, `nb_bulletins`, `maj_fiche_para`, `convention_collective_id`, `is_portfolio`, `parent_client_id`, `type_societe`, `ville`, `dirigeant_nom`, `dirigeant_telephone`, `dirigeant_email`, `binome_id`, `responsable_telephone_ld`, `gestionnaire_telephone_ld`, `binome_telephone_ld`, `saisie_variables`, `client_forme_saisie`, `date_formation_saisie`, `date_fin_prestation`, `date_signature_contrat`, `taux_at`, `adhesion_mydrh`, `date_adhesion_mydrh`, `is_cabinet`, `portfolio_cabinet_id`, `contact_paie`, `contact_comptabilite`, `contact_paie_nom`, `contact_paie_prenom`, `contact_paie_telephone`, `contact_paie_email`, `contact_compta_nom`, `contact_compta_prenom`, `contact_compta_telephone`, `contact_compta_email`, `reference`) VALUES
+(1, 'SOCOCE', 1, 4, '2024-10-31', '2024-10-14', '2024-11-08', 'actif', '2024-10-30 14:55:49', '2024-11-07 12:26:04', 254, '2024-11-13', 3, 0, NULL, 'PME', 'ABIDJAN', 'ALBERT RITHZ', '708967450', 'bio@gmail.com', 3, '7089679078', NULL, NULL, 1, 1, '2024-11-05', NULL, '2024-10-28', '12', 1, '2024-11-01', 1, 4, NULL, NULL, 'SEN', 'Aliou', '8079685765', 'sen@gmail.com', 'MIAN', 'George', '7089679067', 'mian@gmail.com', 'TP-BENTXLP5'),
+(4, 'EUREKA', 1, 3, NULL, '2024-10-14', NULL, 'actif', '2024-10-30 15:47:46', '2024-11-07 14:44:50', 231, '2024-10-30', 2, 0, NULL, 'PME', 'BOUMBAI', 'Shark Noy', '0987658989', 'tco@gmail.com', 4, NULL, NULL, NULL, 0, 0, NULL, NULL, NULL, '12', 0, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'TP-UIXTJIY2'),
+(5, 'SOLARY', 6, 15, '2024-11-06', '2024-11-12', '2024-11-13', 'actif', '2024-10-30 15:52:28', '2024-11-06 14:57:40', 200, '2024-11-07', 1, 0, NULL, 'PME', 'BIAMA', 'LILIAN HOOK', '07986754111', 'lil@gmail.com', 7, '0887908709', NULL, NULL, 1, 1, '2024-11-06', '2024-11-05', '2024-08-01', '13', 1, '2024-11-07', 1, NULL, NULL, NULL, 'LILIPUS', 'BOOM', '0798769876', 'lilipus@gmail.com', 'POLLO ', 'KEEN', '8098877698', 'pollo@gmail.com', 'TP-81BEDUO1');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `fiches_clients`
+--
+
+CREATE TABLE `fiches_clients` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `periode_paie_id` bigint(20) UNSIGNED NOT NULL,
+  `client_id` bigint(20) UNSIGNED NOT NULL,
+  `reception_variables` date DEFAULT NULL,
+  `reception_variables_file` varchar(255) DEFAULT NULL,
+  `preparation_bp` date DEFAULT NULL,
+  `preparation_bp_file` varchar(255) DEFAULT NULL,
+  `validation_bp_client` date DEFAULT NULL,
+  `validation_bp_client_file` varchar(255) DEFAULT NULL,
+  `preparation_envoie_dsn` date DEFAULT NULL,
+  `preparation_envoie_dsn_file` varchar(255) DEFAULT NULL,
+  `accuses_dsn` date DEFAULT NULL,
+  `accuses_dsn_file` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `nb_bulletins_file` varchar(255) DEFAULT NULL,
+  `maj_fiche_para_file` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `fiches_clients`
+--
+
+INSERT INTO `fiches_clients` (`id`, `periode_paie_id`, `client_id`, `reception_variables`, `reception_variables_file`, `preparation_bp`, `preparation_bp_file`, `validation_bp_client`, `validation_bp_client_file`, `preparation_envoie_dsn`, `preparation_envoie_dsn_file`, `accuses_dsn`, `accuses_dsn_file`, `notes`, `created_at`, `updated_at`, `nb_bulletins_file`, `maj_fiche_para_file`) VALUES
+(1, 19, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Notes mises à jour', '2024-11-08 14:30:08', '2024-11-10 20:50:41', NULL, NULL),
+(2, 19, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-11-08 16:57:21', '2024-11-08 16:57:21', NULL, NULL),
+(3, 19, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-11-10 18:34:15', '2024-11-10 18:34:15', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `periodes_paie`
+--
+
+CREATE TABLE `periodes_paie` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `reference` varchar(255) NOT NULL,
+  `debut` date NOT NULL,
+  `fin` date NOT NULL,
+  `validee` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `periodes_paie`
+--
+
+INSERT INTO `periodes_paie` (`id`, `reference`, `debut`, `fin`, `validee`, `created_at`, `updated_at`) VALUES
+(19, 'PERIODE_OCTOBER_2024', '2024-10-14', '2024-11-15', 1, '2024-11-08 13:47:05', '2024-11-10 20:50:25'),
+(20, 'PERIODE_AUGUST_2024', '2024-08-14', '2024-09-15', 1, '2024-11-10 20:53:13', '2024-11-10 21:08:03'),
+(21, 'PERIODE_NOVEMBER_2024', '2024-11-16', '2024-12-17', 0, '2024-11-10 21:07:04', '2024-11-10 21:07:04');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `traitements_paie`
+--
+
+CREATE TABLE `traitements_paie` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `reference` varchar(255) NOT NULL,
+  `gestionnaire_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `client_id` bigint(20) UNSIGNED NOT NULL,
+  `periode_paie_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `teledec_urssaf` date DEFAULT NULL,
+  `est_verrouille` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `traitements_paie`
+--
+
+INSERT INTO `traitements_paie` (`id`, `reference`, `gestionnaire_id`, `client_id`, `periode_paie_id`, `teledec_urssaf`, `est_verrouille`, `created_at`, `updated_at`) VALUES
+(4, 'TP-MP8UJE2P', 15, 5, 19, '2024-11-10', 0, '2024-11-10 00:12:14', '2024-11-10 00:12:14');
+
+--
+-- Index pour les tables déchargées
+--
+
+--
+-- Index pour la table `clients`
+--
+ALTER TABLE `clients`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `clients_responsable_paie_id_foreign` (`responsable_paie_id`),
+  ADD KEY `clients_gestionnaire_principal_id_foreign` (`gestionnaire_principal_id`),
+  ADD KEY `clients_convention_collective_id_foreign` (`convention_collective_id`),
+  ADD KEY `clients_parent_client_id_foreign` (`parent_client_id`),
+  ADD KEY `clients_binome_id_foreign` (`binome_id`),
+  ADD KEY `clients_portfolio_cabinet_id_foreign` (`portfolio_cabinet_id`);
+
+--
+-- Index pour la table `fiches_clients`
+--
+ALTER TABLE `fiches_clients`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fiches_clients_periode_paie_id_foreign` (`periode_paie_id`),
+  ADD KEY `fiches_clients_client_id_foreign` (`client_id`);
+
+--
+-- Index pour la table `periodes_paie`
+--
+ALTER TABLE `periodes_paie`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `periodes_paie_reference_unique` (`reference`);
+
+--
+-- Index pour la table `traitements_paie`
+--
+ALTER TABLE `traitements_paie`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `traitements_paie_reference_unique` (`reference`),
+  ADD KEY `traitements_paie_gestionnaire_id_foreign` (`gestionnaire_id`),
+  ADD KEY `traitements_paie_client_id_foreign` (`client_id`),
+  ADD KEY `traitements_paie_periode_paie_id_foreign` (`periode_paie_id`);
+
+--
+-- AUTO_INCREMENT pour les tables déchargées
+--
+
+--
+-- AUTO_INCREMENT pour la table `clients`
+--
+ALTER TABLE `clients`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+
+--
+-- AUTO_INCREMENT pour la table `fiches_clients`
+--
+ALTER TABLE `fiches_clients`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT pour la table `periodes_paie`
+--
+ALTER TABLE `periodes_paie`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT pour la table `traitements_paie`
+--
+ALTER TABLE `traitements_paie`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- Contraintes pour les tables déchargées
+--
+
+--
+-- Contraintes pour la table `clients`
+--
+ALTER TABLE `clients`
+  ADD CONSTRAINT `clients_binome_id_foreign` FOREIGN KEY (`binome_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `clients_convention_collective_id_foreign` FOREIGN KEY (`convention_collective_id`) REFERENCES `convention_collective` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `clients_gestionnaire_principal_id_foreign` FOREIGN KEY (`gestionnaire_principal_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `clients_parent_client_id_foreign` FOREIGN KEY (`parent_client_id`) REFERENCES `clients` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `clients_portfolio_cabinet_id_foreign` FOREIGN KEY (`portfolio_cabinet_id`) REFERENCES `clients` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `clients_responsable_paie_id_foreign` FOREIGN KEY (`responsable_paie_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Contraintes pour la table `fiches_clients`
+--
+ALTER TABLE `fiches_clients`
+  ADD CONSTRAINT `fiches_clients_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fiches_clients_periode_paie_id_foreign` FOREIGN KEY (`periode_paie_id`) REFERENCES `periodes_paie` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `traitements_paie`
+--
+ALTER TABLE `traitements_paie`
+  ADD CONSTRAINT `traitements_paie_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `traitements_paie_gestionnaire_id_foreign` FOREIGN KEY (`gestionnaire_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `traitements_paie_periode_paie_id_foreign` FOREIGN KEY (`periode_paie_id`) REFERENCES `periodes_paie` (`id`) ON DELETE SET NULL;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

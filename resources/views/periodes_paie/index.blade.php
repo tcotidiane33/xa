@@ -70,8 +70,14 @@
 @endpush
 
 @section('content')
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto w-full">
         <h1 class="text-3xl font-bold text-gray-800 mb-6">Périodes de Paie</h1>
+
+        @if (session('message'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ session('message') }}</span>
+            </div>
+        @endif
         @if ($currentPeriodePaie)
             <h1 class="text-2xl font-bold text-blue-600 mb-4">Période de Paie en cours : {{ $currentPeriodePaie->reference }}
             </h1>
@@ -205,66 +211,169 @@
             </div>
         </form>
 
-    </div>
-    <div class="bg-white w-full shadow-md rounded px-8 pt-6 pb-8 mb-4 table-container">
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <table id="periodesPaieTable" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">Client</th>
-                        <th scope="col" class="px-6 py-3">Réception variables</th>
-                        <th scope="col" class="px-6 py-3">Préparation BP</th>
-                        <th scope="col" class="px-6 py-3">Validation BP client</th>
-                        <th scope="col" class="px-6 py-3">Préparation et envoie DSN</th>
-                        <th scope="col" class="px-6 py-3">Accusés DSN</th>
-                        {{-- <th scope="col" class="px-6 py-3">TELEDEC URSSAF</th> --}}
-                        <th scope="col" class="px-6 py-3">NOTES</th>
-                        <th scope="col" class="px-6 py-3">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($fichesClients as $fiche)
-                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                            <td class="px-6 py-4">{{ $fiche->client->name }}</td>
-                            <td class="px-6 py-4">
-                                {{ $fiche->reception_variables ? \Carbon\Carbon::parse($fiche->reception_variables)->format('d/m') : 'N/A' }}
-                            </td>
-                            <td class="px-6 py-4">
-                                {{ $fiche->preparation_bp ? \Carbon\Carbon::parse($fiche->preparation_bp)->format('d/m') : 'N/A' }}
-                            </td>
-                            <td class="px-6 py-4">
-                                {{ $fiche->validation_bp_client ? \Carbon\Carbon::parse($fiche->validation_bp_client)->format('d/m') : 'N/A' }}
-                            </td>
-                            <td class="px-6 py-4">
-                                {{ $fiche->preparation_envoie_dsn ? \Carbon\Carbon::parse($fiche->preparation_envoie_dsn)->format('d/m') : 'N/A' }}
-                            </td>
-                            <td class="px-6 py-4">
-                                {{ $fiche->accuses_dsn ? \Carbon\Carbon::parse($fiche->accuses_dsn)->format('d/m') : 'N/A' }}
-                            </td>
-                            {{-- <td class="px-6 py-4">{{ $fiche->teledec_urssaf ? \Carbon\Carbon::parse($fiche->teledec_urssaf)->format('d/m') : 'N/A' }}</td> --}}
-                            <td class="px-6 py-4">{{ $fiche->notes ?? 'N/A' }}</td>
-                            <td class="px-6 py-4 flex space-x-2">
-                                <a href="{{ route('fiches-clients.edit', ['fiches_client' => $fiche->id]) }}"
-                                    class="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Modifier</a>
-                                {{-- <form action="{{ route('fiches-clients.destroy', $fiche->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">Supprimer</button>
-                                </form> --}}
-                            </td>
+        <div class="bg-white w-full shadow-md rounded p-1 table-container">
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table id="periodesPaieTable" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">Client</th>
+                            <th scope="col" class="py-2">Gestionnaire</th>
+                            <th scope="col" class="py-2">NB Bulletins</th>
+                            <th scope="col" class="py-2">Maj fiche para</th>
+    
+                            <th scope="col" class="px-6 py-3">Réception variables</th>
+                            <th scope="col" class="px-6 py-3">Préparation BP</th>
+                            <th scope="col" class="px-6 py-3">Validation BP client</th>
+                            <th scope="col" class="px-6 py-3">Préparation et envoie DSN</th>
+                            <th scope="col" class="px-6 py-3">Accusés DSN</th>
+                            {{-- <th scope="col" class="px-6 py-3">TELEDEC URSSAF</th> --}}
+                            <th scope="col" class="px-6 py-3">NOTES</th>
+                            <th scope="col" class="px-6 py-3">Actions</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            <div class="mt-4">
-                {{ $fichesClients->links() }}
+                    </thead>
+                    <tbody>
+                        @foreach ($fichesClients as $fiche)
+                            <tr class="bg-white justify-center border-b dark:bg-gray-800 dark:border-gray-700">
+                                <td class="p-0 m-0 text-center">{{ $fiche->client->name }}</td>
+                                <td class="p-0 m-0 text-center">{{ $fiche->client->gestionnairePrincipal->name ?? 'N/A' }}
+                                </td>
+                                <td class="p-0 m-0 text-center">{{ $fiche->client->nb_bulletins ?? 'N/A' }}</td>
+                                <td
+                                    class="p-0 m-0 text-center {{ !$fiche->client->maj_fiche_para || $fiche->client->maj_fiche_para->year < now()->year ? 'bg-red-500 text-white' : '' }}">
+                                    {{ $fiche->client->maj_fiche_para ? $fiche->client->maj_fiche_para->format('d-m') : 'N/A' }}
+                                </td>
+                                <td
+                                    class="p-0 m-0 text-center {{ !$fiche->reception_variables || $fiche->reception_variables->year < now()->year ? 'bg-red-500 text-white' : '' }}">
+                                    {{ $fiche->reception_variables ? $fiche->reception_variables->format('d-m') : 'N/A' }}
+                                </td>
+                                <td
+                                    class="p-0 m-0 text-center {{ !$fiche->preparation_bp || $fiche->preparation_bp->year < now()->year ? 'bg-red-500 text-white' : '' }}">
+                                    {{ $fiche->preparation_bp ? $fiche->preparation_bp->format('d-m') : 'N/A' }}
+                                </td>
+                                <td
+                                    class="p-0 m-0 text-center {{ !$fiche->validation_bp_client || $fiche->validation_bp_client->year < now()->year ? 'bg-red-500 text-white' : '' }}">
+                                    {{ $fiche->validation_bp_client ? $fiche->validation_bp_client->format('d-m') : 'N/A' }}
+                                </td>
+                                <td
+                                    class="p-0 m-0 text-center {{ !$fiche->preparation_envoie_dsn || $fiche->preparation_envoie_dsn->year < now()->year ? 'bg-red-500 text-white' : '' }}">
+                                    {{ $fiche->preparation_envoie_dsn ? $fiche->preparation_envoie_dsn->format('d-m') : 'N/A' }}
+                                </td>
+                                <td
+                                    class="p-0 m-0 text-center {{ !$fiche->accuses_dsn || $fiche->accuses_dsn->year < now()->year ? 'bg-red-500 text-white' : '' }}">
+                                    {{ $fiche->accuses_dsn ? $fiche->accuses_dsn->format('d-m') : 'N/A' }}
+                                </td>
+                                {{-- <td class="px-6 py-4">{{ $fiche->teledec_urssaf ? \Carbon\Carbon::parse($fiche->teledec_urssaf)->format('d/m') : 'N/A' }}</td> --}}
+                                <td class="p-0 m-0 text-center whitespace-pre">{{ $fiche->notes ?? 'N/A' }}</td>
+                                <td class="p-0 m-0 text-center flex ">
+                                    <button onclick="openPopup({{ $fiche->id }})"
+                                        class="bg-blue-500 hover:bg-cyan-700 text-white font-bold m-1 rounded">
+                                        Mettre à jour
+                                    </button>
+                                    {{-- <form action="{{ route('fiches-clients.destroy', $fiche->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-900">Supprimer</button>
+                                    </form> --}}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <div class="mt-4">
+                    {{ $fichesClients->links() }}
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div id="calendar"></div> <!-- Ajout du calendrier ici -->
+    </div>
+
+     <!-- Popup de mise à jour -->
+     <div id="updatePopup" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden flex items-center justify-center">
+        <div class="relative p-6 border w-92 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Mettre à jour les informations</h3>
+                <form id="updateForm" method="POST" action="">
+
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="fiche_client_id" id="fiche_client_id">
+                    <div class="grid gap-6 mb-6 md:grid-cols-2">
+                        <div>
+                            <div class="mt-2">
+                                <label for="reception_variables" class="block text-sm font-medium text-gray-700">Réception variables</label>
+                                <input type="date" name="reception_variables" id="reception_variables" class="form-control">
+                            </div>
+                            <div class="mt-2">
+                                <label for="preparation_bp" class="block text-sm font-medium text-gray-700">Préparation BP</label>
+                                <input type="date" name="preparation_bp" id="preparation_bp" class="form-control">
+                            </div>
+                            <div class="mt-2">
+                                <label for="validation_bp_client" class="block text-sm font-medium text-gray-700">Validation BP client</label>
+                                <input type="date" name="validation_bp_client" id="validation_bp_client" class="form-control">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="mt-2">
+                                <label for="preparation_envoie_dsn" class="block text-sm font-medium text-gray-700">Préparation et envoie DSN</label>
+                                <input type="date" name="preparation_envoie_dsn" id="preparation_envoie_dsn" class="form-control">
+                            </div>
+                            <div class="mt-2">
+                                <label for="accuses_dsn" class="block text-sm font-medium text-gray-700">Accusés DSN</label>
+                                <input type="date" name="accuses_dsn" id="accuses_dsn" class="form-control">
+                            </div>
+                            <div class="mt-2">
+                                <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
+                                <textarea name="notes" id="notes" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-between">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Enregistrer
+                        </button>
+                        <button type="button" onclick="closePopup()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                            Annuler
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <div id="calendar"></div> <!-- Ajout du calendrier ici -->
+    <script>
+        function openPopup(ficheClientId) {
+            fetch(`/fiches-clients/${ficheClientId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('fiche_client_id').value = ficheClientId;
+                    document.getElementById('updateForm').action = `/fiches-clients/${ficheClientId}`;
+                    document.getElementById('reception_variables').value = data.reception_variables;
+                    document.getElementById('preparation_bp').value = data.preparation_bp;
+                    document.getElementById('validation_bp_client').value = data.validation_bp_client;
+                    document.getElementById('preparation_envoie_dsn').value = data.preparation_envoie_dsn;
+                    document.getElementById('accuses_dsn').value = data.accuses_dsn;
+                    document.getElementById('notes').value = data.notes;
+                    document.getElementById('updatePopup').classList.remove('hidden');
+                });
+        }
 
+        function closePopup() {
+            document.getElementById('updatePopup').classList.add('hidden');
+        }
+    </script>
+    {{-- <script>
+    function openPopup(ficheClientId) {
+        document.getElementById('fiche_client_id').value = ficheClientId;
+        document.getElementById('updateForm').action = "{{ url('fiches-clients') }}/" + ficheClientId;
+        document.getElementById('updatePopup').classList.remove('hidden');
+    }
 
+    function closePopup() {
+        document.getElementById('updatePopup').classList.add('hidden');
+    }
+</script> --}}
+   
     <hr>
     <tbody>
         @foreach ($periodesPaie as $periode)
@@ -344,9 +453,7 @@
         @endforeach
     </tbody>
 
-
-
-    <script>
+    {{-- <script>
         function openEditPopup(ficheClientId) {
             // Remplir le formulaire avec les données de la fiche client
             fetch(`/fiches-clients/${ficheClientId}`)
@@ -438,7 +545,7 @@
                 });
             });
         });
-    </script>
+    </script> --}}
 
     <script>
         $(document).ready(function() {

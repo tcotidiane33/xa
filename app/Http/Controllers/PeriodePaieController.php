@@ -63,12 +63,13 @@ class PeriodePaieController extends Controller
             $query->whereMonth('debut', now()->month);
         }
     
-        // $periodesPaie = $query->paginate(15);
-        $periodesPaie = PeriodePaie::paginate(15);
+        $periodesPaie = $query->paginate(15);
+        // $periodesPaie = PeriodePaie::paginate(15);
 
         $clients = Client::all();
         $gestionnaires = User::role('gestionnaire')->get();
-        $fichesClients = FicheClient::paginate(15);
+        // $fichesClients = FicheClient::paginate(15);
+        $fichesClients = FicheClient::with('client.gestionnairePrincipal')->paginate(15);
     
         $currentPeriodePaie = PeriodePaie::where('validee', false)->latest()->first();
     
@@ -86,8 +87,8 @@ class PeriodePaieController extends Controller
         $validated = $request->validated();
 
         // Vérifier qu'il n'y a qu'une seule période de paie active par mois
-        $currentMonth = Carbon::now()->format('m');
-        $currentYear = Carbon::now()->format('Y');
+        $currentMonth = now()->format('m');
+        $currentYear = now()->format('Y');
         $existingPeriode = PeriodePaie::whereMonth('debut', $currentMonth)
             ->whereYear('debut', $currentYear)
             ->where('validee', true)
@@ -97,9 +98,7 @@ class PeriodePaieController extends Controller
             return redirect()->route('periodes-paie.index')->with('error', 'Il existe déjà une période de paie active pour ce mois.');
         }
 
-        $periodePaie = PeriodePaie::create($validated);
-        $periodePaie->generateReference();
-        $periodePaie->save();
+        $this->periodePaieService->createPeriodePaie($validated);
 
         return redirect()->route('periodes-paie.index')->with('success', 'Période de paie créée avec succès.');
     }

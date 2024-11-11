@@ -36,21 +36,41 @@ class TraitementPaie extends Model
         return $this->belongsTo(Client::class);
     }
 
+    // public function periodePaie()
+    // {
+    //     return $this->belongsTo(PeriodePaie::class);
+    // }
+    
     public function periodePaie()
     {
-        return $this->belongsTo(PeriodePaie::class);
+        return $this->belongsTo(PeriodePaie::class, 'periode_paie_id');
     }
 
+
+
+    // public function getNotesAttribute($value)
+    // {
+    //     $previousNotes = FicheClient::where('client_id', $this->client_id)
+    //         ->where('periode_paie_id', '<', $this->periode_paie_id)
+    //         ->pluck('notes')
+    //         ->implode("\n");
+
+    //     return $previousNotes . "\n" . $value;
+    // }
 
     public function getNotesAttribute($value)
-    {
-        $previousNotes = FicheClient::where('client_id', $this->client_id)
-            ->where('periode_paie_id', '<', $this->periode_paie_id)
-            ->pluck('notes')
-            ->implode("\n");
+{
+    $previousNotes = FicheClient::where('client_id', $this->client_id)
+        ->where('periode_paie_id', '<', $this->periode_paie_id)
+        ->orderBy('periode_paie_id', 'desc')
+        ->get()
+        ->map(function ($fiche) {
+            return $fiche->created_at->format('Y-m-d') . ': ' . $fiche->notes;
+        })
+        ->implode("\n");
 
-        return $previousNotes . "\n" . $value;
-    }
+    return $previousNotes . "\n" . $value;
+}
 
     public function ficheClient()
     {

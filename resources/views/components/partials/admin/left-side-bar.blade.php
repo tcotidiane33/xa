@@ -1,5 +1,5 @@
 <div class="left-side-bar">
-  
+
     <div class="brand-logo">
         <a href="#">
             <img src="{{ asset('backoffice/vendors/images/deskapp-logo.svg') }}" alt="" class="dark-logo" />
@@ -33,13 +33,13 @@
                     </a>
                 </li>
 
-                <!-- Tickets -->
+
+                <!-- Fiche Client -->
                 <li>
-                    <a href="{{ route('tickets.index') }}" class="dropdown-toggle no-arrow">
-                        <span class="micon bi bi-ticket"></span><span class="mtext">Tickets</span>
+                    <a href="{{ route('fiches-clients.index') }}" class="dropdown-toggle no-arrow">
+                        <span class="micon bi bi-user-group"></span><span class="mtext">Fiches Clients</span>
                     </a>
                 </li>
-
                 <!-- Matériels -->
                 <li>
                     <a href="{{ route('materials.index') }}" class="dropdown-toggle no-arrow">
@@ -49,17 +49,17 @@
 
                 <!-- Périodes de Paie -->
                 <li>
-                    <a href="{{ route('periodes-paie.index') }}"  class="dropdown-toggle no-arrow">
-                                <span class="micon bi bi-calendar"></span><span class="mtext">Périodes de Paie</span>
-                            </a>
+                    <a href="{{ route('periodes-paie.index') }}" class="dropdown-toggle no-arrow">
+                        <span class="micon bi bi-calendar"></span><span class="mtext">Périodes de Paie</span>
+                    </a>
                 </li>
 
                 <!-- Traitement des Paies -->
-                <li >
-                    <a href="{{ route('traitements-paie.index') }}"  class="dropdown-toggle no-arrow">
+                <li>
+                    <a href="{{ route('traitements-paie.index') }}" class="dropdown-toggle no-arrow">
                         <span class="micon bi bi-cash"></span><span class="mtext">Traitements Paie</span>
                     </a>
-                    
+
                 </li>
 
 
@@ -87,10 +87,16 @@
                     </ul>
                 </li>
                 <!-- Conventions Collectives -->
-                <li>
+                {{-- <li>
                     <a href="{{ route('convention-collectives.index') }}" class="dropdown-toggle no-arrow">
                         <span class="micon bi bi-file-earmark-text"></span><span class="mtext">Conventions <br>
                             Collectives</span>
+                    </a>
+                </li>
+                  <!-- Tickets -->
+                <li>
+                    <a href="{{ route('tickets.index') }}" class="dropdown-toggle no-arrow">
+                        <span class="micon bi bi-ticket"></span><span class="mtext">Tickets</span>
                     </a>
                 </li>
 
@@ -104,7 +110,7 @@
                     <a href="{{ route('posts.index') }}" class="dropdown-toggle no-arrow">
                         <span class="micon bi bi-box"></span><span class="mtext">Posts</span>
                     </a>
-                </li>
+                </li> --}}
 
 
 
@@ -117,28 +123,29 @@
 <script src="{{ asset('js/app.js') }}"></script>
 <script>
     // Inclure les scripts JavaScript ici
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         // Toggle sidebar
         var closeSidebar = document.querySelector('.close-sidebar');
         var leftSidebar = document.querySelector('.left-side-bar');
 
-        closeSidebar.addEventListener('click', function () {
+        closeSidebar.addEventListener('click', function() {
             leftSidebar.classList.toggle('closed');
         });
 
         // Toggle dropdowns
         var dropdowns = document.querySelectorAll('.dropdown');
 
-        dropdowns.forEach(function (dropdown) {
+        dropdowns.forEach(function(dropdown) {
             var toggle = dropdown.querySelector('.dropdown-toggle');
             var submenu = dropdown.querySelector('.submenu');
 
-            toggle.addEventListener('click', function () {
+            toggle.addEventListener('click', function() {
                 dropdown.classList.toggle('active');
-                submenu.style.display = dropdown.classList.contains('active') ? 'block' : 'none';
+                submenu.style.display = dropdown.classList.contains('active') ? 'block' :
+                'none';
             });
 
-            submenu.addEventListener('click', function (event) {
+            submenu.addEventListener('click', function(event) {
                 event.stopPropagation();
             });
         });

@@ -235,4 +235,5 @@ public function scopeFilterByStatus($query, $status)
          return $this->hasMany(FicheClient::class);
      }
     
+     
 }
