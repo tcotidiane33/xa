@@ -26,6 +26,8 @@ class UpdateFicheClientRequest extends FormRequest
             'preparation_envoie_dsn_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'accuses_dsn' => 'nullable|date',
             'accuses_dsn_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'nb_bulletins_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'maj_fiche_para_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'notes' => 'nullable|string',
         ];
     }

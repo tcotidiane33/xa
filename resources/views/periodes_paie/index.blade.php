@@ -169,7 +169,7 @@
                 </div>
             </div>
         @endif
-
+        {{-- filtres --}}
         <form action="{{ route('periodes-paie.index') }}" method="GET" class="mb-4">
             <div class="flex flex-wrap gap-4">
                 <div class="w-sm md:w-1/6">
@@ -210,17 +210,17 @@
                 </div>
             </div>
         </form>
-
+        {{-- tableau --}}
         <div class="bg-white w-full shadow-md rounded p-1 table-container">
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <table id="periodesPaieTable" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="px-6 py-3">Client</th>
-                            <th scope="col" class="py-2">Gestionnaire</th>
-                            <th scope="col" class="py-2">NB Bulletins</th>
-                            <th scope="col" class="py-2">Maj fiche para</th>
-    
+                            <th scope="col" class="py-2 px-6">Gestionnaire</th>
+                            <th scope="col" class="py-2 px-3">NB Bulletins</th>
+                            <th scope="col" class="py-2 px-4">Maj fiche para</th>
+
                             <th scope="col" class="px-6 py-3">Réception variables</th>
                             <th scope="col" class="px-6 py-3">Préparation BP</th>
                             <th scope="col" class="px-6 py-3">Validation BP client</th>
@@ -234,39 +234,42 @@
                     <tbody>
                         @foreach ($fichesClients as $fiche)
                             <tr class="bg-white justify-center border-b dark:bg-gray-800 dark:border-gray-700">
-                                <td class="p-0 m-0 text-center">{{ $fiche->client->name }}</td>
-                                <td class="p-0 m-0 text-center">{{ $fiche->client->gestionnairePrincipal->name ?? 'N/A' }}
-                                </td>
-                                <td class="p-0 m-0 text-center">{{ $fiche->client->nb_bulletins ?? 'N/A' }}</td>
-                                <td
-                                    class="p-0 m-0 text-center {{ !$fiche->client->maj_fiche_para || $fiche->client->maj_fiche_para->year < now()->year ? 'bg-red-500 text-white' : '' }}">
-                                    {{ $fiche->client->maj_fiche_para ? $fiche->client->maj_fiche_para->format('d-m') : 'N/A' }}
+                                <td class="text-sm font-extrabold tracking-tight leading-none text-gray-900 dark:text-white p-0 m-0 text-center">{{ $fiche->client->name }}</td>
+                                <td class="text-sm font-extrabold tracking-tight leading-none text-gray-900 dark:text-white p-0 m-0 text-center">{{ $fiche->client->gestionnairePrincipal->name ?? 'N/A' }}
                                 </td>
                                 <td
-                                    class="p-0 m-0 text-center {{ !$fiche->reception_variables || $fiche->reception_variables->year < now()->year ? 'bg-red-500 text-white' : '' }}">
-                                    {{ $fiche->reception_variables ? $fiche->reception_variables->format('d-m') : 'N/A' }}
+                                    class="text-xl font-extrabold tracking-tight leading-none text-gray-900 md:text-xl lg:text-1xl dark:text-white p-0 m-0 text-center {{ $fiche->client->nb_bulletins ? 'bg-purple-500 text-white' : '' }}">
+                                    {{ $fiche->client->nb_bulletins ?? 'N/A' }}
                                 </td>
                                 <td
-                                    class="p-0 m-0 text-center {{ !$fiche->preparation_bp || $fiche->preparation_bp->year < now()->year ? 'bg-red-500 text-white' : '' }}">
-                                    {{ $fiche->preparation_bp ? $fiche->preparation_bp->format('d-m') : 'N/A' }}
+                                    class="text-xl font-extrabold tracking-tight leading-none text-gray-900 md:text-xl lg:text-1xl dark:text-white p-0 m-0 text-center {{ !$fiche->client->maj_fiche_para || $fiche->client->maj_fiche_para->year < now()->year ? 'bg-red-500 text-white' : ($fiche->client->maj_fiche_para ? 'bg-purple-500 text-white' : 'bg-yellow-500 text-black') }}">
+                                    {{ $fiche->client->maj_fiche_para ? \Carbon\Carbon::parse($fiche->client->maj_fiche_para)->format('d/m') : 'N/A' }}
                                 </td>
                                 <td
-                                    class="p-0 m-0 text-center {{ !$fiche->validation_bp_client || $fiche->validation_bp_client->year < now()->year ? 'bg-red-500 text-white' : '' }}">
-                                    {{ $fiche->validation_bp_client ? $fiche->validation_bp_client->format('d-m') : 'N/A' }}
+                                    class="text-xl font-extrabold tracking-tight leading-none text-gray-900 md:text-xl lg:text-1xl dark:text-white p-0 m-0 text-center {{ !$fiche->reception_variables || $fiche->reception_variables->year < now()->year ? 'bg-red-500 text-white' : ($fiche->reception_variables ? 'bg-purple-500 text-white' : 'bg-yellow-500 text-black') }}">
+                                    {{ $fiche->reception_variables ? $fiche->reception_variables->format('d/m') : 'N/A' }}
                                 </td>
                                 <td
-                                    class="p-0 m-0 text-center {{ !$fiche->preparation_envoie_dsn || $fiche->preparation_envoie_dsn->year < now()->year ? 'bg-red-500 text-white' : '' }}">
-                                    {{ $fiche->preparation_envoie_dsn ? $fiche->preparation_envoie_dsn->format('d-m') : 'N/A' }}
+                                    class="text-xl font-extrabold tracking-tight leading-none text-gray-900 md:text-xl lg:text-1xl dark:text-white p-0 m-0 text-center {{ !$fiche->preparation_bp || $fiche->preparation_bp->year < now()->year ? 'bg-red-500 text-white' : ($fiche->preparation_bp ? 'bg-purple-500 text-white' : 'bg-yellow-500 text-black') }}">
+                                    {{ $fiche->preparation_bp ? $fiche->preparation_bp->format('d/m') : 'N/A' }}
                                 </td>
                                 <td
-                                    class="p-0 m-0 text-center {{ !$fiche->accuses_dsn || $fiche->accuses_dsn->year < now()->year ? 'bg-red-500 text-white' : '' }}">
-                                    {{ $fiche->accuses_dsn ? $fiche->accuses_dsn->format('d-m') : 'N/A' }}
+                                    class="text-xl font-extrabold tracking-tight leading-none text-gray-900 md:text-xl lg:text-1xl dark:text-white p-0 m-0 text-center {{ !$fiche->validation_bp_client || $fiche->validation_bp_client->year < now()->year ? 'bg-red-500 text-white' : ($fiche->validation_bp_client ? 'bg-purple-500 text-white' : 'bg-yellow-500 text-black') }}">
+                                    {{ $fiche->validation_bp_client ? $fiche->validation_bp_client->format('d/m') : 'N/A' }}
+                                </td>
+                                <td
+                                    class="text-xl font-extrabold tracking-tight leading-none text-gray-900 md:text-xl lg:text-1xl dark:text-white p-0 m-0 text-center {{ !$fiche->preparation_envoie_dsn || $fiche->preparation_envoie_dsn->year < now()->year ? 'bg-red-500 text-white' : ($fiche->preparation_envoie_dsn ? 'bg-purple-500 text-white' : 'bg-yellow-500 text-black') }}">
+                                    {{ $fiche->preparation_envoie_dsn ? $fiche->preparation_envoie_dsn->format('d/m') : 'N/A' }}
+                                </td>
+                                <td
+                                    class="text-xl font-extrabold tracking-tight leading-none text-gray-900 md:text-xl lg:text-1xl dark:text-white p-0 m-0 text-center {{ !$fiche->accuses_dsn || $fiche->accuses_dsn->year < now()->year ? 'bg-red-500 text-white' : ($fiche->accuses_dsn ? 'bg-purple-500 text-white' : 'bg-yellow-500 text-black') }}">
+                                    {{ $fiche->accuses_dsn ? $fiche->accuses_dsn->format('d/m') : 'N/A' }}
                                 </td>
                                 {{-- <td class="px-6 py-4">{{ $fiche->teledec_urssaf ? \Carbon\Carbon::parse($fiche->teledec_urssaf)->format('d/m') : 'N/A' }}</td> --}}
-                                <td class="p-0 m-0 text-center whitespace-pre">{{ $fiche->notes ?? 'N/A' }}</td>
+                                <td class="p-1 m-0 text-center whitespace-pre">{{ $fiche->notes ?? 'N/A' }}</td>
                                 <td class="p-0 m-0 text-center flex ">
                                     <button onclick="openPopup({{ $fiche->id }})"
-                                        class="bg-blue-500 hover:bg-cyan-700 text-white font-bold m-1 rounded">
+                                        class="bg-blue-500 hover:bg-cyan-700 text-white font-bold m-1 p-1 rounded">
                                         Mettre à jour
                                     </button>
                                     {{-- <form action="{{ route('fiches-clients.destroy', $fiche->id) }}" method="POST" style="display:inline;">
@@ -288,38 +291,46 @@
         <div id="calendar"></div> <!-- Ajout du calendrier ici -->
     </div>
 
-     <!-- Popup de mise à jour -->
-     <div id="updatePopup" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden flex items-center justify-center">
+    <!-- Popup de mise à jour -->
+    <div id="updatePopup"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden flex items-center justify-center">
         <div class="relative p-6 border w-92 shadow-lg rounded-md bg-white">
             <div class="mt-3">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">Mettre à jour les informations</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Ajouter les variables</h3>
                 <form id="updateForm" method="POST" action="">
-
                     @csrf
                     @method('PUT')
                     <input type="hidden" name="fiche_client_id" id="fiche_client_id">
                     <div class="grid gap-6 mb-6 md:grid-cols-2">
                         <div>
                             <div class="mt-2">
-                                <label for="reception_variables" class="block text-sm font-medium text-gray-700">Réception variables</label>
-                                <input type="date" name="reception_variables" id="reception_variables" class="form-control">
+                                <label for="reception_variables" class="block text-sm font-medium text-gray-700">Réception
+                                    variables</label>
+                                <input type="date" name="reception_variables" id="reception_variables"
+                                    class="form-control">
                             </div>
                             <div class="mt-2">
-                                <label for="preparation_bp" class="block text-sm font-medium text-gray-700">Préparation BP</label>
+                                <label for="preparation_bp" class="block text-sm font-medium text-gray-700">Préparation
+                                    BP</label>
                                 <input type="date" name="preparation_bp" id="preparation_bp" class="form-control">
                             </div>
                             <div class="mt-2">
-                                <label for="validation_bp_client" class="block text-sm font-medium text-gray-700">Validation BP client</label>
-                                <input type="date" name="validation_bp_client" id="validation_bp_client" class="form-control">
+                                <label for="validation_bp_client"
+                                    class="block text-sm font-medium text-gray-700">Validation BP client</label>
+                                <input type="date" name="validation_bp_client" id="validation_bp_client"
+                                    class="form-control">
                             </div>
                         </div>
                         <div>
                             <div class="mt-2">
-                                <label for="preparation_envoie_dsn" class="block text-sm font-medium text-gray-700">Préparation et envoie DSN</label>
-                                <input type="date" name="preparation_envoie_dsn" id="preparation_envoie_dsn" class="form-control">
+                                <label for="preparation_envoie_dsn"
+                                    class="block text-sm font-medium text-gray-700">Préparation et envoie DSN</label>
+                                <input type="date" name="preparation_envoie_dsn" id="preparation_envoie_dsn"
+                                    class="form-control">
                             </div>
                             <div class="mt-2">
-                                <label for="accuses_dsn" class="block text-sm font-medium text-gray-700">Accusés DSN</label>
+                                <label for="accuses_dsn" class="block text-sm font-medium text-gray-700">Accusés
+                                    DSN</label>
                                 <input type="date" name="accuses_dsn" id="accuses_dsn" class="form-control">
                             </div>
                             <div class="mt-2">
@@ -329,10 +340,12 @@
                         </div>
                     </div>
                     <div class="mt-4 flex justify-between">
-                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        <button type="submit"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                             Enregistrer
                         </button>
-                        <button type="button" onclick="closePopup()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                        <button type="button" onclick="closePopup()"
+                            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                             Annuler
                         </button>
                     </div>
@@ -347,7 +360,8 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('fiche_client_id').value = ficheClientId;
-                    document.getElementById('updateForm').action = `/fiches-clients/${ficheClientId}`;
+                    document.getElementById('updateForm').action =
+                    `/periodes-paie/update-fiche-client/${ficheClientId}`;
                     document.getElementById('reception_variables').value = data.reception_variables;
                     document.getElementById('preparation_bp').value = data.preparation_bp;
                     document.getElementById('validation_bp_client').value = data.validation_bp_client;
@@ -373,7 +387,7 @@
         document.getElementById('updatePopup').classList.add('hidden');
     }
 </script> --}}
-   
+
     <hr>
     <tbody>
         @foreach ($periodesPaie as $periode)
@@ -577,11 +591,11 @@
 @endsection
 
 @push('scripts')
-    <!-- DataTables CSS -->
+     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
-    <!-- jQuery -->
+     {{--<!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- DataTables JS -->
+    <!-- DataTables JS -->--}}
     <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
@@ -589,7 +603,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
-    <script>
+   <script>
         $(document).ready(function() {
             $('#calendar').fullCalendar({
                 events: [
@@ -627,7 +641,7 @@
                 ]
             });
         });
-    </script>
+    </script> 
 @endpush
 
 

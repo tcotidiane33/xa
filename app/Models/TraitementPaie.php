@@ -10,7 +10,12 @@ class TraitementPaie extends Model
     protected $table = 'traitements_paie';
 
     protected $fillable = [
-        'reference', 'gestionnaire_id', 'client_id', 'periode_paie_id', 'teledec_urssaf', 'est_verrouille'
+        'reference',
+        'gestionnaire_id',
+        'client_id',
+        'periode_paie_id',
+        'teledec_urssaf',
+        'est_verrouille'
     ];
 
     protected $dates = [
@@ -40,7 +45,7 @@ class TraitementPaie extends Model
     // {
     //     return $this->belongsTo(PeriodePaie::class);
     // }
-    
+
     public function periodePaie()
     {
         return $this->belongsTo(PeriodePaie::class, 'periode_paie_id');
@@ -59,22 +64,22 @@ class TraitementPaie extends Model
     // }
 
     public function getNotesAttribute($value)
-{
-    $previousNotes = FicheClient::where('client_id', $this->client_id)
-        ->where('periode_paie_id', '<', $this->periode_paie_id)
-        ->orderBy('periode_paie_id', 'desc')
-        ->get()
-        ->map(function ($fiche) {
-            return $fiche->created_at->format('Y-m-d') . ': ' . $fiche->notes;
-        })
-        ->implode("\n");
+    {
+        $previousNotes = FicheClient::where('client_id', $this->client_id)
+            ->where('periode_paie_id', '<', $this->periode_paie_id)
+            ->orderBy('periode_paie_id', 'desc')
+            ->get()
+            ->map(function ($fiche) {
+                return $fiche->created_at->format('Y-m-d') . ': ' . $fiche->notes;
+            })
+            ->implode("\n");
 
-    return $previousNotes . "\n" . $value;
-}
+        return $previousNotes . "\n" . $value;
+    }
 
     public function ficheClient()
     {
         return $this->belongsTo(FicheClient::class, 'client_id', 'client_id')
-                    ->where('periode_paie_id', $this->periode_paie_id);
+            ->where('periode_paie_id', $this->periode_paie_id);
     }
 }

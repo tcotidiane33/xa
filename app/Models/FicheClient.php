@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
+
 
 class FicheClient extends Model
 {
@@ -49,5 +51,30 @@ class FicheClient extends Model
         if ($this->accuses_dsn) $completedSteps++;
 
         return ($completedSteps / $totalSteps) * 100;
+    }
+
+    public function getReceptionVariablesAttribute($value)
+    {
+        return $value ? Carbon::parse($value) : null;
+    }
+
+    public function getPreparationBpAttribute($value)
+    {
+        return $value ? Carbon::parse($value) : null;
+    }
+
+    public function getValidationBpClientAttribute($value)
+    {
+        return $value ? Carbon::parse($value) : null;
+    }
+
+    public function getPreparationEnvoieDsnAttribute($value)
+    {
+        return $value ? Carbon::parse($value) : null;
+    }
+
+    public function getAccusesDsnAttribute($value)
+    {
+        return $value ? Carbon::parse($value) : null;
     }
 }

@@ -70,10 +70,11 @@ class PeriodePaieController extends Controller
         $gestionnaires = User::role('gestionnaire')->get();
         // $fichesClients = FicheClient::paginate(15);
         $fichesClients = FicheClient::with('client.gestionnairePrincipal')->paginate(15);
+        $ficheClient = new FicheClient(); // Ajoutez cette ligne
     
         $currentPeriodePaie = PeriodePaie::where('validee', false)->latest()->first();
     
-        return view('periodes_paie.index', compact('periodesPaie', 'clients', 'gestionnaires', 'currentPeriodePaie', 'fichesClients'));
+        return view('periodes_paie.index', compact('periodesPaie','ficheClient', 'clients', 'gestionnaires', 'currentPeriodePaie', 'fichesClients'));
     }
 
     public function create()
@@ -105,14 +106,18 @@ class PeriodePaieController extends Controller
 
     public function show(PeriodePaie $periodePaie)
     {
-        // Déchiffrer les données de la période de paie
-        $periodePaie->decrypted_data = $periodePaie->decryptedData;
-
-        // Récupérer les traitements de paie associés à cette période
-        $traitementsPaie = TraitementPaie::where('periode_paie_id', $periodePaie->id)->get();
-
-        return view('periodes_paie.show', compact('periodePaie', 'traitementsPaie'));
+        return response()->json($periodePaie);
     }
+    // public function show(PeriodePaie $periodePaie)
+    // {
+    //     // Déchiffrer les données de la période de paie
+    //     $periodePaie->decrypted_data = $periodePaie->decryptedData;
+
+    //     // Récupérer les traitements de paie associés à cette période
+    //     $traitementsPaie = TraitementPaie::where('periode_paie_id', $periodePaie->id)->get();
+
+    //     return view('periodes_paie.show', compact('periodePaie', 'traitementsPaie'));
+    // }
 
     public function edit(PeriodePaie $periodePaie)
     {
@@ -133,6 +138,21 @@ class PeriodePaieController extends Controller
         $periodePaie->update($validated);
 
         return redirect()->route('periodes-paie.index')->with('success', 'Période de paie mise à jour avec succès.');
+    }
+    public function updateFicheClient(Request $request, FicheClient $ficheClient)
+    {
+        $validated = $request->validate([
+            'reception_variables' => 'nullable|date',
+            'preparation_bp' => 'nullable|date',
+            'validation_bp_client' => 'nullable|date',
+            'preparation_envoie_dsn' => 'nullable|date',
+            'accuses_dsn' => 'nullable|date',
+            'notes' => 'nullable|string',
+        ]);
+
+        $this->periodePaieService->updateFicheClient($ficheClient, $validated);
+
+        return redirect()->route('periodes-paie.index')->with('success', 'Fiche client mise à jour avec succès.');
     }
 
     public function destroy(PeriodePaie $periodePaie)

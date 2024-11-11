@@ -12,8 +12,9 @@ use Illuminate\Http\Request;
 use App\Models\TraitementPaie;
 use App\Models\MaterialHistory;
 use App\Models\PeriodePaieHistory;
-use App\Exports\ClientPeriodeExport;
+use Illuminate\Support\Facades\Log;
 
+use App\Exports\ClientPeriodeExport;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
@@ -72,6 +73,23 @@ class PeriodePaieService
             }
         }
     }
+
+    // Mehtode pour Update la fiche client
+
+    public function updateFicheClient(FicheClient $ficheClient, array $data)
+    {
+        Log::info('Mise à jour de la fiche client : ', ['fiche_client_id' => $ficheClient->id, 'data' => $data]);
+
+        if (!empty($data['notes'])) {
+            $newNotes = $ficheClient->notes . "\n" . now()->format('Y-m-d') . ': ' . $data['notes'];
+            $data['notes'] = $newNotes;
+        }
+
+        $ficheClient->update($data);
+
+        Log::info('Fiche client mise à jour avec succès : ', ['fiche_client_id' => $ficheClient->id]);
+    }
+
 
     public function updatePeriodePaie(PeriodePaie $periodePaie, array $data)
     {

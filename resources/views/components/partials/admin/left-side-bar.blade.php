@@ -37,7 +37,7 @@
                 <!-- Fiche Client -->
                 <li>
                     <a href="{{ route('fiches-clients.index') }}" class="dropdown-toggle no-arrow">
-                        <span class="micon bi bi-user-group"></span><span class="mtext">Fiches Clients</span>
+                        <span class="micon bi bi-person-fill"></span><span class="mtext">Fiches Clients</span>
                     </a>
                 </li>
                 <!-- Matériels -->

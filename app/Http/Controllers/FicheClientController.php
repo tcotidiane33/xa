@@ -26,12 +26,13 @@ class FicheClientController extends Controller
         if ($request->has('periode_paie_id') && $request->periode_paie_id != '') {
             $query->where('periode_paie_id', $request->periode_paie_id);
         }
-
+    
         $fichesClients = $query->with('client.gestionnairePrincipal')->paginate(15);
         $clients = Client::all();
         $periodesPaie = PeriodePaie::all();
-
-        return view('clients.fiches_clients.index', compact('fichesClients', 'clients', 'periodesPaie'));
+        $ficheClient = new FicheClient(); // Ajoutez cette ligne
+    
+        return view('clients.fiches_clients.index', compact('fichesClients', 'clients', 'periodesPaie', 'ficheClient'));
     }
 
     public function create()

@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Client;
+use App\Models\FicheClient;
 use App\Models\PeriodePaie;
-use App\Models\TraitementPaie;
 use Illuminate\Http\Request;
+use App\Models\TraitementPaie;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use App\Services\TraitementPaieService;
 use App\Http\Requests\TraitementPaieRequest;
-use Illuminate\Support\Facades\Auth;
 
 class TraitementPaieController extends Controller
 {
@@ -23,9 +25,16 @@ class TraitementPaieController extends Controller
     public function index(Request $request)
     {
         $traitements = TraitementPaie::with(['client', 'gestionnaire', 'periodePaie'])->paginate(15);
-        return view('traitements_paie.index', compact('traitements'));
+        // / Récupérer la période de paie en cours
+        $currentPeriodePaie = PeriodePaie::where('validee', false)->latest()->first();
+    
+        // Récupérer toutes les fiches clients associées à la période de paie en cours
+        $fichesClients = FicheClient::where('periode_paie_id', $currentPeriodePaie->id)
+                                    ->with(['client', 'periodePaie'])
+                                    ->paginate(15);
+    
+        return view('traitements_paie.index', compact('fichesClients', 'currentPeriodePaie','traitements'));
     }
-
     public function create()
     {
         $gestionnaire = Auth::user();
@@ -97,7 +106,29 @@ class TraitementPaieController extends Controller
         return redirect()->route('traitements-paie.index')
             ->with('success', 'Traitement de paie mis à jour avec succès.');
     }
+  
+    public function updateFicheClient(Request $request, FicheClient $ficheClient)
+    {
+        Log::info('Début de la mise à jour de la fiche client.', ['fiche_client_id' => $ficheClient->id]);
 
+        $validated = $request->validate([
+            'reception_variables_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'preparation_bp_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'validation_bp_client_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'preparation_envoie_dsn_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'accuses_dsn_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'nb_bulletins_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'maj_fiche_para_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        ]);
+
+        Log::info('Données validées.', $validated);
+
+        $ficheClient = $this->traitementPaieService->updateFicheClient($ficheClient, $validated);
+
+        Log::info('Fiche client mise à jour avec succès.', ['fiche_client_id' => $ficheClient->id]);
+
+        return redirect()->route('traitements-paie.index')->with('success', 'Fiche client mise à jour avec succès.');
+    }
     public function destroy(TraitementPaie $traitementPaie)
     {
         $this->traitementPaieService->deleteTraitementPaie($traitementPaie);
