@@ -16,25 +16,61 @@ class Client extends Model implements AuditableContract
     use Filterable, HasFactory, Notifiable, Auditable;
 
     protected $fillable = [
-        'name', 'email', 'phone', 'responsable_paie_id', 'gestionnaire_principal_id',
-        'date_debut_prestation', 'contact_paie', 'contact_comptabilite', 'nb_bulletins',
-        'maj_fiche_para', 'convention_collective_id', 'status', 'is_portfolio',
-        'parent_client_id', 'type_societe', 'ville', 'dirigeant_nom',
-        'dirigeant_telephone', 'dirigeant_email', 'contact_paie_nom',
-        'contact_paie_prenom', 'contact_paie_telephone', 'contact_paie_email',
-        'contact_compta_nom', 'contact_compta_prenom', 'contact_compta_telephone',
-        'contact_compta_email', 'responsable_telephone_ld',
-        'gestionnaire_telephone_ld', 'binome_telephone_ld', 'binome_id',
-        'saisie_variables', 'client_forme_saisie', 'date_formation_saisie',
-        'date_fin_prestation', 'date_signature_contrat', 'taux_at',
-        'adhesion_mydrh', 'date_adhesion_mydrh', 'is_cabinet', 'portfolio_cabinet_id',
-        'date_estimative_envoi_variables', 'date_rappel_mail', 'reference'
+        'name',
+        'email',
+        'phone',
+        'responsable_paie_id',
+        'gestionnaire_principal_id',
+        'date_debut_prestation',
+        'contact_paie',
+        'contact_comptabilite',
+        'nb_bulletins',
+        'maj_fiche_para',
+        'convention_collective_id',
+        'status',
+        'is_portfolio',
+        'parent_client_id',
+        'type_societe',
+        'ville',
+        'dirigeant_nom',
+        'dirigeant_telephone',
+        'dirigeant_email',
+        'contact_paie_nom',
+        'contact_paie_prenom',
+        'contact_paie_telephone',
+        'contact_paie_email',
+        'contact_compta_nom',
+        'contact_compta_prenom',
+        'contact_compta_telephone',
+        'contact_compta_email',
+        'responsable_telephone_ld',
+        'gestionnaire_telephone_ld',
+        'binome_telephone_ld',
+        'binome_id',
+        'saisie_variables',
+        'client_forme_saisie',
+        'date_formation_saisie',
+        'date_fin_prestation',
+        'date_signature_contrat',
+        'taux_at',
+        'adhesion_mydrh',
+        'date_adhesion_mydrh',
+        'is_cabinet',
+        'portfolio_cabinet_id',
+        'date_estimative_envoi_variables',
+        'date_rappel_mail',
+        'reference'
     ];
 
     protected $dates = [
-        'date_debut_prestation', 'date_estimative_envoi_variables', 'maj_fiche_para',
-        'saisie_variables', 'date_signature_contrat', 'date_formation_saisie',
-        'date_adhesion_mydrh', 'date_rappel_mail'
+        'date_debut_prestation',
+        'date_estimative_envoi_variables',
+        'maj_fiche_para',
+        'saisie_variables',
+        'date_signature_contrat',
+        'date_formation_saisie',
+        'date_adhesion_mydrh',
+        'date_rappel_mail'
     ];
 
     protected $casts = [
@@ -53,15 +89,7 @@ class Client extends Model implements AuditableContract
         'gestionnaires_secondaires' => 'array',
     ];
 
-    public function scopeFilterBySearch($query, $search)
-{
-    return $query->where('name', 'like', '%' . $search . '%');
-}
-
-public function scopeFilterByStatus($query, $status)
-{
-    return $query->where('status', $status);
-}
+    //email.JS
     protected static function boot()
     {
         parent::boot();
@@ -69,7 +97,73 @@ public function scopeFilterByStatus($query, $status)
         static::creating(function ($traitementPaie) {
             $traitementPaie->reference = 'TP-' . Str::upper(Str::random(8));
         });
+
+        static::created(function ($client) {
+            $client->sendAcknowledgementEmail();
+        });
+
+        static::updated(function ($client) {
+            if ($client->isDirty('gestionnaire_principal_id')) {
+                $client->sendManagerChangeEmail();
+            }
+        });
     }
+
+    public function sendAcknowledgementEmail()
+    {
+        $gestionnaire = $this->gestionnairePrincipal;
+        $client = $this;
+
+        $data = [
+            'managerName' => $gestionnaire->name,
+            'managerEmail' => $gestionnaire->email,
+            'clientName' => $client->name,
+            'clientEmail' => $client->email,
+        ];
+
+        $this->sendEmail('service_o5bj0w5', 'template_qib26ib', $data);
+    }
+
+    public function sendManagerChangeEmail()
+    {
+        $gestionnaire = $this->gestionnairePrincipal;
+        $client = $this;
+
+        $data = [
+            'managerName' => $gestionnaire->name,
+            'managerEmail' => $gestionnaire->email,
+            'managerPhone' => $gestionnaire->phone,
+            'clientName' => $client->name,
+            'clientEmail' => $client->email,
+        ];
+
+        $this->sendEmail('service_o5bj0w5', 'template_u16tm5p', $data);
+    }
+
+    protected function sendEmail($serviceId, $templateId, $data)
+    {
+        $emailJS = new \EmailJS\EmailJS('YOUR_PUBLIC_KEY');
+        $emailJS->send($serviceId, $templateId, $data);
+    }
+
+
+    public function scopeFilterBySearch($query, $search)
+    {
+        return $query->where('name', 'like', '%' . $search . '%');
+    }
+
+    public function scopeFilterByStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+    // protected static function boot()
+    // {
+    //     parent::boot();
+
+    //     static::creating(function ($traitementPaie) {
+    //         $traitementPaie->reference = 'TP-' . Str::upper(Str::random(8));
+    //     });
+    // }
 
     public function gestionnaire()
     {
@@ -205,35 +299,40 @@ public function scopeFilterByStatus($query, $status)
         }
     }
 
-     // Méthodes pour distinguer les clients cabinets et les clients portefeuilles cabinets
-     public function isCabinet()
-     {
-         return $this->is_cabinet;
-     }
- 
-     public function isPortfolioCabinet()
-     {
-         return !$this->is_cabinet && $this->portfolio_cabinet_id !== null;
-     }
+    // Méthodes pour distinguer les clients cabinets et les clients portefeuilles cabinets
+    public function isCabinet()
+    {
+        return $this->is_cabinet;
+    }
 
-     public function progressPercentage()
-     {
-         // Implémentez la logique pour calculer le pourcentage de progression
-         $totalSteps = 5; // Nombre total d'étapes
-         $completedSteps = 0;
- 
-         if ($this->reception_variables) $completedSteps++;
-         if ($this->preparation_bp) $completedSteps++;
-         if ($this->validation_bp_client) $completedSteps++;
-         if ($this->preparation_envoie_dsn) $completedSteps++;
-         if ($this->accuses_dsn) $completedSteps++;
- 
-         return ($completedSteps / $totalSteps) * 100;
-     }
-     public function fichesClients()
-     {
-         return $this->hasMany(FicheClient::class);
-     }
-    
-     
+    public function isPortfolioCabinet()
+    {
+        return !$this->is_cabinet && $this->portfolio_cabinet_id !== null;
+    }
+
+    public function progressPercentage()
+    {
+        // Implémentez la logique pour calculer le pourcentage de progression
+        $totalSteps = 5; // Nombre total d'étapes
+        $completedSteps = 0;
+
+        if ($this->reception_variables)
+            $completedSteps++;
+        if ($this->preparation_bp)
+            $completedSteps++;
+        if ($this->validation_bp_client)
+            $completedSteps++;
+        if ($this->preparation_envoie_dsn)
+            $completedSteps++;
+        if ($this->accuses_dsn)
+            $completedSteps++;
+
+        return ($completedSteps / $totalSteps) * 100;
+    }
+    public function fichesClients()
+    {
+        return $this->hasMany(FicheClient::class);
+    }
+
+
 }

@@ -8,6 +8,8 @@ use App\Models\TraitementPaie;
 use App\Models\PeriodePaie;
 use App\Models\Ticket;
 use App\Models\User;
+use Carbon\Carbon;
+
 
 class HomeController extends Controller
 {
@@ -20,15 +22,15 @@ class HomeController extends Controller
         // Calculez le taux de réussite (remplacez ceci par votre propre logique)
         $successPercentage = 72;
 
-        $traitementsPaieEnCours = TraitementPaie::whereHas('periodePaie', function($query) {
+        $traitementsPaieEnCours = TraitementPaie::whereHas('periodePaie', function ($query) {
             $query->where('validee', false);
         })->count();
 
-        $traitementsPaieTerminer = TraitementPaie::whereHas('periodePaie', function($query) {
+        $traitementsPaieTerminer = TraitementPaie::whereHas('periodePaie', function ($query) {
             $query->where('validee', true);
         })->count();
 
-        $traitementsPaieInterrompu = TraitementPaie::whereHas('periodePaie', function($query) {
+        $traitementsPaieInterrompu = TraitementPaie::whereHas('periodePaie', function ($query) {
             $query->whereNull('validee');
         })->count();
 
@@ -36,10 +38,23 @@ class HomeController extends Controller
         $recentTraitements = TraitementPaie::with('client')->latest()->take(5)->get();
         $recentTickets = Ticket::with('createur')->latest()->take(5)->get();
 
-    // Récupérer les 10 clients les plus récents
-    $recentClients = Client::latest()->take(10)->get();
-    
- return view('dashboard', compact(
+        // Récupérer les 10 clients les plus récents
+        $recentClients = Client::latest()->take(10)->get();
+
+        // Calculer les indicateurs de performance
+        $totalTickets = Ticket::count();
+        $ticketsOuverts = Ticket::where('statut', 'ouvert')->count();
+        $ticketsFermes = Ticket::where('statut', 'fermé')->count();
+        $ticketsEnCours = Ticket::where('statut', 'en cours')->count();
+
+        // Récupérer les utilisateurs connectés
+        $connectedUsers = User::where('is_active', true)->get();
+
+        // Récupérer les logs d'audit récents
+        $recentAudits = \OwenIt\Auditing\Models\Audit::latest()->take(10)->get();
+
+
+        return view('dashboard', compact(
             'totalUsers',
             'totalClients',
             'totalPeriodesPaie',
@@ -50,10 +65,13 @@ class HomeController extends Controller
             'latestClients',
             'recentTraitements',
             'recentTickets',
-            'recentClients'
+            'recentClients',
+            'totalTickets',
+            'ticketsOuverts',
+            'ticketsFermes',
+            'ticketsEnCours',
+            'connectedUsers',
+            'recentAudits'
         ));
     }
-
-
-
 }

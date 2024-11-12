@@ -15,7 +15,8 @@ class FicheClient extends Model
     protected $fillable = [
         'periode_paie_id', 'client_id', 'reception_variables', 'reception_variables_file', 'preparation_bp',
         'preparation_bp_file', 'validation_bp_client', 'validation_bp_client_file', 'preparation_envoie_dsn',
-        'preparation_envoie_dsn_file', 'accuses_dsn', 'accuses_dsn_file', 'notes'
+        'preparation_envoie_dsn_file', 'accuses_dsn', 'accuses_dsn_file', 'notes', 'nb_bulletins_file',
+        'maj_fiche_para_file'
     ];
 
     protected $dates = [

@@ -22,18 +22,25 @@ class TraitementPaieController extends Controller
         $this->traitementPaieService = $traitementPaieService;
     }
 
-    public function index(Request $request)
+    // public function index(Request $request)
+    // {
+    //     $traitements = TraitementPaie::with(['client', 'gestionnaire', 'periodePaie'])->paginate(15);
+    //     // / Récupérer la période de paie en cours
+    //     $currentPeriodePaie = PeriodePaie::where('validee', false)->latest()->first();
+
+    //     // Récupérer toutes les fiches clients associées à la période de paie en cours
+    //     $fichesClients = FicheClient::where('periode_paie_id', $currentPeriodePaie->id)
+    //                                 ->with(['client', 'periodePaie'])
+    //                                 ->paginate(15);
+
+    //     return view('traitements_paie.index', compact('fichesClients', 'currentPeriodePaie','traitements'));
+    // }
+    public function index()
     {
-        $traitements = TraitementPaie::with(['client', 'gestionnaire', 'periodePaie'])->paginate(15);
-        // / Récupérer la période de paie en cours
-        $currentPeriodePaie = PeriodePaie::where('validee', false)->latest()->first();
-    
-        // Récupérer toutes les fiches clients associées à la période de paie en cours
-        $fichesClients = FicheClient::where('periode_paie_id', $currentPeriodePaie->id)
-                                    ->with(['client', 'periodePaie'])
-                                    ->paginate(15);
-    
-        return view('traitements_paie.index', compact('fichesClients', 'currentPeriodePaie','traitements'));
+        $periodePaieEnCours = PeriodePaie::where('validee', false)->first();
+        $fichesClients = FicheClient::where('periode_paie_id', $periodePaieEnCours->id)->paginate(15);
+
+        return view('traitements_paie.index', compact('fichesClients'));
     }
     public function create()
     {
@@ -47,28 +54,28 @@ class TraitementPaieController extends Controller
     public function store(TraitementPaieRequest $request)
     {
         $validatedData = $request->validated();
-    
+
         // Vérifier si le gestionnaire connecté est rattaché au client
         $gestionnaire = Auth::user();
         $client = Client::findOrFail($validatedData['client_id']);
-    
+
         if ($client->gestionnaire_principal_id !== $gestionnaire->id) {
             return redirect()->route('traitements-paie.create')
                 ->with('error', 'Vous n\'êtes pas autorisé à modifier les informations de ce client.');
         }
-    
+
         // Vérifier l'unicité de la période de paie
         $existingTraitement = TraitementPaie::where('client_id', $validatedData['client_id'])
             ->where('periode_paie_id', $validatedData['periode_paie_id'])
             ->first();
-    
+
         if ($existingTraitement) {
             return redirect()->route('traitements-paie.create')
                 ->with('error', 'Un traitement de paie pour ce client et cette période existe déjà.');
         }
-    
+
         $this->traitementPaieService->createTraitementPaie($validatedData);
-    
+
         return redirect()->route('traitements-paie.index')
             ->with('success', 'Traitement de paie créé avec succès.');
     }
@@ -106,7 +113,7 @@ class TraitementPaieController extends Controller
         return redirect()->route('traitements-paie.index')
             ->with('success', 'Traitement de paie mis à jour avec succès.');
     }
-  
+
     public function updateFicheClient(Request $request, FicheClient $ficheClient)
     {
         Log::info('Début de la mise à jour de la fiche client.', ['fiche_client_id' => $ficheClient->id]);
@@ -123,9 +130,7 @@ class TraitementPaieController extends Controller
 
         Log::info('Données validées.', $validated);
 
-        $ficheClient = $this->traitementPaieService->updateFicheClient($ficheClient, $validated);
-
-        Log::info('Fiche client mise à jour avec succès.', ['fiche_client_id' => $ficheClient->id]);
+        $this->traitementPaieService->updateFicheClient($ficheClient, $validated);
 
         return redirect()->route('traitements-paie.index')->with('success', 'Fiche client mise à jour avec succès.');
     }

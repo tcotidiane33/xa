@@ -1,56 +1,107 @@
 @extends('layouts.admin')
 
-@section('title', 'Tableau de Bord Admin')
+@section('title', 'Tableau de Bord')
 
 @section('content')
-<div class="container">
-    <h1>Tableau de Bord</h1>
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Tableau de Bord</h1>
 
-    <div class="row">
-        <!-- Carte pour les rôles -->
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Total Rôles</h5>
-                    <p class="card-text">{{ $totalRoles }}</p>
-                    <a href="{{ route('admin.roles.index') }}" class="btn btn-primary">Gérer les Rôles</a>
-                </div>
-            </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Total Utilisateurs -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Total Utilisateurs</h3>
+            <p class="text-2xl font-bold">{{ $totalUsers }}</p>
         </div>
 
-        <!-- Carte pour les permissions -->
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Total Permissions</h5>
-                    <p class="card-text">{{ $totalPermissions }}</p>
-                    <a href="{{ route('admin.permissions.index') }}" class="btn btn-primary">Gérer les Permissions</a>
-                </div>
-            </div>
+        <!-- Total Clients -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Total Clients</h3>
+            <p class="text-2xl font-bold">{{ $totalClients }}</p>
         </div>
 
-        <!-- Carte pour les utilisateurs -->
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Total Utilisateurs</h5>
-                    <p class="card-text">{{ $totalUsers }}</p>
-                    <a href="{{ route('admin.users.index') }}" class="btn btn-primary">Gérer les Utilisateurs</a>
-                </div>
-            </div>
+        <!-- Total Périodes de Paie -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Total Périodes de Paie</h3>
+            <p class="text-2xl font-bold">{{ $totalPeriodesPaie }}</p>
         </div>
 
-        <!-- Carte pour les clients -->
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Total Clients</h5>
-                    <p class="card-text">{{ $totalClients }}</p>
-                    <a href="{{ route('admin.clients.index') }}" class="btn btn-primary">Gérer les Clients</a>
-                </div>
-            </div>
+        <!-- Taux de Réussite -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Taux de Réussite</h3>
+            <p class="text-2xl font-bold">{{ $successPercentage }}%</p>
+        </div>
+
+        <!-- Traitements de Paie en Cours -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Traitements de Paie en Cours</h3>
+            <p class="text-2xl font-bold">{{ $traitementsPaieEnCours }}</p>
+        </div>
+
+        <!-- Traitements de Paie Terminés -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Traitements de Paie Terminés</h3>
+            <p class="text-2xl font-bold">{{ $traitementsPaieTerminer }}</p>
+        </div>
+
+        <!-- Traitements de Paie Interrompus -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Traitements de Paie Interrompus</h3>
+            <p class="text-2xl font-bold">{{ $traitementsPaieInterrompu }}</p>
+        </div>
+
+        <!-- Total Tickets -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Total Tickets</h3>
+            <p class="text-2xl font-bold">{{ $totalTickets }}</p>
+        </div>
+
+        <!-- Tickets Ouverts -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Tickets Ouverts</h3>
+            <p class="text-2xl font-bold">{{ $ticketsOuverts }}</p>
+        </div>
+
+        <!-- Tickets Fermés -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Tickets Fermés</h3>
+            <p class="text-2xl font-bold">{{ $ticketsFermes }}</p>
+        </div>
+
+        <!-- Tickets en Cours -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Tickets en Cours</h3>
+            <p class="text-2xl font-bold">{{ $ticketsEnCours }}</p>
         </div>
     </div>
 
+    <!-- Derniers Clients -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h3 class="text-lg font-semibold mb-4">Derniers Clients</h3>
+        <ul>
+            @foreach ($latestClients as $client)
+                <li>{{ $client->name }}</li>
+            @endforeach
+        </ul>
+    </div>
+
+    <!-- Derniers Traitements de Paie -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h3 class="text-lg font-semibold mb-4">Derniers Traitements de Paie</h3>
+        <ul>
+            @foreach ($recentTraitements as $traitement)
+                <li>{{ $traitement->client->name }} - {{ $traitement->reference }}</li>
+            @endforeach
+        </ul>
+    </div>
+
+    <!-- Derniers Tickets -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h3 class="text-lg font-semibold mb-4">Derniers Tickets</h3>
+        <ul>
+            @foreach ($recentTickets as $ticket)
+                <li>{{ $ticket->titre }} - {{ $ticket->createur->name }}</li>
+            @endforeach
+        </ul>
+    </div>
 </div>
 @endsection

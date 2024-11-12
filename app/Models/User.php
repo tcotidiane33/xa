@@ -42,6 +42,7 @@ class User extends Authenticatable implements AuditableContract
     protected $hidden = [
         'password',
         'remember_token',
+        
     ];
 
     /**

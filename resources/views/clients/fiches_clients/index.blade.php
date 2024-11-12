@@ -85,8 +85,8 @@
                         <th scope="col" class="px-6 py-3">Préparation et envoie DSN</th>
                         <th scope="col" class="px-6 py-3">Accusés DSN</th>
                         {{-- <th scope="col" class="px-6 py-3">TELEDEC URSSAF</th> --}}
-                        <th scope="col" class="px-6 py-3">NOTES</th>
-                        <th scope="col" class="px-6 py-3">Actions</th>
+                        <th scope="col" class="px-26 py-3">NOTES</th>
+                        {{-- <th scope="col" class="px-6 py-3">Actions</th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -110,13 +110,13 @@
                                 {{ $fiche->accuses_dsn ? \Carbon\Carbon::parse($fiche->accuses_dsn)->format('d/m') : 'N/A' }}
                             </td>
                             {{-- <td class="px-6 py-4">{{ $fiche->teledec_urssaf ? \Carbon\Carbon::parse($fiche->teledec_urssaf)->format('d/m') : 'N/A' }}</td> --}}
-                            <td class="px-6 py-4">{{ $fiche->notes ?? 'N/A' }}</td>
-                            <td class="px-6 py-4 flex space-x-2">
+                            <td class="px-26 py-4">{{ $fiche->notes ?? 'N/A' }}</td>
+                            {{-- <td class="px-6 py-4 flex space-x-2">
                                 <button onclick="openPopup({{ $fiche->id }})"
                                     class="bg-blue-500 hover:bg-cyan-700 text-white font-bold py-1 px-1 rounded">
                                     Mettre à jour
                                 </button>
-                            </td>
+                            </td> --}}
                         </tr>
                     @endforeach
                 </tbody>

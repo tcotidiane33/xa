@@ -18,6 +18,13 @@
     },
     "dependencies": {
         "deskapp": "^0.0.2",
-        "toastr": "^2.1.4"
+        "toastr": "^2.1.4",
+        "tailwindcss": "^2.2.19",
+        "flowbite": "^1.4.7",
+        "@tailwindcss/forms": "^0.3.4",
+        "autoprefixer": "^10.4.0",
+        "postcss": "^8.4.5",
+        "laravel-mix": "^6.0.31",
+        "lottie-web": "^5.7.13"
     }
 }

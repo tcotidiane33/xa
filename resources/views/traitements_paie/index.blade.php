@@ -42,7 +42,7 @@
             </tbody>
         </table>
         <div class="mt-4">
-            {{ $traitements->links() }}
+            {{ $fichesClients->links() }}
         </div>
     </div>
 </div>
