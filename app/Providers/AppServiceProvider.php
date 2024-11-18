@@ -20,7 +20,6 @@ class AppServiceProvider extends ServiceProvider
     {
         // $loader = \Illuminate\Foundation\AliasLoader::getInstance();
         // $loader->alias('Debugbar', \Barryvdh\Debugbar\Facades\Debugbar::class);
-
         if ($this->app->environment('local')) {
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
@@ -52,7 +51,7 @@ class AppServiceProvider extends ServiceProvider
         // Partage de variables globales avec toutes les vues
         View::composer('*', function ($view) {
             $view->with([
-                'tickets' => Ticket::with('createur')->latest()->take(5)->get(),
+                'tickets' => Ticket::with('creator')->latest()->take(5)->get(),
                 'posts' => Post::latest()->take(5)->get(),
             ]);
         });

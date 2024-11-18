@@ -11,9 +11,9 @@
     <title>{{ config('app.name', 'XterAlliance') }}</title>
 
     <!-- Site favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="backoffice/vendors/images/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="backoffice/vendors/images/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="backoffice/vendors/images/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('backoffice/vendors/images/apple-touch-icon.png') }}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('backoffice/vendors/images/favicon-32x32.png') }}" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('backoffice/vendors/images/favicon-16x16.png') }}" />
 
     <!-- Mobile Specific Metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -22,11 +22,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
     <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="backoffice/vendors/styles/core.css" />
-    <link rel="stylesheet" type="text/css" href="backoffice/vendors/styles/icon-font.min.css" />
-    <link rel="stylesheet" type="text/css" href="backoffice/src/plugins/datatables/css/dataTables.bootstrap4.min.css" />
-    <link rel="stylesheet" type="text/css" href="backoffice/src/plugins/datatables/css/responsive.bootstrap4.min.css" />
-    <link rel="stylesheet" type="text/css" href="backoffice/vendors/styles/style.css" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('backoffice/vendors/styles/core.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('backoffice/vendors/styles/icon-font.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('backoffice/src/plugins/datatables/css/dataTables.bootstrap4.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('backoffice/src/plugins/datatables/css/responsive.bootstrap4.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('backoffice/vendors/styles/style.css') }}" />
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="{{ @asset('vendor/larapex-charts/apexcharts.js') }}"></script>
 
@@ -83,16 +83,16 @@
    
     <!-- welcome modal end -->
     <!-- js -->
-    <script src="backoffice/vendors/scripts/core.js"></script>
-    <script src="backoffice/vendors/scripts/script.min.js"></script>
-    <script src="backoffice/vendors/scripts/process.js"></script>
-    <script src="backoffice/vendors/scripts/layout-settings.js"></script>
-    <script src="backoffice/src/plugins/apexcharts/apexcharts.min.js"></script>
-    <script src="backoffice/src/plugins/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="backoffice/src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
-    <script src="backoffice/src/plugins/datatables/js/dataTables.responsive.min.js"></script>
-    <script src="backoffice/src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
-    <script src="backoffice/vendors/scripts/dashboard3.js"></script>
+    <script src="{{ asset('backoffice/vendors/scripts/core.js') }}') }}"></script>
+    <script src="{{ asset('backoffice/vendors/scripts/script.min.js') }}') }}"></script>
+    <script src="{{ asset('backoffice/vendors/scripts/process.js') }}') }}"></script>
+    <script src="{{ asset('backoffice/vendors/scripts/layout-settings.js') }}') }}"></script>
+    <script src="{{ asset('backoffice/src/plugins/apexcharts/apexcharts.min.js') }}') }}"></script>
+    <script src="{{ asset('backoffice/src/plugins/datatables/js/jquery.dataTables.min.js') }}') }}"></script>
+    <script src="{{ asset('backoffice/src/plugins/datatables/js/dataTables.bootstrap4.min.js') }}') }}"></script>
+    <script src="{{ asset('backoffice/src/plugins/datatables/js/dataTables.responsive.min.js') }}') }}"></script>
+    <script src="{{ asset('backoffice/src/plugins/datatables/js/responsive.bootstrap4.min.js') }}') }}"></script>
+    <script src="{{ asset('backoffice/vendors/scripts/dashboard3.js') }}') }}"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 

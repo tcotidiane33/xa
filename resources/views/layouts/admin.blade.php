@@ -6,6 +6,7 @@
     <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'ExternAlliance') }}</title>
@@ -25,8 +26,8 @@
     <!-- jQuery -->
     {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
-    
 
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <!-- Flowbite -->
     <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
@@ -354,4 +355,4 @@
 
 </body>
 
-</h
+</html>
