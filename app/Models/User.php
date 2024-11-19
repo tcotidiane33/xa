@@ -42,7 +42,7 @@ class User extends Authenticatable implements AuditableContract
     protected $hidden = [
         'password',
         'remember_token',
-        
+
     ];
 
     /**
@@ -76,6 +76,10 @@ class User extends Authenticatable implements AuditableContract
     {
         return $this->hasMany(Client::class, 'gestionnaire_principal_id');
     }
+    // public function clientsAsGestionnaire()
+    // {
+    //     return $this->hasMany(Client::class, 'gestionnaire_id');
+    // }
 
     public function clientsAsResponsable()
     {
@@ -96,7 +100,7 @@ class User extends Authenticatable implements AuditableContract
     {
         return $this->hasMany(Client::class, 'gestionnaire_principal_id');
     }
-    
+
 
     public function clientsPrincipaux()
     {

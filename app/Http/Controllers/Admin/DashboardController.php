@@ -1,12 +1,13 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use App\Models\User;
 use App\Models\Client;
+use App\Models\Role;
+use App\Models\Permission;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
@@ -21,17 +22,23 @@ class DashboardController extends Controller
         $totalRoles = Role::count();
         $totalPermissions = Permission::count();
         $totalUsers = User::count();
-        $totalClients = Client::count();  // Assuming you have a Client model
+        $totalClients = Client::count();
 
-        return view('admin.dashboard', compact('totalRoles', 'totalPermissions', 'totalUsers', 'totalClients'));
-    }
+        // Fetch recent interactions
+        $recentRoles = Role::latest()->take(5)->get();
+        $recentPermissions = Permission::latest()->take(5)->get();
+        $recentUsers = User::latest()->take(5)->get();
+        $recentClients = Client::latest()->take(5)->get();
 
-    public function recentClients()
-    {
-        // Récupérer les 10 clients les plus récents
-        $recentClients = Client::latest()->take(10)->get();
-
-        // Retourner la vue avec les clients récents
-        return view('admin.dashboard', compact('recentClients'));
+        return view('admin.dashboard', compact(
+            'totalRoles',
+            'totalPermissions',
+            'totalUsers',
+            'totalClients',
+            'recentRoles',
+            'recentPermissions',
+            'recentUsers',
+            'recentClients'
+        ));
     }
 }
